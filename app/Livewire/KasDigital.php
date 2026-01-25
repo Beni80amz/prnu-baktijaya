@@ -19,7 +19,7 @@ class KasDigital extends Component
         $balance = $totalIncome - $totalExpense;
 
         // Get transactions based on period
-        $query = Transaction::latest('transaction_date');
+        $query = Transaction::with(['incomeType', 'expenseType'])->latest('transaction_date');
 
         if ($this->period === 'month') {
             $query->whereMonth('transaction_date', Carbon::now()->month)
@@ -29,14 +29,16 @@ class KasDigital extends Component
         }
 
         // Get category summary
-        $incomeSummary = Transaction::where('type', 'income')
-            ->select('category', DB::raw('SUM(amount) as total'))
-            ->groupBy('category')
+        $incomeSummary = Transaction::join('income_types', 'transactions.income_type_id', '=', 'income_types.id')
+            ->where('transactions.type', 'income')
+            ->select('income_types.name as category', DB::raw('SUM(transactions.amount) as total'))
+            ->groupBy('income_types.name')
             ->get();
 
-        $expenseSummary = Transaction::where('type', 'expense')
-            ->select('category', DB::raw('SUM(amount) as total'))
-            ->groupBy('category')
+        $expenseSummary = Transaction::join('expense_types', 'transactions.expense_type_id', '=', 'expense_types.id')
+            ->where('transactions.type', 'expense')
+            ->select('expense_types.name as category', DB::raw('SUM(transactions.amount) as total'))
+            ->groupBy('expense_types.name')
             ->get();
 
         return view('livewire.kas-digital', [

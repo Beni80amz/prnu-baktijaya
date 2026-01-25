@@ -26,7 +26,8 @@
                     <p class="text-green-700 dark:text-green-300 text-sm font-bold uppercase tracking-wider mb-2">Total
                         Pemasukan</p>
                     <p class="text-3xl font-black text-green-600 dark:text-green-400">Rp
-                        {{ number_format($totalIncome, 0, ',', '.') }}</p>
+                        {{ number_format($totalIncome, 0, ',', '.') }}
+                    </p>
                 </div>
                 <!-- Total Expense -->
                 <div class="bg-red-500/10 dark:bg-red-500/20 rounded-2xl p-8 text-center border border-red-500/20">
@@ -35,7 +36,8 @@
                     <p class="text-red-700 dark:text-red-300 text-sm font-bold uppercase tracking-wider mb-2">Total
                         Pengeluaran</p>
                     <p class="text-3xl font-black text-red-600 dark:text-red-400">Rp
-                        {{ number_format($totalExpense, 0, ',', '.') }}</p>
+                        {{ number_format($totalExpense, 0, ',', '.') }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -96,7 +98,7 @@
                                             <td class="px-6 py-4">
                                                 <span
                                                     class="px-2 py-1 text-xs font-bold rounded-full {{ $tx->type === 'income' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400' }}">
-                                                    {{ ucfirst($tx->category) }}
+                                                    {{ ucfirst($tx->type === 'income' ? ($tx->incomeType?->name ?? '-') : ($tx->expenseType?->name ?? '-')) }}
                                                 </span>
                                             </td>
                                             <td

@@ -32,7 +32,7 @@ class ProfileDataSeeder extends Seeder
             ],
             [
                 'key' => 'profile_image',
-                'value' => 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?w=800&q=80',
+                'value' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuAcHOgGOrTTa4ki4MwQX8OO_PB_2zj1jDvj2NXLCEZRdeiSDvjSQHuyetUr_GP-oPVzxzR7gsny_UuYW1Rv-ge22s3r45n8lzh8tDSXgQ_WgK1JnMiKHMj_YWNDZ8-v3NC31LKapRwt5z2cqJzSojYKcJAzlrUpiRQPtZplYo06cEzUdSwdwlNDMGppYOnDykQH66Hh64LSpn6Dp_Wrx972duo5qzvEtAGBHtXBpcTHpJspzq9_7KegTievfj_MeQ9iJF1aVXKjBPbQ',
                 'type' => 'image',
                 'group' => 'profile',
                 'label' => 'Gambar Profil',

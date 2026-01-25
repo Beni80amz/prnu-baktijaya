@@ -94,12 +94,10 @@ class Home extends Component
             'galleries' => \App\Models\Gallery::where('is_active', true)->latest()->take(6)->get(),
             'mosques' => \App\Models\Mosque::where('is_active', true)->take(4)->get(),
             'totalInfaq' => Transaction::where('type', 'income')
-                ->where('category', 'infaq')
                 ->whereMonth('transaction_date', Carbon::now()->month)
                 ->whereYear('transaction_date', Carbon::now()->year)
                 ->sum('amount'),
             'totalZakat' => Transaction::where('type', 'expense')
-                ->where('category', 'zakat')
                 ->sum('amount'),
         ]);
     }

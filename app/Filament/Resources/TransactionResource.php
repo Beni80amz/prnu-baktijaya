@@ -25,121 +25,138 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-                    Forms\Components\Section::make()
-                        ->schema([
-                                Forms\Components\Grid::make(3)
-                                    ->schema([
-                                            Forms\Components\Select::make('type')
-                                                ->options([
-                                                        'income' => 'Pemasukan',
-                                                        'expense' => 'Pengeluaran',
-                                                    ])
-                                                ->required()
-                                                ->live(),
-                                            Forms\Components\Select::make('category')
-                                                ->options([
-                                                        'dakwah' => 'Dakwah',
-                                                        'yatim' => 'Yatim & Dhuafa',
-                                                        'operasional' => 'Operasional',
-                                                        'infaq' => 'Infaq',
-                                                        'zakat' => 'Zakat',
-                                                        'qurban' => 'Qurban',
-                                                        'lainnya' => 'Lainnya',
-                                                    ])
-                                                ->required(),
-                                            Forms\Components\DatePicker::make('transaction_date')
-                                                ->required()
-                                                ->default(now()),
-                                        ]),
-                                Forms\Components\TextInput::make('amount')
+                Forms\Components\Section::make()
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('type')
+                                    ->label('Tipe Transaksi')
+                                    ->options([
+                                        'income' => 'Pemasukan',
+                                        'expense' => 'Pengeluaran',
+                                    ])
                                     ->required()
-                                    ->numeric()
-                                    ->prefix('Rp'),
-                                Forms\Components\TextInput::make('description')
+                                    ->live()
+                                    ->afterStateUpdated(fn(Forms\Set $set) => $set('income_type_id', null) && $set('expense_type_id', null)),
+                                Forms\Components\DatePicker::make('transaction_date')
+                                    ->label('Tanggal')
                                     ->required()
-                                    ->maxLength(255),
-                                Forms\Components\Textarea::make('notes')
-                                    ->rows(2)
-                                    ->columnSpanFull(),
-                                Forms\Components\FileUpload::make('proof_image')
-                                    ->image()
-                                    ->directory('transactions')
-                                    ->columnSpanFull(),
-                                Forms\Components\Hidden::make('user_id')
-                                    ->default(fn() => auth()->id()),
-                                Forms\Components\Toggle::make('is_verified')
-                                    ->label('Terverifikasi')
-                                    ->default(false)
-                                    ->disabled(fn() => !auth()->user()->hasRole(['super_admin', 'admin_bendahara'])),
+                                    ->default(now()),
                             ]),
-                ]);
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('income_type_id')
+                                    ->label('Jenis Pemasukan')
+                                    ->relationship('incomeType', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(fn(Forms\Get $get) => $get('type') === 'income')
+                                    ->visible(fn(Forms\Get $get) => $get('type') === 'income'),
+                                Forms\Components\Select::make('expense_type_id')
+                                    ->label('Jenis Pengeluaran')
+                                    ->relationship('expenseType', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(fn(Forms\Get $get) => $get('type') === 'expense')
+                                    ->visible(fn(Forms\Get $get) => $get('type') === 'expense'),
+                            ]),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('region_id')
+                                    ->label('Wilayah')
+                                    ->relationship('region', 'name')
+                                    ->searchable()
+                                    ->preload(),
+                                Forms\Components\Select::make('volunteer_id')
+                                    ->label('Relawan')
+                                    ->relationship('volunteer', 'name')
+                                    ->searchable()
+                                    ->preload(),
+                            ]),
+                        Forms\Components\TextInput::make('amount')
+                            ->label('Nominal')
+                            ->required()
+                            ->numeric()
+                            ->prefix('Rp'),
+                        Forms\Components\Textarea::make('description')
+                            ->label('Keterangan')
+                            ->nullable()
+                            ->columnSpanFull(),
+                        Forms\Components\FileUpload::make('proof_image')
+                            ->label('Bukti Transaksi')
+                            ->image()
+                            ->directory('transactions')
+                            ->columnSpanFull(),
+                        Forms\Components\Hidden::make('user_id')
+                            ->default(fn() => auth()->id()),
+                    ]),
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                    Tables\Columns\TextColumn::make('transaction_date')
-                        ->date('d M Y')
-                        ->sortable(),
-                    Tables\Columns\TextColumn::make('type')
-                        ->badge()
-                        ->formatStateUsing(fn(string $state): string => match ($state) {
-                            'income' => 'Pemasukan',
-                            'expense' => 'Pengeluaran',
-                            default => $state,
-                        })
-                        ->color(fn(string $state): string => match ($state) {
-                            'income' => 'success',
-                            'expense' => 'danger',
-                            default => 'gray',
-                        }),
-                    Tables\Columns\TextColumn::make('category')
-                        ->formatStateUsing(fn(string $state): string => ucwords($state))
-                        ->searchable(),
-                    Tables\Columns\TextColumn::make('description')
-                        ->searchable()
-                        ->limit(30),
-                    Tables\Columns\TextColumn::make('amount')
-                        ->money('IDR')
-                        ->sortable()
-                        ->alignment('right'),
-                    Tables\Columns\IconColumn::make('is_verified')
-                        ->boolean(),
-                    Tables\Columns\TextColumn::make('user.name')
-                        ->label('Input Oleh')
-                        ->toggleable(isToggledHiddenByDefault: true),
-                    Tables\Columns\TextColumn::make('created_at')
-                        ->dateTime()
-                        ->sortable()
-                        ->toggleable(isToggledHiddenByDefault: true),
-                ])
+                Tables\Columns\TextColumn::make('transaction_date')
+                    ->label('Tanggal')
+                    ->date('d M Y')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Tipe')
+                    ->badge()
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'income' => 'Pemasukan',
+                        'expense' => 'Pengeluaran',
+                        default => $state,
+                    })
+                    ->color(fn(string $state): string => match ($state) {
+                        'income' => 'success',
+                        'expense' => 'danger',
+                        default => 'gray',
+                    }),
+                Tables\Columns\TextColumn::make('category_name')
+                    ->label('Kategori')
+                    ->state(function (Transaction $record): string {
+                        return $record->type === 'income'
+                            ? ($record->incomeType?->name ?? '-')
+                            : ($record->expenseType?->name ?? '-');
+                    }),
+                Tables\Columns\TextColumn::make('amount')
+                    ->label('Nominal')
+                    ->money('IDR')
+                    ->sortable()
+                    ->alignment('right'),
+                Tables\Columns\TextColumn::make('region.name')
+                    ->label('Wilayah')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('volunteer.name')
+                    ->label('Relawan')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('description')
+                    ->label('Keterangan')
+                    ->limit(30)
+                    ->searchable(),
+            ])
             ->filters([
-                    Tables\Filters\SelectFilter::make('type')
-                        ->options([
-                                'income' => 'Pemasukan',
-                                'expense' => 'Pengeluaran',
-                            ]),
-                    Tables\Filters\SelectFilter::make('category')
-                        ->options([
-                                'dakwah' => 'Dakwah',
-                                'yatim' => 'Yatim & Dhuafa',
-                                'operasional' => 'Operasional',
-                                'infaq' => 'Infaq',
-                                'zakat' => 'Zakat',
-                                'qurban' => 'Qurban',
-                                'lainnya' => 'Lainnya',
-                            ]),
-                ])
-            ->actions([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                ])
-            ->bulkActions([
-                    Tables\Actions\BulkActionGroup::make([
-                        Tables\Actions\DeleteBulkAction::make(),
+                Tables\Filters\SelectFilter::make('type')
+                    ->options([
+                        'income' => 'Pemasukan',
+                        'expense' => 'Pengeluaran',
                     ]),
-                ]);
+                Tables\Filters\SelectFilter::make('region')
+                    ->relationship('region', 'name'),
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getRelations(): array

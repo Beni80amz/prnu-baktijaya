@@ -11,22 +11,42 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'transaction_date',
         'type',
-        'category',
         'amount',
         'description',
-        'notes',
+        'income_type_id',
+        'expense_type_id',
+        'region_id',
+        'volunteer_id',
+        'user_id',
         'proof_image',
-        'transaction_date',
-        'is_verified',
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2',
         'transaction_date' => 'date',
-        'is_verified' => 'boolean',
+        'amount' => 'decimal:2',
     ];
+
+    public function incomeType(): BelongsTo
+    {
+        return $this->belongsTo(IncomeType::class);
+    }
+
+    public function expenseType(): BelongsTo
+    {
+        return $this->belongsTo(ExpenseType::class);
+    }
+
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Region::class);
+    }
+
+    public function volunteer(): BelongsTo
+    {
+        return $this->belongsTo(Volunteer::class);
+    }
 
     public function user(): BelongsTo
     {
