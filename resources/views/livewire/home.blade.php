@@ -655,10 +655,10 @@
                     <h2 class="text-4xl font-black mb-6 leading-tight">Transparansi Keuangan Umat</h2>
                     <p class="text-white/80 mb-10 text-lg leading-relaxed">Komitmen kami dalam menjaga amanah jamaah
                         dengan pelaporan keuangan digital yang realtime dan akuntabel.</p>
-                    <button
-                        class="bg-accent text-background-dark font-black py-4 px-10 rounded-lg hover:bg-white transition-all transform hover:scale-105 shadow-2xl">
+                    <a href="{{ route('kas-digital') }}" wire:navigate
+                        class="inline-block bg-accent text-background-dark font-black py-4 px-10 rounded-lg hover:bg-white transition-all transform hover:scale-105 shadow-2xl">
                         LIHAT LAPORAN KAS
-                    </button>
+                    </a>
                 </div>
                 <div class="md:w-1/2 w-full">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -667,7 +667,7 @@
                                 class="size-10 bg-accent/20 rounded-lg flex items-center justify-center mb-4 text-accent">
                                 <span class="material-symbols-outlined font-bold">payments</span>
                             </div>
-                            <p class="text-white/70 text-xs font-black uppercase tracking-widest mb-2">Infaq Bulan Ini
+                            <p class="text-white/70 text-xs font-black uppercase tracking-widest mb-2">Pemasukan Bulan Ini
                             </p>
                             <p class="text-3xl font-black text-white">Rp
                                 {{ number_format($totalInfaq / 1000000, 1, ',', '.') }} jt</p>
@@ -677,7 +677,7 @@
                                 class="size-10 bg-accent/20 rounded-lg flex items-center justify-center mb-4 text-accent">
                                 <span class="material-symbols-outlined font-bold">volunteer_activism</span>
                             </div>
-                            <p class="text-white/70 text-xs font-black uppercase tracking-widest mb-2">Zakat Tersalur
+                            <p class="text-white/70 text-xs font-black uppercase tracking-widest mb-2">Total Pengeluaran
                             </p>
                             <p class="text-3xl font-black text-white">Rp
                                 {{ number_format($totalZakat / 1000000, 1, ',', '.') }} jt</p>
