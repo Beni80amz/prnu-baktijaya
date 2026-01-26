@@ -1,0 +1,4 @@
+﻿Analyzing mobile...                                             
+
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\transaction_history_screen.dart:163:39 - prefer_const_constructors
+

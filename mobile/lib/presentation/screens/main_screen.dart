@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'home_screen.dart';
-import 'service_menu_screen.dart';
+import 'kas_digital_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,40 +15,92 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = const [
     HomeScreen(),
-    ServiceMenuScreen(),
-    // Placeholder for other tabs like Inbox or Profile
-    Center(child: Text('Profil (Coming Soon)')), 
+    Center(child: Text('Kegiatan (Coming Soon)', style: TextStyle(color: AppTheme.teal))),
+    KasDigitalScreen(), // FAB navigation
+    KasDigitalScreen(), // Donasi tab
+    Center(child: Text('Profil (Coming Soon)', style: TextStyle(color: AppTheme.teal))),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home, color: AppTheme.teal),
-            label: 'Beranda',
+      floatingActionButton: Container(
+        height: 64,
+        width: 64,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            width: 4,
           ),
-          NavigationDestination(
-            icon: Icon(Icons.grid_view),
-            selectedIcon: Icon(Icons.grid_view_rounded, color: AppTheme.teal),
-            label: 'Layanan',
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.teal.withOpacity(0.4),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          onPressed: () => setState(() => _currentIndex = 2),
+          backgroundColor: AppTheme.teal,
+          elevation: 0,
+          shape: const CircleBorder(),
+          child: const Icon(
+            Icons.account_balance_wallet,
+            color: Colors.white,
+            size: 32,
           ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person, color: AppTheme.teal),
-            label: 'Profil',
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        height: 70,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1A1A1A)
+            : Colors.white,
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildNavItem(0, Icons.home, 'Home'),
+            _buildNavItem(1, Icons.event_note, 'Kegiatan'),
+            const SizedBox(width: 48), // Space for FAB
+            _buildNavItem(3, Icons.payments, 'Donasi'),
+            _buildNavItem(4, Icons.person, 'Profil'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, String label) {
+    final isSelected = _currentIndex == index;
+    return InkWell(
+      onTap: () => setState(() => _currentIndex = index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: isSelected ? AppTheme.teal : Colors.grey[400],
+            size: 24,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? AppTheme.teal : Colors.grey[400],
+              fontSize: 10,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+            ),
           ),
         ],
       ),

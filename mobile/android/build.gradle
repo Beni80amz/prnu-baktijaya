@@ -4,11 +4,11 @@ allprojects {
         mavenCentral()
     }
     // Skip unit tests to avoid "different roots" error on Windows (Drive C vs D)
-    gradle.startParameter.excludedTaskNames.addAll([
-        'generateDebugUnitTestConfig', 
-        'testDebugUnitTest', 
-        'testReleaseUnitTest'
-    ])
+    // gradle.startParameter.excludedTaskNames.addAll([
+    //     'generateDebugUnitTestConfig', 
+    //     'testDebugUnitTest', 
+    //     'testReleaseUnitTest'
+    // ])
 }
 
 rootProject.buildDir = "../build"

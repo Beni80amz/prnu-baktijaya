@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import '../../core/network/dio_client.dart';
 import '../models/news_model.dart';
 import '../models/prayer_time_model.dart';

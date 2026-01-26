@@ -1,153 +1,132 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/providers.dart';
 import '../../core/theme/app_theme.dart';
-import 'news_detail_screen.dart';
+import '../widgets/home/prayer_card.dart';
+import '../widgets/home/dawuh_card.dart';
+import '../widgets/home/services_grid.dart';
+import '../widgets/home/kas_balance_card.dart';
+import '../widgets/home/latest_news_section.dart';
 
-
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final prayerTimesAsync = ref.watch(prayerTimeProvider);
-    final newsAsync = ref.watch(newsProvider);
-
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PRNU Baktijaya'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              // Navigate to profile
-            },
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await Future.wait([
-            ref.refresh(prayerTimeProvider.future),
-            ref.refresh(newsProvider.future),
-          ]);
-        },
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Prayer Times Widget
-              _buildSectionTitle('Jadwal Sholat'),
-              const SizedBox(height: 10),
-              prayerTimesAsync.when(
-                data: (data) => _buildPrayerTimesCard(data),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => Text('Error: $err', style: const TextStyle(color: Colors.red)),
-              ),
-
-              const SizedBox(height: 20),
-
-              // News Widget
-              _buildSectionTitle('Berita Terkini'),
-              const SizedBox(height: 10),
-              newsAsync.when(
-                data: (newsList) => Column(
-                  children: newsList.map((news) => _buildNewsCard(context, news)).toList(),
-                ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => Text('Error: $err', style: const TextStyle(color: Colors.red)),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: AppTheme.teal,
-      ),
-    );
-  }
-
-  Widget _buildPrayerTimesCard(dynamic data) {
-    // Assuming data is PrayerTimes model
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: AppTheme.teal,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+        title: Row(
           children: [
-            Text(
-              data.cityName,
-              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppTheme.teal.withOpacity(0.2), width: 2),
+                image: const DecorationImage(
+                  image: NetworkImage("https://lh3.googleusercontent.com/aida-public/AB6AXuBiUPY8ypA38vHHlqPv7iyc77_QOm1GszqASPGNUhNzmMqH5-GlGusH0lXxh5nZaUtlWHH3c9E8ie4xIizKJ3glvUsGIJbXByC3P9vTAro773GC4MZWYjxcG9ekmokDl7uH7y1CbrZxFIQ8E3Gj26_JExXK9pzW9F8vAc_LdgSxowDvGqvOK7KdyvL7hjDujVeLWnvRoxziX0TaZZN1oWQ4yCEJGVIyjnCxM6flDZTmp_9XDoeC8u-Jbz7eZlWR2RmDRRXoj94NDsQ"),
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            const SizedBox(width: 12),
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                _buildTimeItem('Subuh', data.times['subuh']),
-                _buildTimeItem('Dzuhur', data.times['dzuhur']),
-                _buildTimeItem('Ashar', data.times['ashar']),
-                _buildTimeItem('Maghrib', data.times['maghrib']),
-                _buildTimeItem('Isya', data.times['isya']),
+                Text(
+                  'PRNU BAKTIJAYA',
+                  style: TextStyle(
+                    color: AppTheme.teal,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'RANTING NU',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.5,
+                  ),
+                ),
               ],
             ),
           ],
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[850] : Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.notifications_none, color: AppTheme.teal),
+                    onPressed: () {},
+                  ),
+                ),
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-    );
-  }
-
-  Widget _buildTimeItem(String name, String? time) {
-    return Column(
-      children: [
-        Text(name, style: const TextStyle(color: Colors.white70, fontSize: 12)),
-        const SizedBox(height: 4),
-        Text(time ?? '-', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-      ],
-    );
-  }
-
-  Widget _buildNewsCard(BuildContext context, dynamic news) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(10),
-        title: Text(
-          news.title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Column(
+      body: const SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 5),
-            Text(
-              news.publishedAt,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
+            SizedBox(height: 16),
+
+            // Prayer Times Card (Hardcoded Placeholder)
+            PrayerCard(),
+
+            SizedBox(height: 16),
+
+            // Dawuh Card
+            DawuhCard(),
+
+            SizedBox(height: 12),
+
+            // Services Grid
+            ServicesGrid(),
+
+            SizedBox(height: 8),
+
+            // Kas Balance Card
+            KasBalanceCard(),
+
+            SizedBox(height: 16),
+
+            // Latest News Section (Hardcoded Placeholder)
+            LatestNewsSection(newsList: []),
+
+            SizedBox(height: 100), // Space for bottom nav
           ],
         ),
-        // trailing: Image.network(news.image ?? '', width: 60, fit: BoxFit.cover, errorBuilder: (c,e,s) => const Icon(Icons.image)),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NewsDetailScreen(news: news),
-            ),
-          );
-        },
       ),
     );
   }

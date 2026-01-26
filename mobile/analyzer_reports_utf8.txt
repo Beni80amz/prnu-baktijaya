@@ -1,0 +1,8 @@
+﻿Analyzing mobile...                                             
+
+warning - Unused import: '../../core/theme/app_theme.dart' - lib\presentation\screens\financial_report_screen.dart:2:8 - unused_import
+  error - Expected a method, getter, setter or operator declaration - lib\presentation\screens\kas_digital_screen.dart:1:1 - expected_executable
+  error - Expected a method, getter, setter or operator declaration - lib\presentation\screens\kas_digital_screen.dart:1:2 - expected_executable
+  error - Expected a method, getter, setter or operator declaration - lib\presentation\screens\kas_digital_screen.dart:1:3 - expected_executable
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\transaction_history_screen.dart:163:39 - prefer_const_constructors
+

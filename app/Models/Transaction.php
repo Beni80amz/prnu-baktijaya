@@ -21,6 +21,7 @@ class Transaction extends Model
         'volunteer_id',
         'user_id',
         'proof_image',
+        'fund_type',
     ];
 
     protected $casts = [

@@ -1,0 +1,18 @@
+﻿Analyzing mobile...                                             
+
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\home_screen.dart:97:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\home_screen.dart:98:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\home_screen.dart:99:16 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\presentation\screens\home_screen.dart:101:21 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\home_screen.dart:102:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\home_screen.dart:105:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\home_screen.dart:107:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\home_screen.dart:110:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\home_screen.dart:115:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\home_screen.dart:120:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\home_screen.dart:125:13 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\presentation\screens\home_screen.dart:125:41 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\home_screen.dart:127:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\presentation\screens\transaction_history_screen.dart:157:39 - prefer_const_constructors
+   info - Unnecessary use of 'toList' in a spread - lib\presentation\screens\transaction_history_screen.dart:249:30 - unnecessary_to_list_in_spreads
+

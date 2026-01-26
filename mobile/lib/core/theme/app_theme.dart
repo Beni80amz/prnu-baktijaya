@@ -3,11 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Brand Colors
-  static const Color teal = Color(0xFF008080);
-  static const Color gold = Color(0xFFFFD700);
+  static const Color teal = Color(0xFF007F80);
+  static const Color gold = Color(0xFFD4AF37);
   static const Color white = Color(0xFFFFFFFF);
-  static const Color black = Color(0xFF1A1A1A);
-  static const Color lightGray = Color(0xFFF5F5F5);
+  static const Color black = Color(0xFF0F2323);
+  static const Color backgroundLight = Color(0xFFF5F8F8);
+  static const Color backgroundDark = Color(0xFF0F2323);
 
   // Light Theme
   static ThemeData get lightTheme {
@@ -20,21 +21,13 @@ class AppTheme {
         surface: white,
         brightness: Brightness.light,
       ),
-      scaffoldBackgroundColor: white,
+      scaffoldBackgroundColor: backgroundLight,
       textTheme: GoogleFonts.interTextTheme(),
       appBarTheme: const AppBarTheme(
-        backgroundColor: teal,
-        foregroundColor: white,
-        centerTitle: true,
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: teal,
-          foregroundColor: white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
+        backgroundColor: backgroundLight,
+        foregroundColor: teal,
+        centerTitle: false,
+        elevation: 0,
       ),
     );
   }
@@ -47,24 +40,16 @@ class AppTheme {
         seedColor: teal,
         primary: teal,
         secondary: gold,
-        surface: const Color(0xFF121212),
+        surface: backgroundDark,
         brightness: Brightness.dark,
       ),
-      scaffoldBackgroundColor: const Color(0xFF121212),
+      scaffoldBackgroundColor: backgroundDark,
       textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF1F1F1F),
+        backgroundColor: backgroundDark,
         foregroundColor: white,
-        centerTitle: true,
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: teal,
-          foregroundColor: white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
+        centerTitle: false,
+        elevation: 0,
       ),
     );
   }
