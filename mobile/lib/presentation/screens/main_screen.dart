@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'home_screen.dart';
 import 'kas_digital_screen.dart';
+import 'news_list_screen.dart';
+import 'gallery_screen.dart';
+import 'organization_profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,10 +18,10 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = const [
     HomeScreen(),
-    Center(child: Text('Kegiatan (Coming Soon)', style: TextStyle(color: AppTheme.teal))),
+    NewsListScreen(),
     KasDigitalScreen(), // FAB navigation
-    KasDigitalScreen(), // Donasi tab
-    Center(child: Text('Profil (Coming Soon)', style: TextStyle(color: AppTheme.teal))),
+    GalleryScreen(), // Galeri tab
+    OrganizationProfileScreen(),
   ];
 
   @override
@@ -71,9 +74,9 @@ class _MainScreenState extends State<MainScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildNavItem(0, Icons.home, 'Home'),
-            _buildNavItem(1, Icons.event_note, 'Kegiatan'),
+            _buildNavItem(1, Icons.newspaper, 'Berita'),
             const SizedBox(width: 48), // Space for FAB
-            _buildNavItem(3, Icons.payments, 'Donasi'),
+            _buildNavItem(3, Icons.collections, 'Galeri'),
             _buildNavItem(4, Icons.person, 'Profil'),
           ],
         ),

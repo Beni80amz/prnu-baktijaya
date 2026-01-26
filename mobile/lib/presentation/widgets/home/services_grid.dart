@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../screens/kas_digital_screen.dart';
+import '../../screens/news_list_screen.dart';
 
 class ServicesGrid extends StatelessWidget {
   const ServicesGrid({super.key});
@@ -31,18 +32,24 @@ class ServicesGrid extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         GridView.count(
+          padding: EdgeInsets.zero,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 2,
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
-          childAspectRatio: 3.0, // Even shorter cards
+          childAspectRatio: 2.8, // Slightly more height to prevent overflow
           children: [
             _buildServiceItem(
               context,
               'Berita Ranting',
               Icons.newspaper,
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NewsListScreen()),
+                );
+              },
             ),
             _buildServiceItem(
               context,
@@ -80,10 +87,10 @@ class ServicesGrid extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8), // Much tighter padding
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
           color: isDark ? Colors.grey[850] : Colors.white,
-          borderRadius: BorderRadius.circular(12), // Slightly smaller radius
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isDark ? Colors.white10 : Colors.black.withOpacity(0.05),
           ),
@@ -100,17 +107,19 @@ class ServicesGrid extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              padding: const EdgeInsets.all(4), // Tiny icon container
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: AppTheme.teal.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Icon(icon, color: AppTheme.teal, size: 16), // Tiny icon
+              child: Icon(icon, color: AppTheme.teal, size: 16),
             ),
             Text(
               title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 11, // Smaller text
+                fontSize: 11,
                 fontWeight: FontWeight.bold,
               ),
             ),

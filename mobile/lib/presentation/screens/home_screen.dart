@@ -1,57 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
 import '../widgets/home/prayer_card.dart';
 import '../widgets/home/dawuh_card.dart';
 import '../widgets/home/services_grid.dart';
 import '../widgets/home/kas_balance_card.dart';
 import '../widgets/home/latest_news_section.dart';
+import '../providers/providers.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settingsAsync = ref.watch(settingsProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: AppTheme.teal.withOpacity(0.2), width: 2),
-                image: const DecorationImage(
-                  image: NetworkImage("https://lh3.googleusercontent.com/aida-public/AB6AXuBiUPY8ypA38vHHlqPv7iyc77_QOm1GszqASPGNUhNzmMqH5-GlGusH0lXxh5nZaUtlWHH3c9E8ie4xIizKJ3glvUsGIJbXByC3P9vTAro773GC4MZWYjxcG9ekmokDl7uH7y1CbrZxFIQ8E3Gj26_JExXK9pzW9F8vAc_LdgSxowDvGqvOK7KdyvL7hjDujVeLWnvRoxziX0TaZZN1oWQ4yCEJGVIyjnCxM6flDZTmp_9XDoeC8u-Jbz7eZlWR2RmDRRXoj94NDsQ"),
-                  fit: BoxFit.cover,
+        title: settingsAsync.when(
+          data: (settings) => Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppTheme.teal.withOpacity(0.2), width: 2),
+                  image: DecorationImage(
+                    image: (settings.siteLogo != null)
+                        ? NetworkImage(settings.siteLogo!)
+                        : const NetworkImage("https://lh3.googleusercontent.com/aida-public/AB6AXuBiUPY8ypA38vHHlqPv7iyc77_QOm1GszqASPGNUhNzmMqH5-GlGusH0lXxh5nZaUtlWHH3c9E8ie4xIizKJ3glvUsGIJbXByC3P9vTAro773GC4MZWYjxcG9ekmokDl7uH7y1CbrZxFIQ8E3Gj26_JExXK9pzW9F8vAc_LdgSxowDvGqvOK7KdyvL7hjDujVeLWnvRoxziX0TaZZN1oWQ4yCEJGVIyjnCxM6flDZTmp_9XDoeC8u-Jbz7eZlWR2RmDRRXoj94NDsQ"),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'PRNU BAKTIJAYA',
-                  style: TextStyle(
-                    color: AppTheme.teal,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    settings.siteName.toUpperCase(),
+                    style: const TextStyle(
+                      color: AppTheme.teal,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  'RANTING NU',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.5,
+                  const Text(
+                    'Ranting NU Baktijaya',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
+          loading: () => const Row(
+            children: [
+              SizedBox(width: 40, height: 40, child: CircularProgressIndicator(strokeWidth: 2)),
+              SizedBox(width: 12),
+              Text('Loading...', style: TextStyle(fontSize: 14)),
+            ],
+          ),
+          error: (err, stack) => const Text('PRNU BAKTIJAYA', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
         ),
         actions: [
           Padding(
@@ -94,38 +110,53 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 16),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(newsProvider);
+          ref.invalidate(prayerTimeProvider);
+          ref.invalidate(kasSummaryProvider);
+          ref.invalidate(dawuhProvider);
+          ref.invalidate(settingsProvider);
+          return Future.delayed(const Duration(milliseconds: 500));
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 16),
 
-            // Prayer Times Card (Hardcoded Placeholder)
-            PrayerCard(),
+              // Prayer Times Card
+              const PrayerCard(),
 
-            SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Dawuh Card
-            DawuhCard(),
+              // Dawuh Card
+              const DawuhCard(),
 
-            SizedBox(height: 12),
+              const SizedBox(height: 8),
 
-            // Services Grid
-            ServicesGrid(),
+              // Services Grid
+              const ServicesGrid(),
 
-            SizedBox(height: 8),
+              const SizedBox(height: 12),
 
-            // Kas Balance Card
-            KasBalanceCard(),
+              // Kas Balance Card
+              const KasBalanceCard(),
 
-            SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Latest News Section (Hardcoded Placeholder)
-            LatestNewsSection(newsList: []),
+              // Latest News Section
+              ref.watch(newsProvider).when(
+                data: (news) => LatestNewsSection(newsList: news),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => const LatestNewsSection(newsList: []),
+              ),
 
-            SizedBox(height: 100), // Space for bottom nav
-          ],
+              const SizedBox(height: 100), // Space for bottom nav
+            ],
+          ),
         ),
       ),
     );

@@ -1,14 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../providers/providers.dart';
+import '../../../data/models/dawuh_model.dart';
 
-class DawuhCard extends StatelessWidget {
+class DawuhCard extends ConsumerWidget {
   const DawuhCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dawuhsAsync = ref.watch(dawuhProvider);
+
+    return dawuhsAsync.when(
+      data: (dawuhs) {
+        if (dawuhs.isEmpty) return const SizedBox.shrink();
+        
+        return CarouselSlider(
+          options: CarouselOptions(
+            height: 180,
+            viewportFraction: 1.0,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 5),
+            enlargeCenterPage: false,
+          ),
+          items: dawuhs.map((dawuh) {
+            return Builder(
+              builder: (BuildContext context) {
+                return _buildDawuhItem(context, dawuh);
+              },
+            );
+          }).toList(),
+        );
+      },
+      loading: () => Container(
+        height: 180,
+        decoration: BoxDecoration(
+          color: AppTheme.teal.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (err, stack) => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildDawuhItem(BuildContext context, Dawuh dawuh) {
     return Container(
       width: double.infinity,
-      height: 180,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         image: const DecorationImage(
@@ -48,15 +87,17 @@ class DawuhCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    '"The greatest struggle is the battle with your own soul."',
-                    style: TextStyle(
+                  Text(
+                    '"${dawuh.quote}"',
+                    style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                       fontStyle: FontStyle.italic,
                       letterSpacing: -0.5,
                     ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -67,9 +108,9 @@ class DawuhCard extends StatelessWidget {
                         color: AppTheme.gold,
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'DAWUH KH HASYIM ASY\'ARI',
-                        style: TextStyle(
+                      Text(
+                        'DAWUH ${dawuh.ulamaName.toUpperCase()}',
+                        style: const TextStyle(
                           color: AppTheme.gold,
                           fontSize: 10,
                           fontWeight: FontWeight.w800,

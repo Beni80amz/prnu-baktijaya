@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../data/models/news_model.dart';
+import '../../screens/news_detail_screen.dart';
 
 class LatestNewsSection extends StatelessWidget {
   final List<News> newsList;
@@ -52,59 +54,82 @@ class LatestNewsSection extends StatelessWidget {
   }
 
   Widget _buildNewsCard(BuildContext context, News news) {
-    return Container(
-      width: 240,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Image.network(
-                news.image ?? '',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.image, color: Colors.grey),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewsDetailScreen(news: news),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 240,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Image.network(
+                  news.image ?? '',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.image, color: Colors.grey),
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'BERITA',
-            style: TextStyle(
-              color: AppTheme.teal,
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
+            const SizedBox(height: 8),
+            const Text(
+              'BERITA',
+              style: TextStyle(
+                color: AppTheme.teal,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            news.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              height: 1.2,
+            const SizedBox(height: 4),
+            Text(
+              news.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                height: 1.2,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            news.publishedAt,
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 10,
+            const SizedBox(height: 4),
+            Text(
+              _formatDate(news.publishedAt),
+              style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 10,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  String _formatDate(String dateStr) {
+    try {
+      if (dateStr.isEmpty) return '';
+      // Handle "Z" and other timezone formats by parsing as UTC if needed
+      final date = DateTime.parse(dateStr).toLocal();
+      return DateFormat('dd MMMM yyyy, HH:mm', 'id_ID').format(date);
+    } catch (e) {
+      debugPrint('Error formatting date: $e');
+      return dateStr;
+    }
   }
 
   Widget _buildPlaceholderCard(BuildContext context, int index) {

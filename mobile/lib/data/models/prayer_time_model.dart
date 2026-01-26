@@ -1,5 +1,5 @@
 class PrayerTimes {
-  final int cityId;
+  final dynamic cityId;
   final String cityName;
   final Map<String, String> times;
   final String date;
@@ -13,7 +13,7 @@ class PrayerTimes {
 
   factory PrayerTimes.fromJson(Map<String, dynamic> json) {
     return PrayerTimes(
-      cityId: json['city_id'] ?? 0,
+      cityId: json['city_id'],
       cityName: json['city_name'] ?? '',
       times: Map<String, String>.from(json['times'] ?? {}),
       date: json['date'] ?? '',

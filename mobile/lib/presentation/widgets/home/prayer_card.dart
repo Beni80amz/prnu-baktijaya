@@ -1,29 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../data/models/prayer_time_model.dart';
+import '../../providers/providers.dart';
+import '../../screens/city_selector_screen.dart';
 
-class PrayerCard extends StatelessWidget {
-  final PrayerTimes? data;
-
-  const PrayerCard({super.key, this.data});
+class PrayerCard extends ConsumerWidget {
+  const PrayerCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Hardcoded mock data if none provided
-    final prayerData = data ?? PrayerTimes(
-      cityId: 0,
-      cityName: 'Baktijaya',
-      times: {
-        'subuh': '04:35',
-        'dzuhur': '12:10',
-        'ashar': '15:30',
-        'maghrib': '18:05',
-        'isya': '19:15',
-      },
-      date: '2026-01-26',
-    );
-
-    final nextPrayer = _getNextPrayer(prayerData);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final prayerAsync = ref.watch(prayerTimeProvider);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -41,19 +28,51 @@ class PrayerCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, color: AppTheme.teal, size: 14),
-                    const SizedBox(width: 4),
-                    Text(
+      child: prayerAsync.when(
+        data: (prayerData) => _buildContent(context, prayerData),
+        loading: () => const Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: CircularProgressIndicator(),
+          ),
+        ),
+        error: (err, stack) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red, size: 24),
+              const SizedBox(height: 8),
+              const Text('Gagal memuat jadwal sholat', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              Text(err.toString(), style: const TextStyle(fontSize: 10, color: Colors.grey), textAlign: TextAlign.center, maxLines: 2),
+              TextButton(
+                onPressed: () => ref.refresh(prayerTimeProvider),
+                child: const Text('Coba Lagi', style: TextStyle(fontSize: 11)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, PrayerTimes prayerData) {
+    final nextPrayer = _getNextPrayer(prayerData);
+
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.location_on, color: AppTheme.teal, size: 14),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
                       'NEXT PRAYER • ${prayerData.cityName.toUpperCase()}',
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: Colors.grey[500],
                         fontSize: 10,
@@ -61,70 +80,75 @@ class PrayerCard extends StatelessWidget {
                         letterSpacing: 1.2,
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${nextPrayer.name} ${nextPrayer.time}',
-                  style: const TextStyle(
-                    color: AppTheme.teal,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
                   ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${nextPrayer.name} ${nextPrayer.time}',
+                style: const TextStyle(
+                  color: AppTheme.teal,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  nextPrayer.remaining,
-                  style: const TextStyle(
-                    color: AppTheme.gold,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                nextPrayer.remaining,
+                style: const TextStyle(
+                  color: AppTheme.gold,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(height: 12),
-                ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.schedule, size: 16),
-                  label: const Text('Full Schedule'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.teal.withOpacity(0.1),
-                    foregroundColor: AppTheme.teal,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                    textStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CitySelectorScreen()),
+                  );
+                },
+                icon: const Icon(Icons.location_city, size: 16),
+                label: const Text('Pilih Wilayah'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.teal.withOpacity(0.1),
+                  foregroundColor: AppTheme.teal,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  textStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppTheme.teal.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.teal.withOpacity(0.05)),
-            ),
-            child: const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.wb_twilight, color: AppTheme.teal, size: 32),
-                SizedBox(height: 4),
-                Text(
-                  'SUNSET',
-                  style: TextStyle(
-                    color: AppTheme.teal,
-                    fontSize: 9,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+        ),
+        const SizedBox(width: 12),
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: AppTheme.teal.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppTheme.teal.withOpacity(0.05)),
           ),
-        ],
-      ),
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.wb_twilight, color: AppTheme.teal, size: 32),
+              SizedBox(height: 4),
+              Text(
+                'SUNSET',
+                style: TextStyle(
+                  color: AppTheme.teal,
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -152,7 +176,7 @@ class PrayerCard extends StatelessWidget {
           return _NextPrayerInfo(
             name: name,
             time: timeStr,
-            remaining: '${hours > 0 ? '$hours hour ' : ''}$mins minutes remaining',
+            remaining: '${hours > 0 ? '$hours jam ' : ''}$mins menit lagi',
           );
         }
       } catch (e) {
@@ -160,11 +184,11 @@ class PrayerCard extends StatelessWidget {
       }
     }
     
-    // If all prayers passed, next is Maghrib for demonstration
+    // If all prayers passed, fallback to Subuh tomorrow or just show last one
     return _NextPrayerInfo(
-      name: 'Maghrib',
-      time: '18:05',
-      remaining: '1 hour 12 minutes remaining',
+      name: 'Subuh',
+      time: prayerData.times['subuh'] ?? '--:--',
+      remaining: 'Besok',
     );
   }
 }
