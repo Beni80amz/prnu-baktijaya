@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/dio_client.dart';
 import '../../core/constants/api_constants.dart';
+import 'download_status_screen.dart';
 
 class FinancialReportScreen extends StatefulWidget {
   const FinancialReportScreen({super.key});
@@ -67,6 +69,39 @@ class _FinancialReportScreenState extends State<FinancialReportScreen> {
         _error = 'Kesalahan: $e';
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _handleDownload(Map<String, dynamic> report) async {
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: AppTheme.teal),
+      ),
+    );
+
+    // Simulate download delay
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Close loading dialog
+    if (mounted) Navigator.pop(context);
+
+    // Navigate to status screen
+    if (mounted) {
+      final now = DateTime.now();
+      final formattedTime = DateFormat('d MMM yyyy, HH:mm').format(now);
+      
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DownloadStatusScreen(
+            report: report,
+            downloadTime: formattedTime,
+          ),
+        ),
+      );
     }
   }
 
@@ -204,11 +239,7 @@ class _FinancialReportScreenState extends State<FinancialReportScreen> {
                           )
                         : Column(
                             children: _reports.map((report) {
-                              return _buildReportCard(
-                                report['title'], 
-                                report['subtitle'], 
-                                report['size']
-                              );
+                              return _buildReportCard(report);
                             }).toList(),
                           ),
               ),
@@ -291,7 +322,10 @@ class _FinancialReportScreenState extends State<FinancialReportScreen> {
     );
   }
 
-  Widget _buildReportCard(String title, String type, String size) {
+  Widget _buildReportCard(Map<String, dynamic> report) {
+    final title = report['title'] ?? 'Laporan';
+    final type = report['subtitle'] ?? 'Kas';
+    final size = report['size'] ?? '0.0 MB';
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -339,21 +373,24 @@ class _FinancialReportScreenState extends State<FinancialReportScreen> {
               ],
             ),
           ),
-          Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              color: AppTheme.teal,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.teal.withOpacity(0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+          GestureDetector(
+            onTap: () => _handleDownload(report),
+            child: Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: AppTheme.teal,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.teal.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.download, color: Colors.white, size: 20),
             ),
-            child: const Icon(Icons.download, color: Colors.white, size: 20),
           ),
         ],
       ),
