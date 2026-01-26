@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/dio_client.dart';
 import '../../core/constants/api_constants.dart';
@@ -73,34 +74,48 @@ class _FinancialReportScreenState extends State<FinancialReportScreen> {
   }
 
   Future<void> _handleDownload(Map<String, dynamic> report) async {
-    // Show loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(color: AppTheme.teal),
-      ),
-    );
-
-    // Simulate download delay
-    await Future.delayed(const Duration(seconds: 2));
-
-    // Close loading dialog
-    if (mounted) Navigator.pop(context);
-
-    // Navigate to status screen
-    if (mounted) {
-      final now = DateTime.now();
-      final formattedTime = DateFormat('d MMM yyyy, HH:mm').format(now);
-      
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DownloadStatusScreen(
-            report: report,
-            downloadTime: formattedTime,
-          ),
-        ),
+    final downloadUrl = report['download_url'];
+    
+    if (downloadUrl != null) {
+      final uri = Uri.parse(downloadUrl.toString());
+      try {
+        if (await canLaunchUrl(uri)) {
+          // Trigger download in external application (browser)
+          // Using LaunchMode.externalApplication so the browser handles the download headers
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          
+          // Still navigate to status screen to show success feedback in-app
+          if (mounted) {
+            final now = DateTime.now();
+            final formattedTime = DateFormat('d MMM yyyy, HH:mm').format(now);
+            
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DownloadStatusScreen(
+                  report: report,
+                  downloadTime: formattedTime,
+                ),
+              ),
+            );
+          }
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Tidak dapat membuka link unduhan')),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Gagal memulai unduhan: $e')),
+          );
+        }
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Link unduhan tidak tersedia')),
       );
     }
   }

@@ -230,9 +230,10 @@ class DownloadStatusScreen extends StatelessWidget {
                       margin: const EdgeInsets.only(bottom: 12),
                       child: ElevatedButton.icon(
                         onPressed: () async {
-                          // In a real app, we would open the local file path.
-                          // Here we simulate it by opening a dummy PDF URL to show functionality.
-                          final url = Uri.parse('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+                          final downloadUrl = report['download_url'];
+                          final url = downloadUrl != null 
+                              ? Uri.parse(downloadUrl.toString())
+                              : Uri.parse('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
                           
                           try {
                             if (await canLaunchUrl(url)) {

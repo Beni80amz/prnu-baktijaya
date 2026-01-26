@@ -239,6 +239,7 @@ class KasController extends Controller
                 'month' => $monthNum,
                 'year' => (int) $selectedYear,
                 'fund_type' => $selectedType,
+                'download_url' => url("/api/kas/download-report?title=Laporan_{$monthName}_{$selectedYear}&type={$selectedType}"),
             ];
         }
 
@@ -251,6 +252,7 @@ class KasController extends Controller
                 'month' => 'annual',
                 'year' => (int) $selectedYear,
                 'fund_type' => $selectedType,
+                'download_url' => url("/api/kas/download-report?title=Laporan_Tahunan_{$selectedYear}&type={$selectedType}"),
             ];
         }
 
@@ -264,5 +266,36 @@ class KasController extends Controller
                 'reports' => array_reverse($reports), // Newest first
             ]
         ]);
+    }
+
+    public function downloadReport(Request $request)
+    {
+        $title = $request->input('title', 'Laporan');
+
+        // Minimal valid PDF content
+        $content = "%PDF-1.4\n" .
+            "1 0 obj < < /Type /Catalog /Pages 2 0 R > > endobj\n" .
+            "2 0 obj < < /Type /Pages /Kids [3 0 R] /Count 1 > > endobj\n" .
+            "3 0 obj < < /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources < < /Font < < /F1 5 0 R > > > > > > endobj\n" .
+            "4 0 obj < < /Length 51 > > stream\n" .
+            "BT /F1 24 Tf 100 700 Td ($title) Tj ET\n" .
+            "endstream endobj\n" .
+            "5 0 obj < < /Type /Font /Subtype /Type1 /BaseFont /Helvetica > > endobj\n" .
+            "xref\n" .
+            "0 6\n" .
+            "0000000000 65535 f\n" .
+            "0000000010 00000 n\n" .
+            "0000000060 00000 n\n" .
+            "0000000115 00000 n\n" .
+            "0000000245 00000 n\n" .
+            "0000000346 00000 n\n" .
+            "trailer < < /Size 6 /Root 1 0 R > >\n" .
+            "startxref\n" .
+            "426\n" .
+            "%%EOF";
+
+        return response($content)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="' . $title . '.pdf"');
     }
 }

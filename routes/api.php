@@ -23,6 +23,7 @@ Route::get('/dawuh', [\App\Http\Controllers\Api\UtilityController::class, 'getDa
 Route::get('/kas', [\App\Http\Controllers\Api\KasController::class, 'index']);
 Route::get('/kas/history', [\App\Http\Controllers\Api\KasController::class, 'history']);
 Route::get('/kas/reports', [\App\Http\Controllers\Api\KasController::class, 'reports']);
+Route::get('/kas/download-report', [\App\Http\Controllers\Api\KasController::class, 'downloadReport']);
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
