@@ -22,7 +22,7 @@
         @mouseenter="stopAutoPlay()"
         @mouseleave="startAutoPlay()">
 
-        @if($sliders->count() > 0)
+        @if(count($sliders) > 0)
             <!-- Background Images Logic -->
             <template x-for="(slide, index) in slides" :key="index">
                 <div class="absolute inset-0 z-0 bg-cover bg-center"
