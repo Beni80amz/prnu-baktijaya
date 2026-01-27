@@ -110,64 +110,70 @@
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .summary-card {
-            border: 1px solid #000;
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 10px;
+            padding: 15px 12px;
             text-align: center;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         .summary-card.primary {
-            background-color: #006064;
+            background-color: #006064 !important;
+            background: linear-gradient(135deg, #006064 0%, #004d40 100%) !important;
             color: #fff;
-            border-color: #004d40;
+            border: 2px solid #004d40;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .summary-card.primary .label,
         .summary-card.primary .amount {
-            color: #fff;
+            color: #fff !important;
         }
 
         .summary-card.income {
-            background-color: #ecfdf5;
-            border-color: #16a34a;
+            background-color: #dcfce7 !important;
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+            border: 2px solid #22c55e;
         }
 
         .summary-card.income .label {
-            color: #15803d;
+            color: #166534 !important;
         }
 
         .summary-card.income .amount {
-            color: #16a34a;
+            color: #15803d !important;
         }
 
         .summary-card.expense {
-            background-color: #fef2f2;
-            border-color: #dc2626;
+            background-color: #fee2e2 !important;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
+            border: 2px solid #ef4444;
         }
 
         .summary-card.expense .label {
-            color: #b91c1c;
+            color: #991b1b !important;
         }
 
         .summary-card.expense .amount {
-            color: #dc2626;
+            color: #dc2626 !important;
         }
 
         .summary-card .label {
-            font-size: 9pt;
+            font-size: 10pt;
             text-transform: uppercase;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
         }
 
         .summary-card .amount {
-            font-size: 14pt;
-            font-weight: bold;
+            font-size: 16pt;
+            font-weight: 900;
         }
 
         /* Category Summary */
@@ -175,28 +181,44 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .category-box {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 10px;
+            padding: 15px;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         .category-box.income {
-            background-color: #ecfdf5;
-            border-color: #16a34a;
+            background-color: #dcfce7 !important;
+            background: linear-gradient(180deg, #dcfce7 0%, #f0fdf4 100%) !important;
+            border: 2px solid #22c55e;
+        }
+
+        .category-box.income h4 {
+            color: #166534 !important;
+            border-bottom: 2px solid #22c55e;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .category-box.expense {
-            background-color: #fef2f2;
-            border-color: #dc2626;
+            background-color: #fee2e2 !important;
+            background: linear-gradient(180deg, #fee2e2 0%, #fef2f2 100%) !important;
+            border: 2px solid #ef4444;
+        }
+
+        .category-box.expense h4 {
+            color: #991b1b !important;
+            border-bottom: 2px solid #ef4444;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .category-box h4 {
             font-size: 11pt;
-            margin-bottom: 8px;
             font-weight: bold;
         }
 
@@ -204,16 +226,21 @@
             display: flex;
             justify-content: space-between;
             font-size: 10pt;
-            padding: 3px 0;
+            padding: 5px 0;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .category-item:last-child {
+            border-bottom: none;
         }
 
         .category-item .value.income {
-            color: #16a34a;
+            color: #15803d !important;
             font-weight: bold;
         }
 
         .category-item .value.expense {
-            color: #dc2626;
+            color: #dc2626 !important;
             font-weight: bold;
         }
 
