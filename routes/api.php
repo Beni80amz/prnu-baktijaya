@@ -14,7 +14,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::apiResource('news', \App\Http\Controllers\Api\BeritaController::class)->only(['index', 'show']);
 Route::get('/news/{newsId}/comments', [\App\Http\Controllers\Api\NewsCommentController::class, 'index']);
 Route::post('/news/{newsId}/comments', [\App\Http\Controllers\Api\NewsCommentController::class, 'store']);
-Route::apiResource('artikel', \App\Http\Controllers\Api\ArtikelController::class)->only(['index', 'show']);
+Route::apiResource('articles', \App\Http\Controllers\Api\ArtikelController::class)->only(['index', 'show']);
 Route::apiResource('galeri', \App\Http\Controllers\Api\GaleriController::class)->only(['index']);
 
 // Utilities
