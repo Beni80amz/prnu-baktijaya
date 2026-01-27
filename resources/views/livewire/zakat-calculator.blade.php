@@ -1,9 +1,9 @@
 <div>
-    <section class="relative overflow-hidden pt-32 pb-20 bg-background-light dark:bg-background-dark min-h-screen">
+    <section class="relative overflow-hidden pt-44 pb-32 bg-background-light dark:bg-background-dark min-h-screen">
         <div class="container mx-auto px-4 relative z-10">
             <div class="max-w-4xl mx-auto">
                 <!-- Header -->
-                <div class="text-center mb-12">
+                <div class="text-center mb-16">
                     <span
                         class="inline-block py-1 px-3 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-sm font-bold tracking-widest uppercase mb-4 animate-fade-in">Zakat
                         & Shadaqah</span>
@@ -16,7 +16,7 @@
 
                 <!-- Main Calculator Card -->
                 <div
-                    class="bg-white dark:bg-white/5 rounded-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-white/10">
+                    class="bg-white dark:bg-white/5 rounded-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-white/10 mb-10">
                     <div class="grid grid-cols-1 md:grid-cols-12">
                         <!-- Left: Selection -->
                         <div
@@ -69,7 +69,8 @@
                                         <p class="text-primary font-bold uppercase tracking-widest text-xs mb-2">Total Zakat
                                             Maal Anda</p>
                                         <h2 class="text-4xl font-black text-primary">Rp
-                                            {{ number_format($this->maalZakat, 0, ',', '.') }}</h2>
+                                            {{ number_format($this->maalZakat, 0, ',', '.') }}
+                                        </h2>
                                     </div>
                                 </div>
                             @elseif($type === 'profesi')
@@ -102,7 +103,8 @@
                                         <p class="text-secondary font-bold uppercase tracking-widest text-xs mb-2">Zakat
                                             Profesi Per Bulan</p>
                                         <h2 class="text-4xl font-black text-secondary">Rp
-                                            {{ number_format($this->profesiZakat, 0, ',', '.') }}</h2>
+                                            {{ number_format($this->profesiZakat, 0, ',', '.') }}
+                                        </h2>
                                     </div>
                                 </div>
                             @elseif($type === 'emas')
@@ -122,7 +124,8 @@
                                         <p class="text-amber-600 font-bold uppercase tracking-widest text-xs mb-2">Zakat
                                             Emas Anda</p>
                                         <h2 class="text-4xl font-black text-amber-600">Rp
-                                            {{ number_format($this->emasZakat, 0, ',', '.') }}</h2>
+                                            {{ number_format($this->emasZakat, 0, ',', '.') }}
+                                        </h2>
                                     </div>
                                 </div>
                             @endif
@@ -132,10 +135,12 @@
                                     class="flex-1 w-full py-4 rounded-2xl bg-primary text-white font-bold text-center shadow-lg hover:scale-105 transition-all">
                                     Salurkan Lewat LAZISNU
                                 </a>
-                                <p class="text-xs text-gray-400 font-medium italic">
-                                    *Perhitungan ini hanya estimasi berdasarkam nisab emas saat ini. Silakan
-                                    konsultasikan dengan Kiai untuk perhitungan lebih rinci.
-                                </p>
+                                <div class="flex-1">
+                                    <p class="text-xs text-gray-400 font-medium italic leading-relaxed">
+                                        *Perhitungan ini hanya estimasi berdasarkan nisab emas saat ini. Silakan
+                                        konsultasikan dengan Kiai untuk perhitungan lebih rinci.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
