@@ -102,6 +102,11 @@ class Home extends Component
             'dawuh' => Dawuh::where('is_active', true)->latest()->first(),
             'galleries' => \App\Models\Gallery::where('is_active', true)->latest()->take(6)->get(),
             'mosques' => \App\Models\Mosque::where('is_active', true)->take(4)->get(),
+            'agendas' => \App\Models\Agenda::where('date', '>=', now()->toDateString())
+                ->orderBy('date', 'asc')
+                ->orderBy('time', 'asc')
+                ->take(3)
+                ->get(),
             'totalInfaq' => Transaction::where('type', 'income')
                 ->whereMonth('transaction_date', Carbon::now()->month)
                 ->whereYear('transaction_date', Carbon::now()->year)

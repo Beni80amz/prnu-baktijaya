@@ -485,16 +485,8 @@
                             Agenda Terdekat
                         </h3>
                         
-                        @php
-                            $agendas = \App\Models\Agenda::where('date', '>=', now()->toDateString())
-                                ->orderBy('date', 'asc')
-                                ->orderBy('time', 'asc')
-                                ->take(3)
-                                ->get();
-                        @endphp
-
                         <ul class="space-y-6">
-                            @forelse($agendas as $agenda)
+                            @forelse($agendas ?? [] as $agenda)
                             @php
                                 $months = [
                                     1 => 'JAN', 2 => 'FEB', 3 => 'MAR', 4 => 'APR', 5 => 'MEI', 6 => 'JUN',
