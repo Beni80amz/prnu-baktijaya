@@ -15,7 +15,7 @@ Route::apiResource('news', \App\Http\Controllers\Api\BeritaController::class)->o
 Route::get('/news/{newsId}/comments', [\App\Http\Controllers\Api\NewsCommentController::class, 'index']);
 Route::post('/news/{newsId}/comments', [\App\Http\Controllers\Api\NewsCommentController::class, 'store']);
 Route::apiResource('articles', \App\Http\Controllers\Api\ArtikelController::class)->only(['index', 'show']);
-Route::apiResource('galeri', \App\Http\Controllers\Api\GaleriController::class)->only(['index']);
+Route::apiResource('galleries', \App\Http\Controllers\Api\GaleriController::class)->only(['index'])->names('api.galeri');
 
 // Utilities
 Route::get('/jadwal-sholat', [\App\Http\Controllers\Api\UtilityController::class, 'getJadwalSholat']);

@@ -46,3 +46,6 @@ Route::get('/tanya-kiai', TanyaKiai::class)->name('tanya-kiai');
 
 // Zakat Calculator
 Route::get('/zakat', ZakatCalculator::class)->name('zakat');
+
+// Ruang Doa
+Route::get('/ruang-doa', RuangDoa::class)->name('ruang-doa');
