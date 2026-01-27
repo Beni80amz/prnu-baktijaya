@@ -121,9 +121,19 @@ class Home extends Component
     public function render()
     {
         try {
+            // Prepare sliders data array so Blade JSON encoding is simple
+            $rawSliders = Slider::where('is_active', true)->orderBy('order')->get();
+            $sliders = $rawSliders->map(fn($s) => [
+                'image' => asset('storage/' . $s->image),
+                'title' => $s->title,
+                'description' => $s->description,
+                'link_url' => $s->link_url,
+                'button_text' => $s->button_text
+            ])->values()->toArray();
+
             return view('livewire.home', [
                 'settings' => Setting::pluck('value', 'key')->toArray(),
-                'sliders' => Slider::where('is_active', true)->orderBy('order')->get(),
+                'sliders' => $sliders,
                 'news' => News::with('category')->where('status', 'published')->latest()->take(2)->get(),
                 'dawuh' => Dawuh::where('is_active', true)->latest()->first(),
                 'galleries' => Gallery::where('is_active', true)->latest()->take(6)->get(),
@@ -145,7 +155,7 @@ class Home extends Component
             // Fallback empty view or simple error message
             return view('livewire.home', [
                 'settings' => [],
-                'sliders' => collect(),
+                'sliders' => [],
                 'news' => collect(),
                 'dawuh' => null,
                 'galleries' => collect(),
