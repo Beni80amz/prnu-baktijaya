@@ -17,9 +17,12 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RoleSeeder::class,
-            KasDigitalSeeder::class,
             SettingsSeeder::class,
             ProfileDataSeeder::class,
+            MasterDataSeeder::class,
+            MosqueSeeder::class,
+            ContentSeeder::class,
+            KasDigitalSeeder::class,
         ]);
     }
 }
