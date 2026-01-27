@@ -73,7 +73,6 @@ class ArticleResource extends Resource
                                         'align-center',
                                         'align-right',
                                         'align-justify',
-                                        'direction', // RTL support
                                         'code-block',
                                         'details', // collapsible
                                         'remove-format',

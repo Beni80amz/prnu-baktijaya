@@ -64,7 +64,6 @@ class NewsResource extends Resource
                                         'align-center',
                                         'align-right',
                                         'align-justify',
-                                        'direction',
                                         'code-block',
                                         'details',
                                         'remove-format',
