@@ -7,11 +7,11 @@
     <title>{{ $title ?? 'PRNU Baktijaya - Merawat Jagad, Membangun Peradaban' }}</title>
 
     @php
-        $settings = \App\Models\Setting::all()->pluck('value', 'key');
+        $settings = \App\Models\Setting::all()->pluck('value', 'key')->toArray();
     @endphp
 
     @if(!empty($settings['site_favicon']))
-        <link rel="icon" type="image/png" href="{{ Storage::url($settings['site_favicon']) }}">
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $settings['site_favicon']) }}">
     @endif
 
     <!-- Fonts -->
@@ -84,7 +84,7 @@
                         <div
                             class="size-10 rounded-full flex items-center justify-center overflow-hidden {{ empty($settings['site_logo']) ? 'bg-primary/10 dark:bg-white/10' : '' }}">
                             @if(!empty($settings['site_logo']))
-                                <img src="{{ Storage::url($settings['site_logo']) }}" alt="Logo"
+                                <img src="{{ asset('storage/' . $settings['site_logo']) }}" alt="Logo"
                                     class="w-full h-full object-cover">
                             @else
                                 <span class="material-symbols-outlined text-primary text-2xl">mosque</span>
@@ -171,7 +171,7 @@
                         <div
                             class="size-10 rounded-full flex items-center justify-center overflow-hidden shadow-lg shadow-primary/20 {{ empty($settings['site_logo']) ? 'bg-primary' : '' }}">
                             @if(!empty($settings['site_logo']))
-                                <img src="{{ Storage::url($settings['site_logo']) }}" alt="Logo"
+                                <img src="{{ asset('storage/' . $settings['site_logo']) }}" alt="Logo"
                                     class="w-full h-full object-cover">
                             @else
                                 <span class="material-symbols-outlined text-white text-2xl">mosque</span>
