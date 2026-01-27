@@ -49,3 +49,8 @@ Route::get('/zakat', ZakatCalculator::class)->name('zakat');
 
 // Ruang Doa
 Route::get('/ruang-doa', RuangDoa::class)->name('ruang-doa');
+
+// Admin Transaction Print (for PDF export)
+Route::get('/admin/transactions/print', [App\Http\Controllers\TransactionPrintController::class, 'print'])
+    ->name('admin.transactions.print')
+    ->middleware('auth');
