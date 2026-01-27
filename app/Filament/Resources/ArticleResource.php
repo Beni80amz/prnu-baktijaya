@@ -67,10 +67,11 @@ class ArticleResource extends Resource
                                         'orderedList',
                                         'redo',
                                         'strike',
-                                        'table',
+                                        'table', // Ensure table is here
                                         'underline',
                                         'undo',
-                                    ]),
+                                    ])
+                                    ->extraInputAttributes(['dir' => 'auto', 'style' => 'min-height: 300px']),
                                 Forms\Components\Textarea::make('excerpt')
                                     ->rows(3)
                                     ->columnSpanFull(),

@@ -115,6 +115,13 @@ class SystemMaintenance extends Page
             // 2. Migrate only if pull success
             $output .= "\nExecuting: php artisan migrate --force\n";
             $output .= $this->runCommand('migrate --force');
+
+            // 3. Publish Assets (Important for Filament updates)
+            $output .= "\nExecuting: php artisan filament:upgrade\n";
+            $output .= $this->runCommand('filament:upgrade');
+
+            // 4. Optimize
+            $this->optimize();
         }
 
         $output .= "\n--- UPDATE COMPLETED ---";
