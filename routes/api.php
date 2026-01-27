@@ -31,7 +31,7 @@ Route::get('/kas/reports', [\App\Http\Controllers\Api\KasController::class, 'rep
 Route::get('/kas/download-report', [\App\Http\Controllers\Api\KasController::class, 'downloadReport']);
 
 // New Mobile Features
-Route::apiResource('umkm', \App\Http\Controllers\Api\UmkmController::class)->only(['index', 'show']);
+Route::apiResource('umkm', \App\Http\Controllers\Api\UmkmController::class)->only(['index', 'show'])->names('api.umkm');
 Route::post('/tanya-kiai', [\App\Http\Controllers\Api\TanyaKiaiController::class, 'chat']);
 Route::apiResource('ruang-doa', \App\Http\Controllers\Api\RuangDoaController::class)->only(['index', 'store']);
 Route::get('/mosques', [\App\Http\Controllers\Api\MosqueController::class, 'index']);
