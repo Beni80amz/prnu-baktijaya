@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 class GeminiApiService
 {
     protected string $apiKey;
-    protected string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+    protected string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
     public function __construct()
     {
@@ -29,8 +29,7 @@ class GeminiApiService
         Jika pertanyaan di luar masalah agama atau NU, arahkan dengan sopan agar bertanya seputar keislaman.";
 
         try {
-            // Using legacy prompt structure (system instruction inside content) for maximum compatibility
-            // to avoid 404/400 errors with specific model versions not supporting 'system_instruction' param yet.
+            // Using legacy prompt structure (system instruction inside content) plus gemini-pro for maximum compatibility
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
             ])->post("{$this->baseUrl}?key={$this->apiKey}", [
@@ -52,12 +51,16 @@ class GeminiApiService
                 return $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Maaf, saya tidak bisa menemukan jawaban untuk itu.';
             }
 
+            // Expose the actual error message for debugging purposes
+            $errorBody = json_decode($response->body(), true);
+            $errorMessage = $errorBody['error']['message'] ?? $response->body();
             Log::error('Gemini API Error: ' . $response->body());
-            return 'Maaf, terjadi gangguan saat menghubungi sistem AI. (' . $response->status() . ')';
+
+            return 'GOOGLE ERROR (' . $response->status() . '): ' . substr($errorMessage, 0, 150) . '...';
 
         } catch (\Exception $e) {
             Log::error('Gemini Service Exception: ' . $e->getMessage());
-            return 'Mohon maaf, hamba sakhaya sedang mengalami gangguan teknis.';
+            return 'Mohon maaf, hamba sakhaya sedang mengalami gangguan teknis. ' . $e->getMessage();
         }
     }
 }
