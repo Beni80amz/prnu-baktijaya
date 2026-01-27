@@ -51,7 +51,7 @@ class ArticleResource extends Resource
                                     ])
                                     ->required()
                                     ->default('opini'),
-                                \Awcodes\FilamentTiptapEditor\TiptapEditor::make('content')
+                                \FilamentTiptapEditor\TiptapEditor::make('content')
                                     ->required()
                                     ->columnSpanFull()
                                     ->tools([

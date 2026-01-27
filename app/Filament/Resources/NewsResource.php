@@ -42,7 +42,7 @@ class NewsResource extends Resource
                                     ->required()
                                     ->maxLength(255)
                                     ->unique(ignoreRecord: true),
-                                \Awcodes\FilamentTiptapEditor\TiptapEditor::make('content')
+                                \FilamentTiptapEditor\TiptapEditor::make('content')
                                     ->required()
                                     ->columnSpanFull()
                                     ->tools([
