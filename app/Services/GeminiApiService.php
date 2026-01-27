@@ -56,6 +56,30 @@ class GeminiApiService
             $errorMessage = $errorBody['error']['message'] ?? $response->body();
             Log::error('Gemini API Error: ' . $response->body());
 
+            // IF 404, Try to list available models to help user debug
+            if ($response->status() === 404) {
+                $availableModelsMsg = "";
+                try {
+                    $modelsResponse = Http::get("https://generativelanguage.googleapis.com/v1beta/models?key={$this->apiKey}");
+                    if ($modelsResponse->successful()) {
+                        $modelsData = $modelsResponse->json();
+                        $availableModels = [];
+                        if (isset($modelsData['models'])) {
+                            foreach ($modelsData['models'] as $m) {
+                                $availableModels[] = str_replace('models/', '', $m['name']);
+                            }
+                        }
+                        $availableModelsMsg = "\n\nMODEL YANG TERSEDIA UNTUK KEY ANDA: \n- " . implode("\n- ", $availableModels);
+                    } else {
+                        $availableModelsMsg = "\n\nGAGAL LIST MODELS: " . $modelsResponse->body();
+                    }
+                } catch (\Exception $ex) {
+                    $availableModelsMsg = "\n\nEXCEPTION LIST MODELS: " . $ex->getMessage();
+                }
+
+                return "GOOGLE ERROR (404): Model tidak ditemukan. " . $availableModelsMsg;
+            }
+
             return 'GOOGLE ERROR (' . $response->status() . '): ' . substr($errorMessage, 0, 150) . '...';
 
         } catch (\Exception $e) {
