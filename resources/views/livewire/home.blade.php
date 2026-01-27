@@ -1,7 +1,7 @@
 <div>
     <!-- Hero Section -->
     <header class="relative w-full h-[650px] overflow-hidden flex items-center justify-center bg-black"
-        x-data="{
+        x-data='{
             currentSlide: 0,
             slides: @json($sliders),
             timer: null,
@@ -17,7 +17,7 @@
             stopAutoPlay() {
                 clearInterval(this.timer);
             }
-        }"
+        }'
         x-init="startAutoPlay()"
         @mouseenter="stopAutoPlay()"
         @mouseleave="startAutoPlay()">
