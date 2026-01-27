@@ -62,7 +62,11 @@ class Gallery extends Model
             return null;
         if (str_starts_with($image, 'http'))
             return $image;
-        return Storage::url($image);
+        try {
+            return Storage::url($image);
+        } catch (\Exception $e) {
+            return asset('storage/' . $image);
+        }
     }
 
     public function getThumbnailAttribute()

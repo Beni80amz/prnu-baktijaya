@@ -379,7 +379,7 @@
                                 <div class="flex-1 flex flex-col justify-center">
                                     <div class="flex items-center gap-4 mb-3">
                                         <span
-                                            class="bg-primary/10 text-primary text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">{{ $item->category->name ?? 'Berita' }}</span>
+                                            class="bg-primary/10 text-primary text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">{{ $item->category?->name ?? 'Berita' }}</span>
                                         <span class="text-[11px] text-gray-400 font-bold flex items-center gap-1.5"><span
                                                 class="material-symbols-outlined text-[16px]">calendar_today</span>
                                             {{ $item->created_at->format('d M Y') }}</span>
