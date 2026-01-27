@@ -51,6 +51,11 @@ class GeminiApiService
                 return $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Maaf, saya tidak bisa menemukan jawaban untuk itu.';
             }
 
+            // IF 429 (Quota Exceeded), Return Friendly Message
+            if ($response->status() === 429) {
+                return "Untuk hari ini kami tidak bisa melayani!. Mohon maaf atas ketidaknyamanan ini!. Terima Kasih";
+            }
+
             // Expose the actual error message for debugging purposes
             $errorBody = json_decode($response->body(), true);
             $errorMessage = $errorBody['error']['message'] ?? $response->body();
