@@ -71,7 +71,7 @@ class SystemMaintenance extends Page
 
         // 1. Git Pull
         $output .= "Executing: git pull origin main\n";
-        $process = Process::run('git pull origin main');
+        $process = Process::run('export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" && git pull origin main');
         $output .= $process->output() . $process->errorOutput();
 
         // 2. Migrate
@@ -89,7 +89,7 @@ class SystemMaintenance extends Page
         $output = "--- START HARD RESET ---\n";
 
         $output .= "Executing: git fetch origin\n";
-        $output .= Process::run('git fetch origin')->output();
+        $output .= Process::run('export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" && git fetch origin')->output();
 
         $output .= "\nExecuting: git reset --hard origin/main\n";
         $output .= Process::run('git reset --hard origin/main')->output();
