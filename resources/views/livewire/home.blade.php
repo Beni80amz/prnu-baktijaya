@@ -51,9 +51,9 @@
                         </div>
                     @endif
 
-                    <!-- Title with x-text -->
-                    <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-tight drop-shadow-lg min-h-[1.2em]"
-                        x-text="slides[currentSlide].title"
+                    <!-- Title with x-html -->
+                    <h1 class="text-4xl md:text-6xl font-black tracking-tighter leading-tight drop-shadow-lg min-h-[1.2em]"
+                        x-html="slides[currentSlide].title"
                         x-transition:enter="transition ease-out duration-500 delay-200"
                         x-transition:enter-start="opacity-0 translate-y-4"
                         x-transition:enter-end="opacity-100 translate-y-0">

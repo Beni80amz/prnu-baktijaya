@@ -26,7 +26,7 @@ class ContentSeeder extends Seeder
         // 1. Sliders
         $sliders = [
             [
-                'title' => 'Selamat Datang di Portal Resmi PRNU Baktijaya',
+                'title' => 'Selamat Datang di<br>Portal Resmi <span class="text-accent">PRNU Baktijaya</span>',
                 'description' => 'Membangun umat, menjaga tradisi, dan memperkuat ukhuwah Nahdliyah di lingkungan Baktijaya.',
                 'image' => 'https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=2070&auto=format&fit=crop',
                 'order' => 1,
