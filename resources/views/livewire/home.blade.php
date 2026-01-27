@@ -528,7 +528,7 @@
                     <span class="text-primary font-black tracking-[0.2em] text-xs uppercase">Dokumentasi</span>
                     <h2 class="text-3xl md:text-4xl font-black text-background-dark dark:text-white mt-2">Galeri Kegiatan</h2>
                 </div>
-                <a href="{{ route('galeri.index') }}" wire:navigate 
+                <a href="{{ route('galeri.web') }}" wire:navigate 
                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary/10 hover:bg-primary text-primary hover:text-white font-bold text-sm rounded-lg transition-all">
                     Lihat Semua
                     <span class="material-symbols-outlined text-lg">arrow_forward</span>
@@ -542,7 +542,7 @@
             @else
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     @foreach($galleries as $gallery)
-                    <a href="{{ route('galeri.index') }}" wire:navigate 
+                    <a href="{{ route('galeri.web') }}" wire:navigate 
                        class="group relative aspect-square rounded-xl overflow-hidden">
                         @if($gallery->type === 'video')
                             <div class="absolute inset-0 bg-black/40 flex items-center justify-center z-10">

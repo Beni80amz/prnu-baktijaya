@@ -30,7 +30,7 @@ Route::get('/artikel/{slug}', ArtikelShow::class)->name('artikel.show');
 Route::get('/profil', Profil::class)->name('profil');
 
 // Galeri
-Route::get('/galeri', GaleriIndex::class)->name('galeri.index');
+Route::get('/galeri', GaleriIndex::class)->name('galeri.web');
 
 // KAS Digital
 Route::get('/kas-digital', KasDigital::class)->name('kas-digital');
