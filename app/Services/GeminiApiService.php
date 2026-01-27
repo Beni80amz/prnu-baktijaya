@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 class GeminiApiService
 {
     protected string $apiKey;
-    protected string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+    protected string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
     public function __construct()
     {
@@ -29,18 +29,15 @@ class GeminiApiService
         Jika pertanyaan di luar masalah agama atau NU, arahkan dengan sopan agar bertanya seputar keislaman.";
 
         try {
+            // Using legacy prompt structure (system instruction inside content) for maximum compatibility
+            // to avoid 404/400 errors with specific model versions not supporting 'system_instruction' param yet.
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
             ])->post("{$this->baseUrl}?key={$this->apiKey}", [
-                        'system_instruction' => [
-                            'parts' => [
-                                ['text' => $systemInstruction]
-                            ]
-                        ],
                         'contents' => [
                             [
                                 'parts' => [
-                                    ['text' => $question]
+                                    ['text' => $systemInstruction . "\n\nPertanyaan: " . $question]
                                 ]
                             ]
                         ],
