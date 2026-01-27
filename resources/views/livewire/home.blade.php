@@ -3,13 +3,13 @@
     <header class="relative w-full h-[650px] overflow-hidden flex items-center justify-center bg-black"
         x-data="{
             currentSlide: 0,
-            slides: {{ $sliders->map(fn($s) => [
+            slides: @json($sliders->map(fn($s) => [
                 'image' => asset('storage/' . $s->image),
                 'title' => $s->title,
                 'description' => $s->description,
                 'link_url' => $s->link_url,
                 'button_text' => $s->button_text
-            ]) }},
+            ])),
             timer: null,
             next() {
                 this.currentSlide = (this.currentSlide + 1) % this.slides.length;
