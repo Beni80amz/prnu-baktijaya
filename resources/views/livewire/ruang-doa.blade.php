@@ -1,6 +1,6 @@
 <div>
     <section
-        class="relative overflow-hidden pt-32 pb-20 bg-background-light dark:bg-background-dark min-h-screen text-background-dark dark:text-white">
+        class="relative overflow-hidden pt-44 pb-32 bg-background-light dark:bg-background-dark min-h-screen text-background-dark dark:text-white">
         <!-- Background Elements -->
         <div
             class="absolute top-0 left-0 w-1/3 h-1/3 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2">
@@ -26,18 +26,17 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
                     <!-- Info Card -->
                     <div class="space-y-8">
-                        <div
-                            class="bg-emerald-800 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden group">
+                        <div class="bg-primary text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden group">
                             <div
                                 class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-700">
                                 <span class="material-symbols-outlined text-9xl">format_quote</span>
                             </div>
                             <h3 class="text-2xl font-bold mb-4">Fadhilah Doa Jama'i</h3>
-                            <p class="text-emerald-50/80 leading-relaxed text-sm italic">
+                            <p class="text-white/90 leading-relaxed text-sm italic">
                                 "Sesungguhnya tidaklah suatu kaum berkumpul, lalu sebagian mereka berdoa dan sebagian
                                 yang lain mengamininya, melainkan Allah akan mengabulkan doa mereka."
                             </p>
-                            <p class="text-xs font-bold mt-4 text-amber-300 tracking-wider">HR. AL-HAKIM</p>
+                            <p class="text-xs font-bold mt-4 text-secondary tracking-wider">HR. AL-HAKIM</p>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
