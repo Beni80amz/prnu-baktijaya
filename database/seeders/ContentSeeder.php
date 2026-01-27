@@ -70,32 +70,43 @@ class ContentSeeder extends Seeder
         }
 
         // 3. News
-        $newsCategory = Category::where('type', 'news')->first();
-        if ($newsCategory) {
-            $news = [
-                [
-                    'title' => 'Lailatul Ijtima Rutin PRNU Baktijaya',
-                    'content' => '<p>PRNU Baktijaya kembali mengadakan kegiatan rutin Lailatul Ijtima yang dihadiri oleh ratusan jamaah dari berbagai RW di lingkungan Baktijaya. Kegiatan ini diisi dengan pembacaan Istighosah dan kajian kitab kuning.</p>',
-                    'category_id' => $newsCategory->id,
-                    'user_id' => $admin->id,
-                    'status' => 'published',
-                    'published_at' => now(),
-                ],
-                [
-                    'title' => 'Penyaluran Bantuan Sembako Lazisnu Baktijaya',
-                    'content' => '<p>Lazisnu Baktijaya menyalurkan paket sembako kepada dhuafa di lingkungan RW 04. Program ini merupakan bagian dari komitmen PRNU untuk terus hadir melayani masyarakat.</p>',
-                    'category_id' => $newsCategory->id,
-                    'user_id' => $admin->id,
-                    'status' => 'published',
-                    'published_at' => now(),
-                ],
-            ];
-
-            foreach ($news as $item) {
-                $item['slug'] = Str::slug($item['title']);
+        $newsCategories = Category::where('type', 'news')->get();
+        foreach ($newsCategories as $cat) {
+            if ($cat->name == 'Berita') {
                 News::updateOrCreate(
-                    ['slug' => $item['slug']],
-                    $item
+                    ['slug' => Str::slug('Lailatul Ijtima Rutin PRNU Baktijaya')],
+                    [
+                        'title' => 'Lailatul Ijtima Rutin PRNU Baktijaya',
+                        'content' => '<p>PRNU Baktijaya kembali mengadakan kegiatan rutin Lailatul Ijtima yang dihadiri oleh ratusan jamaah dari berbagai RW di lingkungan Baktijaya. Kegiatan ini diisi dengan pembacaan Istighosah dan kajian kitab kuning.</p>',
+                        'category_id' => $cat->id,
+                        'user_id' => $admin->id,
+                        'status' => 'published',
+                        'published_at' => now(),
+                    ]
+                );
+            } elseif ($cat->name == 'Kegiatan') {
+                News::updateOrCreate(
+                    ['slug' => Str::slug('Penyaluran Bantuan Sembako Lazisnu Baktijaya')],
+                    [
+                        'title' => 'Penyaluran Bantuan Sembako Lazisnu Baktijaya',
+                        'content' => '<p>Lazisnu Baktijaya menyalurkan paket sembako kepada dhuafa di lingkungan RW 04. Program ini merupakan bagian dari komitmen PRNU untuk terus hadir melayani masyarakat.</p>',
+                        'category_id' => $cat->id,
+                        'user_id' => $admin->id,
+                        'status' => 'published',
+                        'published_at' => now(),
+                    ]
+                );
+            } elseif ($cat->name == 'Pengumuman') {
+                News::updateOrCreate(
+                    ['slug' => Str::slug('Pendaftaran Kartu Anggota NU (KARTANU) Baktijaya')],
+                    [
+                        'title' => 'Pendaftaran Kartu Anggota NU (KARTANU) Baktijaya',
+                        'content' => '<p>Diberitahukan kepada seluruh warga Nahdliyin di wilayah Baktijaya untuk segera mendaftarkan diri dalam pembuatan KARTANU. Pendaftaran dibuka setiap hari Sabtu di Kantor Sekretariat.</p>',
+                        'category_id' => $cat->id,
+                        'user_id' => $admin->id,
+                        'status' => 'published',
+                        'published_at' => now(),
+                    ]
                 );
             }
         }
@@ -119,7 +130,43 @@ class ContentSeeder extends Seeder
             );
         }
 
-        // 5. UMKM
+        // 5. Gallery
+        $galleryCategory = Category::where('type', 'gallery')->first();
+        if ($galleryCategory) {
+            $galleries = [
+                [
+                    'title' => 'Dokumentasi Harlah NU',
+                    'description' => 'Foto-foto kegiatan Hari Lahir Nahdlatul Ulama yang diselenggarakan oleh PRNU Baktijaya.',
+                    'type' => 'photo',
+                    'images' => [
+                        'https://images.unsplash.com/photo-1590073844006-369302634356?q=80&w=2070&auto=format&fit=crop',
+                        'https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=2070&auto=format&fit=crop'
+                    ],
+                    'category_id' => $galleryCategory->id,
+                    'is_active' => true,
+                    'is_featured' => true,
+                ],
+                [
+                    'title' => 'Pengajian Akbar Baktijaya',
+                    'description' => 'Dokumentasi video Pengajian Akbar bersama para Masyayikh.',
+                    'type' => 'video',
+                    'video_url' => 'https://www.youtube.com/live/RrceCiquvMs?si=5zFMsvLoe4m07fjq',
+                    'category_id' => $galleryCategory->id,
+                    'is_active' => true,
+                    'is_featured' => false,
+                ],
+            ];
+
+            foreach ($galleries as $gallery) {
+                $gallery['slug'] = Str::slug($gallery['title']);
+                \App\Models\Gallery::updateOrCreate(
+                    ['slug' => $gallery['slug']],
+                    $gallery
+                );
+            }
+        }
+
+        // 6. UMKM
         $umkms = [
             [
                 'business_name' => 'Warung Berkah NU',
