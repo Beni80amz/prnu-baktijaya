@@ -71,7 +71,9 @@ class SystemMaintenance extends Page
 
         // Configuration
         $repoUrl = config('app.repository_url', 'https://github.com/Beni80amz/prnu-baktijaya.git');
-        $token = env('GITHUB_TOKEN');
+
+        // Use config() instead of env() to support cached configuration in production
+        $token = config('services.github.token');
 
         $output .= "Target Repo: {$repoUrl}\n";
 
@@ -136,7 +138,7 @@ class SystemMaintenance extends Page
         // Use token logic here too if available? For simplicity, we keep SSH default for reset 
         // OR we apply the same token logic. Let's apply token logic for consistency.
 
-        $token = env('GITHUB_TOKEN');
+        $token = config('services.github.token');
         $repoUrl = config('app.repository_url', 'https://github.com/Beni80amz/prnu-baktijaya.git');
 
         if ($token) {
