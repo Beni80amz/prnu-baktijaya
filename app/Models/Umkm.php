@@ -30,4 +30,14 @@ class Umkm extends Model
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
     ];
+
+    public function getNameAttribute()
+    {
+        return $this->business_name;
+    }
+
+    public function getImageAttribute()
+    {
+        return $this->featured_image;
+    }
 }
