@@ -26,7 +26,19 @@ class ListTransactions extends ListRecords
                 ->label('Export PDF')
                 ->icon('heroicon-o-document-text')
                 ->color('gray')
-                ->url(fn() => route('admin.transactions.print'))
+                ->url(function () {
+                    $filters = $this->tableFilters;
+                    $params = [];
+
+                    if (!empty($filters['type']['value'])) {
+                        $params['type'] = $filters['type']['value'];
+                    }
+                    if (!empty($filters['region']['value'])) {
+                        $params['region'] = $filters['region']['value'];
+                    }
+
+                    return route('admin.transactions.print', $params);
+                })
                 ->openUrlInNewTab(),
             Actions\CreateAction::make(),
         ];
@@ -34,11 +46,33 @@ class ListTransactions extends ListRecords
 
     public function exportExcel()
     {
-        $fileName = 'Laporan Keuangan PRNU Baktijaya ' . now()->setTimezone('Asia/Jakarta')->format('d-m-Y H.i') . '.csv';
+        // Get active filters
+        $filters = $this->tableFilters;
+        $typeFilter = $filters['type']['value'] ?? null;
+        $regionFilter = $filters['region']['value'] ?? null;
 
-        $transactions = Transaction::with(['incomeType', 'expenseType'])
-            ->latest('transaction_date')
-            ->get();
+        $query = Transaction::with(['incomeType', 'expenseType'])
+            ->latest('transaction_date');
+
+        // Apply filters
+        if ($typeFilter) {
+            $query->where('type', $typeFilter);
+        }
+        if ($regionFilter) {
+            $query->where('region_id', $regionFilter);
+        }
+
+        $transactions = $query->get();
+
+        // Generate filename with filter info
+        $filterLabel = '';
+        if ($typeFilter === 'income') {
+            $filterLabel = ' - Pemasukan';
+        } elseif ($typeFilter === 'expense') {
+            $filterLabel = ' - Pengeluaran';
+        }
+
+        $fileName = 'Laporan Keuangan PRNU Baktijaya' . $filterLabel . ' ' . now()->setTimezone('Asia/Jakarta')->format('d-m-Y H.i') . '.csv';
 
         $headers = [
             'Content-Type' => 'text/csv',
@@ -76,3 +110,4 @@ class ListTransactions extends ListRecords
         return response()->stream($callback, 200, $headers);
     }
 }
+

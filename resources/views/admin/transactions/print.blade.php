@@ -349,10 +349,30 @@
         <div class="kop-logo"></div>
     </div>
 
+    @php
+        // Indonesian month names
+        $bulanIndo = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ];
+        $now = now()->setTimezone('Asia/Jakarta');
+        $tanggalCetak = $now->format('d') . ' ' . $bulanIndo[(int) $now->format('m')] . ' ' . $now->format('Y H:i');
+    @endphp
+
     <!-- Report Title -->
     <div class="report-title">
-        <h2>LAPORAN KOIN NU</h2>
-        <p>Dicetak pada: {{ now()->setTimezone('Asia/Jakarta')->format('d M Y H:i') }}</p>
+        <h2>LAPORAN KOIN NU @if($filterLabel) - {{ strtoupper($filterLabel) }} @endif</h2>
+        <p>Dicetak pada: {{ $tanggalCetak }} WIB</p>
     </div>
 
     <!-- Summary Cards -->
@@ -372,29 +392,34 @@
     </div>
 
     <!-- Category Summary -->
-    <div class="category-section">
-        <div class="category-box income">
-            <h4>Pemasukan per Kategori</h4>
-            @forelse($incomeSummary as $item)
-                <div class="category-item">
-                    <span>{{ ucfirst($item->category) }}</span>
-                    <span class="value income">Rp {{ number_format($item->total, 0, ',', '.') }}</span>
-                </div>
-            @empty
-                <p style="font-size: 10pt; color: #666;">Belum ada data</p>
-            @endforelse
-        </div>
-        <div class="category-box expense">
-            <h4>Pengeluaran per Kategori</h4>
-            @forelse($expenseSummary as $item)
-                <div class="category-item">
-                    <span>{{ ucfirst($item->category) }}</span>
-                    <span class="value expense">Rp {{ number_format($item->total, 0, ',', '.') }}</span>
-                </div>
-            @empty
-                <p style="font-size: 10pt; color: #666;">Belum ada data</p>
-            @endforelse
-        </div>
+    <div class="category-section"
+        style="{{ ($typeFilter === 'income' || $typeFilter === 'expense') ? 'grid-template-columns: 1fr;' : '' }}">
+        @if(!$typeFilter || $typeFilter === 'income')
+            <div class="category-box income">
+                <h4>Pemasukan per Kategori</h4>
+                @forelse($incomeSummary as $item)
+                    <div class="category-item">
+                        <span>{{ ucfirst($item->category) }}</span>
+                        <span class="value income">Rp {{ number_format($item->total, 0, ',', '.') }}</span>
+                    </div>
+                @empty
+                    <p style="font-size: 10pt; color: #666;">Belum ada data</p>
+                @endforelse
+            </div>
+        @endif
+        @if(!$typeFilter || $typeFilter === 'expense')
+            <div class="category-box expense">
+                <h4>Pengeluaran per Kategori</h4>
+                @forelse($expenseSummary as $item)
+                    <div class="category-item">
+                        <span>{{ ucfirst($item->category) }}</span>
+                        <span class="value expense">Rp {{ number_format($item->total, 0, ',', '.') }}</span>
+                    </div>
+                @empty
+                    <p style="font-size: 10pt; color: #666;">Belum ada data</p>
+                @endforelse
+            </div>
+        @endif
     </div>
 
     <!-- Transaction Table -->
@@ -411,9 +436,13 @@
         </thead>
         <tbody>
             @forelse($transactions as $index => $tx)
+                @php
+                    $txDate = $tx->transaction_date;
+                    $tanggalTx = $txDate->format('d') . ' ' . $bulanIndo[(int) $txDate->format('m')] . ' ' . $txDate->format('Y');
+                @endphp
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $tx->transaction_date->format('d M Y') }}</td>
+                    <td>{{ $tanggalTx }}</td>
                     <td>{{ $tx->description }}</td>
                     <td>
                         <span class="{{ $tx->type === 'income' ? 'income-text' : 'expense-text' }}">

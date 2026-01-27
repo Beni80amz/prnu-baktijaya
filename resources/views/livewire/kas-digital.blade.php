@@ -386,25 +386,6 @@
                                 </optgroup>
                             </select>
                         </div>
-
-                        <div class="flex gap-2">
-                            <button wire:click="showAll" wire:loading.attr="disabled"
-                                class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold transition-colors">
-                                <span class="material-symbols-outlined text-sm">list_alt</span>
-                                Muat Semua
-                            </button>
-                            <button wire:click="exportExcel" wire:loading.attr="disabled"
-                                class="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-bold transition-colors">
-                                <span class="material-symbols-outlined text-sm">download</span>
-                                Excel
-                            </button>
-                            <button
-                                onclick="document.title='Laporan Keuangan PRNU Baktijaya {{ now()->setTimezone('Asia/Jakarta')->format('d-m-Y H.i') }}'; window.print()"
-                                class="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-bold transition-colors">
-                                <span class="material-symbols-outlined text-sm">print</span>
-                                Print
-                            </button>
-                        </div>
                     </div>
 
                     <div
@@ -448,7 +429,7 @@
                                                                         <td class="px-6 py-4 whitespace-nowrap">
                                                                             <span
                                                                                 class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $tx->type === 'income'
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $tx->type === 'income'
                                         ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-500/20 dark:text-green-400 dark:border-green-500/30'
                                         : 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30' }}">
                                                                                 {{ ucfirst($tx->type === 'income' ? ($tx->incomeType?->name ?? '-') : ($tx->expenseType?->name ?? '-')) }}
