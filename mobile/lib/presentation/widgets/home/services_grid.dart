@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../screens/kas_digital_screen.dart';
 import '../../screens/news_list_screen.dart';
+import '../../screens/tanya_kiai_screen.dart';
+import '../../screens/umkm_screen.dart';
+import '../../screens/ruang_doa_screen.dart';
+import '../../screens/zakat_calculator_screen.dart';
+import '../../screens/peta_masjid_screen.dart';
+import '../../screens/article_list_screen.dart';
 
 class ServicesGrid extends StatelessWidget {
   const ServicesGrid({super.key});
@@ -35,44 +41,58 @@ class ServicesGrid extends StatelessWidget {
           padding: EdgeInsets.zero,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
+          crossAxisCount: 4,
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
-          childAspectRatio: 2.8, // Slightly more height to prevent overflow
+          childAspectRatio: 0.85,
           children: [
             _buildServiceItem(
               context,
-              'Berita Ranting',
+              'Berita',
               Icons.newspaper,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const NewsListScreen()),
-                );
-              },
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewsListScreen())),
             ),
             _buildServiceItem(
               context,
-              'Layanan Jamaah',
-              Icons.volunteer_activism,
-              onTap: () {},
-            ),
-            _buildServiceItem(
-              context,
-              'Kas Digital (v2)',
+              'Kas Digital',
               Icons.account_balance_wallet,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const KasDigitalScreen()),
-                );
-              },
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KasDigitalScreen())),
             ),
             _buildServiceItem(
               context,
               'Tanya Kiai',
-              Icons.forum,
-              onTap: () {},
+              Icons.school,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TanyaKiaiScreen())),
+            ),
+            _buildServiceItem(
+              context,
+              'UMKM',
+              Icons.storefront,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UmkmScreen())),
+            ),
+            _buildServiceItem(
+              context,
+              'Ruang Doa',
+              Icons.volunteer_activism,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RuangDoaScreen())),
+            ),
+            _buildServiceItem(
+              context,
+              'Zakat',
+              Icons.calculate,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ZakatCalculatorScreen())),
+            ),
+            _buildServiceItem(
+              context,
+              'Peta Masjid',
+              Icons.mosque,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PetaMasjidScreen())),
+            ),
+            _buildServiceItem(
+              context,
+              'Artikel',
+              Icons.menu_book,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ArticleListScreen())),
             ),
           ],
         ),
@@ -87,7 +107,7 @@ class ServicesGrid extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: isDark ? Colors.grey[850] : Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -103,23 +123,24 @@ class ServicesGrid extends StatelessWidget {
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(4),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: AppTheme.teal.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, color: AppTheme.teal, size: 16),
+              child: Icon(icon, color: AppTheme.teal, size: 22),
             ),
+            const SizedBox(height: 6),
             Text(
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 11,
+                fontSize: 10,
                 fontWeight: FontWeight.bold,
               ),
             ),

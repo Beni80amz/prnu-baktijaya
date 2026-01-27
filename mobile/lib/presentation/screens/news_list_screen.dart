@@ -64,7 +64,11 @@ class _NewsListScreenState extends ConsumerState<NewsListScreen> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.arrow_back_ios, color: AppTheme.teal, size: 20),
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
+                        },
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                       ),
