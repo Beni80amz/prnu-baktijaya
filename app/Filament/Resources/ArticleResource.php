@@ -51,25 +51,34 @@ class ArticleResource extends Resource
                                     ])
                                     ->required()
                                     ->default('opini'),
-                                Forms\Components\RichEditor::make('content')
+                                \Awcodes\FilamentTiptapEditor\TiptapEditor::make('content')
                                     ->required()
                                     ->columnSpanFull()
-                                    ->toolbarButtons([
-                                        'attachFiles',
-                                        'blockquote',
+                                    ->tools([
+                                        'heading',
                                         'bold',
-                                        'bulletList',
-                                        'codeBlock',
-                                        'h2',
-                                        'h3',
                                         'italic',
-                                        'link',
-                                        'orderedList',
-                                        'redo',
                                         'strike',
-                                        'table', // Ensure table is here
                                         'underline',
+                                        'lead', // improved typography
+                                        'bullet-list',
+                                        'ordered-list',
+                                        'checked-list',
+                                        'blockquote',
+                                        'hr',
+                                        'table', // The star of the show
+                                        'link',
+                                        'media',
+                                        'align-left',
+                                        'align-center',
+                                        'align-right',
+                                        'align-justify',
+                                        'direction', // RTL support
+                                        'code-block',
+                                        'details', // collapsible
+                                        'remove-format',
                                         'undo',
+                                        'redo',
                                     ])
                                     ->extraInputAttributes(['dir' => 'auto', 'style' => 'min-height: 300px']),
                                 Forms\Components\Textarea::make('excerpt')
