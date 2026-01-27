@@ -142,17 +142,21 @@ class ManualTransactionSeeder extends Seeder
                 $volunteerId = $volunteer->id;
             }
 
-            Transaction::create([
-                'transaction_date' => $transactionDate,
-                'type' => $type,
-                'amount' => $amount,
-                'description' => $description,
-                'income_type_id' => $incomeTypeId,
-                'expense_type_id' => null,
-                'region_id' => $regionId,
-                'volunteer_id' => $volunteerId,
-                'user_id' => 1,
-            ]);
+            Transaction::updateOrCreate(
+                [
+                    'transaction_date' => $transactionDate,
+                    'type' => $type,
+                    'amount' => $amount,
+                    'description' => $description,
+                ],
+                [
+                    'income_type_id' => $incomeTypeId,
+                    'expense_type_id' => null,
+                    'region_id' => $regionId,
+                    'volunteer_id' => $volunteerId,
+                    'user_id' => 1,
+                ]
+            );
         }
     }
 }

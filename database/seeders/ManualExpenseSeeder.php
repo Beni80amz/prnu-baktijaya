@@ -192,17 +192,21 @@ class ManualExpenseSeeder extends Seeder
                     $volunteerId = $volunteer->id;
                 }
 
-                Transaction::create([
-                    'transaction_date' => $transactionDate,
-                    'type' => $type,
-                    'amount' => $amount,
-                    'description' => $description,
-                    'income_type_id' => null,
-                    'expense_type_id' => $expenseTypeId,
-                    'region_id' => $volunteerId ? $volunteer->region_id : null,
-                    'volunteer_id' => $volunteerId,
-                    'user_id' => null,
-                ]);
+                Transaction::updateOrCreate(
+                    [
+                        'transaction_date' => $transactionDate,
+                        'type' => $type,
+                        'amount' => $amount,
+                        'description' => $description,
+                    ],
+                    [
+                        'income_type_id' => null,
+                        'expense_type_id' => $expenseTypeId,
+                        'region_id' => $volunteerId ? $volunteer->region_id : null,
+                        'volunteer_id' => $volunteerId,
+                        'user_id' => null,
+                    ]
+                );
             } catch (\Exception $e) {
                 echo "ERROR on ROW: " . json_encode($data) . "\n";
                 echo "MSG: " . $e->getMessage() . "\n";

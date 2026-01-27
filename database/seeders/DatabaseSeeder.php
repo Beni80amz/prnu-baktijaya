@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
             MosqueSeeder::class,
             ContentSeeder::class,
             KasDigitalSeeder::class,
+            ManualTransactionSeeder::class,
+            ManualExpenseSeeder::class,
         ]);
     }
 }
