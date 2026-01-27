@@ -5,7 +5,7 @@
             class="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2">
         </div>
         <div
-            class="absolute bottom-0 left-0 w-1/4 h-1/4 bg-secondary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2">
+            class="absolute bottom-0 left-0 w-1/4 h-1/4 bg-[#b8860b]/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2">
         </div>
 
         <div class="container mx-auto px-4 relative z-10">
@@ -57,7 +57,7 @@
                                             class="max-w-[80%] flex items-start gap-3 {{ $chat['role'] === 'user' ? 'flex-row-reverse' : '' }}">
                                             <!-- Avatar -->
                                             <div
-                                                class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $chat['role'] === 'user' ? 'bg-secondary text-white' : 'bg-primary text-white ring-4 ring-primary/20' }}">
+                                                class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $chat['role'] === 'user' ? 'bg-[#b8860b] text-white' : 'bg-primary text-white ring-4 ring-primary/20' }}">
                                                 <span class="material-symbols-outlined text-xl italic font-bold">
                                                     {{ $chat['role'] === 'user' ? 'person' : 'school' }}
                                                 </span>
@@ -65,7 +65,7 @@
 
                                             <!-- Message -->
                                             <div
-                                                class="p-4 rounded-2xl shadow-sm leading-relaxed text-sm md:text-base {{ $chat['role'] === 'user' ? 'bg-secondary text-white rounded-tr-none' : 'bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-200 rounded-tl-none' }}">
+                                                class="p-4 rounded-2xl shadow-sm leading-relaxed text-sm md:text-base {{ $chat['role'] === 'user' ? 'bg-[#b8860b] text-white rounded-tr-none' : 'bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-200 rounded-tl-none' }}">
                                                 {!! nl2br(e($chat['message'])) !!}
                                             </div>
                                         </div>
