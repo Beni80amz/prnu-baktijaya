@@ -42,7 +42,10 @@ class ContentSeeder extends Seeder
         ];
 
         foreach ($sliders as $slider) {
-            Slider::create($slider);
+            Slider::updateOrCreate(
+                ['title' => $slider['title']],
+                $slider
+            );
         }
 
         // 2. Dawuhs
@@ -138,7 +141,10 @@ class ContentSeeder extends Seeder
 
         foreach ($umkms as $umkm) {
             $umkm['slug'] = Str::slug($umkm['business_name']);
-            Umkm::create($umkm);
+            Umkm::updateOrCreate(
+                ['slug' => $umkm['slug']],
+                $umkm
+            );
         }
     }
 }
