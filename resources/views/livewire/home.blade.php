@@ -495,10 +495,16 @@
 
                         <ul class="space-y-6">
                             @forelse($agendas as $agenda)
+                            @php
+                                $months = [
+                                    1 => 'JAN', 2 => 'FEB', 3 => 'MAR', 4 => 'APR', 5 => 'MEI', 6 => 'JUN',
+                                    7 => 'JUL', 8 => 'AGU', 9 => 'SEP', 10 => 'OKT', 11 => 'NOV', 12 => 'DES'
+                                ];
+                            @endphp
                             <li class="flex gap-6 items-center">
                                 <div
                                     class="bg-primary text-white rounded-xl w-14 h-14 flex flex-col items-center justify-center shrink-0 shadow-lg shadow-primary/20">
-                                    <span class="text-[10px] font-black uppercase">{{ $agenda->date->translatedFormat('M') }}</span>
+                                    <span class="text-[10px] font-black uppercase">{{ $months[(int)$agenda->date->format('m')] }}</span>
                                     <span class="text-xl font-black leading-none">{{ $agenda->date->format('d') }}</span>
                                 </div>
                                 <div>
