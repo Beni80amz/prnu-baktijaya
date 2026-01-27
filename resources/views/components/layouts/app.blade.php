@@ -112,6 +112,12 @@
                         href="{{ route('kas-digital') }}" wire:navigate>KAS Digital</a>
                     <a class="text-sm font-medium {{ request()->routeIs('umkm.*') ? 'text-primary font-semibold' : '' }} hover:text-primary transition-colors"
                         href="{{ route('umkm.index') }}" wire:navigate>UMKM</a>
+                    <a class="text-sm font-medium {{ request()->routeIs('tanya-kiai') ? 'text-primary font-semibold' : '' }} hover:text-primary transition-colors"
+                        href="{{ route('tanya-kiai') }}" wire:navigate>Tanya Kiai</a>
+                    <a class="text-sm font-medium {{ request()->routeIs('zakat') ? 'text-primary font-semibold' : '' }} hover:text-primary transition-colors"
+                        href="{{ route('zakat') }}" wire:navigate>Zakat</a>
+                    <a class="text-sm font-medium {{ request()->routeIs('ruang-doa') ? 'text-primary font-semibold' : '' }} hover:text-primary transition-colors"
+                        href="{{ route('ruang-doa') }}" wire:navigate>Ruang Doa</a>
                 </div>
 
                 <div class="flex items-center gap-4">

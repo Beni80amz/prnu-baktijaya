@@ -160,8 +160,10 @@
                         <span class="material-symbols-outlined text-primary font-bold">schedule</span>
                     </div>
                     <div class="relative">
-                        <h3 class="text-sm font-black text-background-dark dark:text-white uppercase tracking-tight">
-                            Jadwal Sholat</h3>
+                        <h3 class="text-sm font-black text-background-dark dark:text-white uppercase tracking-tight flex items-center gap-2">
+                            Jadwal Sholat
+                            <span class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full lowercase tracking-normal">{{ $hijriDate }}</span>
+                        </h3>
                         <button @click="showCityDropdown = !showCityDropdown"
                             class="text-[11px] text-primary/60 dark:text-white/50 font-medium hover:text-primary dark:hover:text-white transition-colors flex items-center gap-1 cursor-pointer">
                             <span class="material-symbols-outlined text-[14px]">location_on</span>
@@ -311,14 +313,13 @@
                     class="group relative bg-white dark:bg-white/5 p-10 rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-500 border border-primary/5 dark:border-white/5 hover:border-accent/40">
                     <div
                         class="size-16 bg-primary/10 rounded-xl flex items-center justify-center mb-8 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                        <span class="material-symbols-outlined text-4xl">menu_book</span>
+                        <span class="material-symbols-outlined text-4xl">calculate</span>
                     </div>
-                    <h3 class="text-2xl font-black text-background-dark dark:text-white mb-4">Pendaftaran Amalan</h3>
-                    <p class="text-gray-600 dark:text-white/60 mb-8 text-sm leading-relaxed">Fasilitas pendaftaran hajat
-                        khusus dan doa bersama untuk keberkahan keluarga.</p>
+                    <h3 class="text-2xl font-black text-background-dark dark:text-white mb-4">Kalkulator Zakat</h3>
+                    <p class="text-gray-600 dark:text-white/60 mb-8 text-sm leading-relaxed">Hitung kewajiban zakat maal dan penghasilan Anda secara otomatis sesuai syariat.</p>
                     <a class="inline-flex items-center text-primary font-black text-sm uppercase tracking-wider group-hover:text-accent transition-colors"
-                        href="#">
-                        Daftar Sekarang <span
+                        href="{{ route('zakat') }}" wire:navigate>
+                        Hitung Sekarang <span
                             class="material-symbols-outlined text-lg ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
                     </a>
                 </div>
@@ -332,7 +333,7 @@
                     <p class="text-gray-600 dark:text-white/60 mb-8 text-sm leading-relaxed">Konsultasi hukum Islam dan
                         problematika umat langsung dengan para Asatidz pilihan.</p>
                     <a class="inline-flex items-center text-primary font-black text-sm uppercase tracking-wider group-hover:text-accent transition-colors"
-                        href="#">
+                        href="{{ route('tanya-kiai') }}" wire:navigate>
                         Mulai Chat <span
                             class="material-symbols-outlined text-lg ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
                     </a>
@@ -347,7 +348,7 @@
                     <p class="text-gray-600 dark:text-white/60 mb-8 text-sm leading-relaxed">Khidmat permohonan doa
                         virtual yang akan dibacakan rutin setiap majelis taklim.</p>
                     <a class="inline-flex items-center text-primary font-black text-sm uppercase tracking-wider group-hover:text-accent transition-colors"
-                        href="#">
+                        href="{{ route('ruang-doa') }}" wire:navigate>
                         Titip Doa <span
                             class="material-symbols-outlined text-lg ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
                     </a>

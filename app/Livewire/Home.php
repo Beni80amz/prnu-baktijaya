@@ -8,6 +8,7 @@ use App\Models\News;
 use App\Models\Dawuh;
 use App\Models\Transaction;
 use App\Services\PrayerTimesService;
+use App\Services\HijriService;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -18,11 +19,19 @@ class Home extends Component
     public array $prayerTimes = [];
     public array $allCities = [];
     public string $activePrayer = 'isya'; // Default active prayer
+    public string $hijriDate = '';
+    public ?string $liveStreamUrl = null;
 
     public function mount()
     {
         $this->loadPrayerTimes();
         $this->loadCities();
+
+        $hijriService = new HijriService();
+        $this->hijriDate = $hijriService->getTodayHijri();
+
+        // Fetch live stream from settings
+        $this->liveStreamUrl = \App\Models\Setting::where('key', 'youtube_live_url')->value('value');
     }
 
     public function loadPrayerTimes()

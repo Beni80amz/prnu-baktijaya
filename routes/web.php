@@ -11,6 +11,9 @@ use App\Livewire\GaleriIndex;
 use App\Livewire\KasDigital;
 use App\Livewire\UmkmIndex;
 use App\Livewire\PetaMasjid;
+use App\Livewire\TanyaKiai;
+use App\Livewire\ZakatCalculator;
+use App\Livewire\RuangDoa;
 
 // Home
 Route::get('/', Home::class)->name('home');
@@ -37,3 +40,9 @@ Route::get('/umkm', UmkmIndex::class)->name('umkm.index');
 
 // Peta Masjid
 Route::get('/peta-masjid', PetaMasjid::class)->name('peta-masjid');
+
+// Tanya Kiai
+Route::get('/tanya-kiai', TanyaKiai::class)->name('tanya-kiai');
+
+// Zakat Calculator
+Route::get('/zakat', ZakatCalculator::class)->name('zakat');
