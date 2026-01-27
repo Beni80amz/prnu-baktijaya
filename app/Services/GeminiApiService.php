@@ -29,19 +29,26 @@ class GeminiApiService
         Jika pertanyaan di luar masalah agama atau NU, arahkan dengan sopan agar bertanya seputar keislaman.";
 
         try {
-            $response = Http::post("{$this->baseUrl}?key={$this->apiKey}", [
-                'contents' => [
-                    [
-                        'parts' => [
-                            ['text' => $systemInstruction . "\n\nPertanyaan: " . $question]
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+            ])->post("{$this->baseUrl}?key={$this->apiKey}", [
+                        'system_instruction' => [
+                            'parts' => [
+                                ['text' => $systemInstruction]
+                            ]
+                        ],
+                        'contents' => [
+                            [
+                                'parts' => [
+                                    ['text' => $question]
+                                ]
+                            ]
+                        ],
+                        'generationConfig' => [
+                            'temperature' => 0.7,
+                            'maxOutputTokens' => 800,
                         ]
-                    ]
-                ],
-                'generationConfig' => [
-                    'temperature' => 0.7,
-                    'maxOutputTokens' => 800,
-                ]
-            ]);
+                    ]);
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -49,7 +56,7 @@ class GeminiApiService
             }
 
             Log::error('Gemini API Error: ' . $response->body());
-            return 'Maaf, terjadi gangguan saat menghubungi sistem AI.';
+            return 'Maaf, terjadi gangguan saat menghubungi sistem AI. (' . $response->status() . ')';
 
         } catch (\Exception $e) {
             Log::error('Gemini Service Exception: ' . $e->getMessage());

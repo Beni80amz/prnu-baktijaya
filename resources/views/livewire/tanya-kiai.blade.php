@@ -1,5 +1,5 @@
 <div>
-    <section class="relative overflow-hidden pt-32 pb-20 bg-background-light dark:bg-background-dark min-h-screen">
+    <section class="relative overflow-hidden pt-44 pb-32 bg-background-light dark:bg-background-dark min-h-screen">
         <!-- Background Elements -->
         <div
             class="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2">
