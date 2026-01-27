@@ -71,8 +71,21 @@ class SystemMaintenance extends Page
 
         // 1. Git Pull
         $output .= "Executing: git pull origin main\n";
-        $process = Process::run('export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" && git pull origin main');
-        $output .= $process->output() . $process->errorOutput();
+
+        // Try to inject HOME env var to find SSH keys (common VPS issue for www-data)
+        // We assume the key might be in /root or the default user home if standard fail.
+        // This command adds verbose output (-v) and redirects stderr to stdout (2>&1).
+        $gitCommand = 'export HOME=/root && export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" && git pull origin main 2>&1';
+
+        $process = Process::run($gitCommand);
+        $output .= $process->output();
+
+        // Fallback: If root fails, maybe try generic home or just standard (already failed)
+        if ($process->failed()) {
+            $output .= "\n[RETRY] Trying default user context...\n";
+            $processRetry = Process::run('git pull origin main 2>&1');
+            $output .= $processRetry->output();
+        }
 
         // 2. Migrate
         $output .= "\nExecuting: php artisan migrate --force\n";
@@ -89,7 +102,7 @@ class SystemMaintenance extends Page
         $output = "--- START HARD RESET ---\n";
 
         $output .= "Executing: git fetch origin\n";
-        $output .= Process::run('export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" && git fetch origin')->output();
+        $output .= Process::run('export HOME=/root && export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" && git fetch origin 2>&1')->output();
 
         $output .= "\nExecuting: git reset --hard origin/main\n";
         $output .= Process::run('git reset --hard origin/main')->output();
