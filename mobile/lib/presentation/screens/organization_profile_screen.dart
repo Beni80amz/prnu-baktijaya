@@ -30,10 +30,12 @@ class OrganizationProfileScreen extends ConsumerWidget {
               pinned: true,
               backgroundColor: isDark ? const Color(0xFF102216).withOpacity(0.9) : const Color(0xFFF6F8F6).withOpacity(0.9),
               elevation: 0,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios, size: 20),
-                onPressed: () => Navigator.pop(context),
-              ),
+              leading: Navigator.canPop(context)
+                  ? IconButton(
+                      icon: const Icon(Icons.arrow_back_ios, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    )
+                  : null,
               title: const Text('Profil Organisasi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               centerTitle: true,
               actions: [
