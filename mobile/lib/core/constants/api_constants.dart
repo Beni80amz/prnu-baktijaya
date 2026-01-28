@@ -1,6 +1,6 @@
 class ApiConstants {
   // Replace with your local IP if testing on real device
-  static const String baseUrl = 'http://192.168.0.129:8123/api/';
+  static const String baseUrl = 'http://192.168.0.129:8000/api/';
   
   // Endpoints
   static const String login = 'login';

@@ -132,16 +132,26 @@ class PrayerCard extends ConsumerWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppTheme.teal.withOpacity(0.05)),
           ),
-          child: const Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.wb_twilight, color: AppTheme.teal, size: 32),
-              SizedBox(height: 4),
+              Icon(Icons.calendar_month, color: AppTheme.teal, size: 28),
+              SizedBox(height: 6),
               Text(
-                'SUNSET',
+                'HIJRIYAH',
                 style: TextStyle(
                   color: AppTheme.teal,
-                  fontSize: 9,
+                  fontSize: 8,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 2),
+              Text(
+                prayerData.hijri ?? '-',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppTheme.gold,
+                  fontSize: 10,
                   fontWeight: FontWeight.bold,
                 ),
               ),

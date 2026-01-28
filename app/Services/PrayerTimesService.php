@@ -19,7 +19,7 @@ class PrayerTimesService
         $cityId = $cityId ?? $this->defaultCityId;
         $date = $date ?? Carbon::now();
 
-        $cacheKey = "prayer_times_{$cityId}_{$date->format('Y_m_d')}";
+        $cacheKey = "prayer_times_{$cityId}_{$date->format('Y_m_d')}_v2";
 
         return Cache::remember($cacheKey, 3600, function () use ($cityId, $date) {
             try {
@@ -27,12 +27,18 @@ class PrayerTimesService
 
                 if ($response->successful() && $response->json('status')) {
                     $data = $response->json('data');
+
+                    // Add Hijri Date
+                    $hijriService = new HijriService();
+                    $hijriDate = $hijriService->gregorianToHijri($date->day, $date->month, $date->year);
+
                     return [
                         'success' => true,
                         'city_id' => $data['id'],
                         'city_name' => $data['lokasi'],
                         'region' => $data['daerah'] ?? '',
                         'date' => $data['jadwal']['tanggal'] ?? $date->format('d/m/Y'),
+                        'hijri' => $hijriDate,
                         'times' => [
                             'imsak' => $data['jadwal']['imsak'],
                             'subuh' => $data['jadwal']['subuh'],
@@ -109,6 +115,7 @@ class PrayerTimesService
             'city_name' => 'KOTA DEPOK',
             'region' => 'JAWA BARAT',
             'date' => Carbon::now()->format('d/m/Y'),
+            'hijri' => (new HijriService())->getTodayHijri(),
             'times' => [
                 'imsak' => '04:20',
                 'subuh' => '04:30',

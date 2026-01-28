@@ -83,22 +83,28 @@ class UtilityController extends Controller
     public function getCategories(Request $request)
     {
         try {
+            \Illuminate\Support\Facades\Log::info('API Categories Request', ['type' => $request->type, 'all' => $request->all()]);
+
             $query = \App\Models\Category::where('is_active', true);
 
             if ($request->has('type')) {
                 $query->where('type', $request->type);
             }
 
+            $result = $query->get();
+            \Illuminate\Support\Facades\Log::info('API Categories Count', ['count' => $result->count()]);
+
             return response()->json([
                 'success' => true,
-                'data' => $query->get()
+                'data' => $result
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('API Categories Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'data' => [],
                 'message' => $e->getMessage()
-            ], 200); // Return 200 with empty data to prevent FE error
+            ], 200);
         }
     }
 

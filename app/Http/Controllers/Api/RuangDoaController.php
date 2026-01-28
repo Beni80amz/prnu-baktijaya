@@ -33,15 +33,18 @@ class RuangDoaController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'prayer' => 'required|string|min:5',
-            'is_anonymous' => 'boolean'
+            'deceased_name' => 'required|string|max:255',
+            'request_type' => 'required|string',
+            'notes' => 'nullable|string',
         ]);
 
         $prayer = PrayerRequest::create([
-            'name' => $validated['name'],
-            'prayer' => $validated['prayer'],
-            'is_anonymous' => $validated['is_anonymous'] ?? false,
-            'is_approved' => false // Moderated first
+            'requester_name' => $validated['name'],
+            'names' => [$validated['deceased_name']], // Cast as array in model
+            'type' => $validated['request_type'],
+            'notes' => $validated['notes'],
+            'status' => 'pending',
+            'requested_date' => now(),
         ]);
 
         return response()->json([

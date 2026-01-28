@@ -86,8 +86,7 @@ class Repository {
       final List data = response.data['data'] ?? [];
       return data.map((e) => Category.fromJson(e)).toList();
     } catch (e) {
-      print('Failed to load categories: $e');
-      return []; // Return empty list on error to prevent UI breaking
+      return []; // Return empty list on error to prevent UI breaking 
     }
   }
 
