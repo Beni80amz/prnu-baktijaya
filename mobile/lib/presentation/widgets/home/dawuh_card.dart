@@ -18,11 +18,12 @@ class DawuhCard extends ConsumerWidget {
         
         return CarouselSlider(
           options: CarouselOptions(
-            height: 180,
-            viewportFraction: 1.0,
+            height: 200,
+            viewportFraction: 0.92,
             autoPlay: true,
             autoPlayInterval: const Duration(seconds: 5),
             enlargeCenterPage: false,
+            enableInfiniteScroll: true,
           ),
           items: dawuhs.map((dawuh) {
             return Builder(
@@ -34,7 +35,7 @@ class DawuhCard extends ConsumerWidget {
         );
       },
       loading: () => Container(
-        height: 180,
+        height: 200,
         decoration: BoxDecoration(
           color: AppTheme.teal.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
@@ -48,6 +49,7 @@ class DawuhCard extends ConsumerWidget {
   Widget _buildDawuhItem(BuildContext context, Dawuh dawuh) {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 6.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         image: const DecorationImage(

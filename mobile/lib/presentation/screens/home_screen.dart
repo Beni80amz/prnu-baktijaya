@@ -135,7 +135,7 @@ class HomeScreen extends ConsumerWidget {
               // Dawuh Card
               const DawuhCard(),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
 
               // Services Grid
               const ServicesGrid(),
