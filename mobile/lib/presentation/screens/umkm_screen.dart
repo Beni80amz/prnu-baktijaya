@@ -88,7 +88,7 @@ class UmkmScreen extends ConsumerWidget {
                       crossAxisCount: 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 0.75,
+                      childAspectRatio: 0.65,
                     ),
                     itemCount: umkmList.length,
                     itemBuilder: (context, index) {
@@ -127,7 +127,7 @@ class UmkmScreen extends ConsumerWidget {
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             child: AspectRatio(
-              aspectRatio: 1.2,
+              aspectRatio: 1.35,
               child: umkm['image'] != null
                   ? Image.network(
                       umkm['image'].toString().startsWith('http')
