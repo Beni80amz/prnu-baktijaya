@@ -155,7 +155,7 @@ class _NewsListScreenState extends ConsumerState<NewsListScreen> {
                   final List newsItems = data['data'] ?? [];
                   if (newsItems.isEmpty) {
                     return RefreshIndicator(
-                      onRefresh: () async => ref.dispose(paginatedNewsProvider(_currentPage)), // Force reload
+                      onRefresh: () async => ref.invalidate(paginatedNewsProvider(_currentPage)), // Force reload
                       child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         child: SizedBox(

@@ -237,6 +237,7 @@ class OrganizationProfileScreen extends ConsumerWidget {
               ),
             ),
           ],
+          ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => RefreshIndicator(
