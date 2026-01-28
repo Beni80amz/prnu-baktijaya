@@ -167,7 +167,7 @@ class UmkmScreen extends ConsumerWidget {
                   const Spacer(),
                   if (umkm['whatsapp'] != null)
                     GestureDetector(
-                      onTap: () => _openWhatsApp(umkm['whatsapp']),
+                      onTap: () => _openWhatsApp(context, umkm['whatsapp']),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
@@ -193,11 +193,27 @@ class UmkmScreen extends ConsumerWidget {
     );
   }
 
-  void _openWhatsApp(String phone) async {
-    final cleanPhone = phone.replaceAll(RegExp(r'[^0-9]'), '');
+  void _openWhatsApp(BuildContext context, String phone) async {
+    var cleanPhone = phone.replaceAll(RegExp(r'[^0-9]'), '');
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = '62${cleanPhone.substring(1)}';
+    }
+    
     final url = Uri.parse('https://wa.me/$cleanPhone');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
+    
+    try {
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        // Fallback: try generic launch without checking
+         await launchUrl(url, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Tidak dapat membuka WhatsApp: $e')),
+        );
+      }
     }
   }
 }
