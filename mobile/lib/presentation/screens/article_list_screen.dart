@@ -114,29 +114,51 @@ class _ArticleListScreenState extends ConsumerState<ArticleListScreen> {
                   }).toList();
 
                   if (filtered.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.menu_book, size: 64, color: Colors.grey[400]),
-                          const SizedBox(height: 16),
-                          const Text('Tidak ada artikel ditemukan', style: TextStyle(color: Colors.grey)),
-                        ],
+                    return RefreshIndicator(
+                      onRefresh: () async => ref.refresh(articlesProvider.future),
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height - 200,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.menu_book, size: 64, color: Colors.grey[400]),
+                                const SizedBox(height: 16),
+                                const Text('Tidak ada artikel ditemukan', style: TextStyle(color: Colors.grey)),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                     );
                   }
 
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: filtered.length,
-                    itemBuilder: (context, index) {
-                      final article = filtered[index];
-                      return _buildArticleCard(article, isDark);
-                    },
+                  return RefreshIndicator(
+                    onRefresh: () async => ref.refresh(articlesProvider.future),
+                    child: ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: filtered.length,
+                      itemBuilder: (context, index) {
+                        final article = filtered[index];
+                        return _buildArticleCard(article, isDark);
+                      },
+                    ),
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => Center(child: Text('Gagal memuat: $err')),
+                error: (err, stack) => RefreshIndicator(
+                  onRefresh: () async => ref.refresh(articlesProvider.future),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height - 200,
+                      child: Center(child: Text('Gagal memuat: $err')),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

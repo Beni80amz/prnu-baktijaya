@@ -154,25 +154,50 @@ class _NewsListScreenState extends ConsumerState<NewsListScreen> {
                 data: (data) {
                   final List newsItems = data['data'] ?? [];
                   if (newsItems.isEmpty) {
-                    return const Center(child: Text('Tidak ada berita ditemukan'));
+                    return RefreshIndicator(
+                      onRefresh: () async => ref.dispose(paginatedNewsProvider(_currentPage)), // Force reload
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height - 200,
+                          child: const Center(child: Text('Tidak ada berita ditemukan')),
+                        ),
+                      ),
+                    );
                   }
-                  return ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: newsItems.length,
-                    itemBuilder: (context, index) {
-                      final news = News.fromJson(newsItems[index]);
-                      // Alternating designs based on HTML
-                      if (index < 3) {
-                        return _buildLargeCard(context, news);
-                      } else {
-                        return _buildSmallCard(context, news);
-                      }
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      // Invalidate current page to reload
+                      return ref.refresh(paginatedNewsProvider(_currentPage).future);
                     },
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: newsItems.length,
+                      itemBuilder: (context, index) {
+                        final news = News.fromJson(newsItems[index]);
+                        // Alternating designs based on HTML
+                        if (index < 3) {
+                          return _buildLargeCard(context, news);
+                        } else {
+                          return _buildSmallCard(context, news);
+                        }
+                      },
+                    ),
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => Center(child: Text('Gagal memuat berita: $err')),
+                error: (err, stack) => RefreshIndicator(
+                  onRefresh: () async => ref.refresh(paginatedNewsProvider(_currentPage).future),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height - 200,
+                      child: Center(child: Text('Gagal memuat berita: $err')),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

@@ -23,9 +23,12 @@ class OrganizationProfileScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF102216) : const Color(0xFFF6F8F6),
       body: orgAsync.when(
-        data: (org) => CustomScrollView(
-          slivers: [
-            // AppBar
+        data: (org) => RefreshIndicator(
+          onRefresh: () async => ref.refresh(organizationProvider.future),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              // AppBar
             SliverAppBar(
               pinned: true,
               backgroundColor: isDark ? const Color(0xFF102216).withOpacity(0.9) : const Color(0xFFF6F8F6).withOpacity(0.9),
@@ -236,7 +239,16 @@ class OrganizationProfileScreen extends ConsumerWidget {
           ],
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) => RefreshIndicator(
+          onRefresh: () async => ref.refresh(organizationProvider.future),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: Center(child: Text('Error: $err')),
+            ),
+          ),
+        ),
       ),
     );
   }

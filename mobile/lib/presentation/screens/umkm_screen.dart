@@ -82,23 +82,38 @@ class UmkmScreen extends ConsumerWidget {
                       ),
                     );
                   }
-                  return GridView.builder(
-                    padding: const EdgeInsets.all(16),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.65,
-                    ),
-                    itemCount: umkmList.length,
-                    itemBuilder: (context, index) {
-                      final umkm = umkmList[index];
-                      return _buildUmkmCard(context, umkm, isDark);
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      return ref.refresh(umkmProvider.future);
                     },
+                    child: GridView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(16),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.65,
+                      ),
+                      itemCount: umkmList.length,
+                      itemBuilder: (context, index) {
+                        final umkm = umkmList[index];
+                        return _buildUmkmCard(context, umkm, isDark);
+                      },
+                    ),
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => Center(child: Text('Gagal memuat: $err')),
+                error: (err, stack) => RefreshIndicator(
+                  onRefresh: () async => ref.refresh(umkmProvider.future),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height - 200,
+                      child: Center(child: Text('Gagal memuat: $err')),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

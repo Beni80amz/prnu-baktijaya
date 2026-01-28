@@ -117,17 +117,45 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
                   data: (data) {
                     final List<GalleryItem> items = data['items'];
                     if (items.isEmpty) {
-                      return const Center(child: Text('Belum ada dokumentasi'));
+                      return RefreshIndicator(
+                         onRefresh: () async {
+                            setState(() => _currentPage = 1);
+                            return ref.refresh(paginatedGalleryProvider(1).future);
+                         },
+                         child: SingleChildScrollView(
+                           physics: const AlwaysScrollableScrollPhysics(),
+                           child: SizedBox(
+                             height: MediaQuery.of(context).size.height - 200,
+                             child: const Center(child: Text('Belum ada dokumentasi')),
+                           ),
+                         ),
+                      );
                     }
 
-                    if (type == 'photo') {
-                      return _buildPhotoGrid(items, isDark);
-                    } else {
-                      return _buildVideoList(items, isDark);
-                    }
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                         setState(() => _currentPage = 1);
+                         return ref.refresh(paginatedGalleryProvider(1).future);
+                      },
+                      child: type == 'photo' 
+                        ? _buildPhotoGrid(items, isDark)
+                        : _buildVideoList(items, isDark),
+                    );
                   },
                   loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (err, stack) => Center(child: Text('Error: $err')),
+                  error: (err, stack) => RefreshIndicator(
+                     onRefresh: () async {
+                        setState(() => _currentPage = 1);
+                        return ref.refresh(paginatedGalleryProvider(1).future);
+                     },
+                     child: SingleChildScrollView(
+                       physics: const AlwaysScrollableScrollPhysics(),
+                       child: SizedBox(
+                         height: MediaQuery.of(context).size.height - 200,
+                         child: Center(child: Text('Error: $err')),
+                       ),
+                     ),
+                  ),
                 );
               },
             ),
