@@ -110,13 +110,17 @@ class DawuhCard extends ConsumerWidget {
                         color: AppTheme.gold,
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        'DAWUH ${dawuh.ulamaName.toUpperCase()}',
-                        style: const TextStyle(
-                          color: AppTheme.gold,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.5,
+                      Expanded(
+                        child: Text(
+                          'DAWUH ${dawuh.ulamaName.toUpperCase()}',
+                          style: const TextStyle(
+                            color: AppTheme.gold,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.5,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
