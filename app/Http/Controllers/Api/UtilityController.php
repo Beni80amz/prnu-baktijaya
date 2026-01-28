@@ -82,16 +82,24 @@ class UtilityController extends Controller
 
     public function getCategories(Request $request)
     {
-        $query = \App\Models\Category::where('is_active', true);
+        try {
+            $query = \App\Models\Category::where('is_active', true);
 
-        if ($request->has('type')) {
-            $query->where('type', $request->type);
+            if ($request->has('type')) {
+                $query->where('type', $request->type);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $query->get()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => [],
+                'message' => $e->getMessage()
+            ], 200); // Return 200 with empty data to prevent FE error
         }
-
-        return response()->json([
-            'success' => true,
-            'data' => $query->get()
-        ]);
     }
 
     public function getOrganization()
