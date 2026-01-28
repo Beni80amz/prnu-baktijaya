@@ -26,7 +26,13 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: _currentIndex == 0,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+        setState(() => _currentIndex = 0);
+      },
+      child: Scaffold(
       extendBody: true,
       body: IndexedStack(
         index: _currentIndex,
@@ -80,6 +86,7 @@ class _MainScreenState extends State<MainScreen> {
             _buildNavItem(4, Icons.person, 'Profil'),
           ],
         ),
+      ),
       ),
     );
   }
