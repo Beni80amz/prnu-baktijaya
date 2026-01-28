@@ -32,8 +32,10 @@ class GalleryItem {
     }
 
     return GalleryItem(
-      id: json['id'],
-      categoryId: json['category_id'],
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
+      categoryId: json['category_id'] is int 
+          ? json['category_id'] 
+          : (json['category_id'] != null ? int.tryParse(json['category_id'].toString()) : null),
       title: json['title'] ?? '',
       slug: json['slug'],
       description: json['description'],
@@ -41,7 +43,7 @@ class GalleryItem {
       images: imagesList,
       videoUrl: json['video_url'],
       eventDate: json['event_date'] != null ? DateTime.tryParse(json['event_date']) : null,
-      isFeatured: json['is_featured'] == 1 || json['is_featured'] == true,
+      isFeatured: json['is_featured'] == 1 || json['is_featured'] == true || json['is_featured'] == '1',
     );
   }
 

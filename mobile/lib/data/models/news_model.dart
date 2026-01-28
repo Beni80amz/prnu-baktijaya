@@ -19,9 +19,9 @@ class News {
 
   factory News.fromJson(Map<String, dynamic> json) {
     return News(
-      id: json['id'],
-      title: json['title'],
-      slug: json['slug'],
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
+      title: json['title'] ?? '',
+      slug: json['slug'] ?? '',
       excerpt: json['excerpt'],
       content: json['content'],
       image: json['image'], // Ensure backend returns full URL or handle it here
