@@ -25,6 +25,11 @@ class Umkm extends Model
         'is_active',
     ];
 
+    protected $appends = [
+        'name',
+        'image',
+    ];
+
     protected $casts = [
         'images' => 'array',
         'is_featured' => 'boolean',
