@@ -93,7 +93,7 @@
                 <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-background-dark shadow-sm relative transition-all duration-300 hover:shadow-lg group">
                     <div class="absolute top-4 right-4">
                          <!-- FIX: Smaller font size for "Paling Aktif" -->
-                         <span class="bg-accent text-white text-[7px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm shadow-accent/30">Paling Aktif</span>
+                         <span class="bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm shadow-accent/30">Paling Aktif</span>
                     </div>
                     <div class="flex items-center gap-3 mb-5">
                         <div class="size-10 bg-[#fdf8e8] dark:bg-yellow-900/20 text-accent dark:text-yellow-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform border border-accent/10 dark:border-yellow-500/20">

@@ -182,7 +182,7 @@ class KasDigital extends Component
     private function getRecentDonors()
     {
         return Transaction::where('type', 'income')
-            ->latest('created_at')
+            ->latest('transaction_date')
             ->take(3)
             ->get();
     }
