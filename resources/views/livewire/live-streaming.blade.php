@@ -206,15 +206,15 @@
                         </div>
                     </div>
 
-                    <div class="p-6 pt-2 border-t border-slate-100 dark:border-white/5 flex-shrink-0">
-                        <a href="https://wa.me/{{ $donationContact }}?text=Assalamualaikum, saya ingin konfirmasi donasi untuk acara..."
-                            target="_blank"
-                            class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-green-500/20">
-                            <span class="material-symbols-outlined">whatsapp</span>
-                            Konfirmasi Donasi
-                        </a>
-                    </div>
                 </div>
+
+                <div class="p-6 pt-2 border-t border-slate-100 dark:border-white/5 flex-shrink-0">
+                    <a href="https://wa.me/{{ $donationContact }}?text=Assalamualaikum, saya ingin konfirmasi donasi untuk acara..."
+                        target="_blank"
+                        class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-green-500/20">
+                        <span class="material-symbols-outlined">whatsapp</span>
+                        Konfirmasi Donasi
+                    </a>
                 </div>
             </div>
         </div>
