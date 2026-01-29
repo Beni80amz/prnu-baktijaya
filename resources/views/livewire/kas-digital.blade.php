@@ -8,34 +8,7 @@
                     <h1 class="text-3xl font-black text-[#0c1d1d] dark:text-gray-200 transition-colors">Ringkasan Transparansi Keuangan</h1>
                     <p class="text-gray-500 dark:text-gray-400 font-medium transition-colors">Laporan realtime pengelolaan dana umat PRNU Baktijaya</p>
                 </div>
-                <div class="flex gap-3 relative">
-                    <button wire:click="exportExcel"
-                        class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-background-dark py-2 px-4 rounded-full hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-primary/30 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light flex items-center gap-2 font-bold text-xs transition-all shadow-sm">
-                        <span class="material-symbols-outlined text-lg">download</span> Unduh Excel
-                    </button>
-                    <!-- Date Filter -->
-                    <div class="relative">
-                        <button @click="showFilters = !showFilters"
-                            class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-background-dark py-2 px-4 rounded-full hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-primary/30 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light flex items-center gap-2 font-bold text-xs transition-all shadow-sm">
-                            <span class="material-symbols-outlined text-lg">filter_list</span>
-                            {{ $period === 'month' ? 'Bulan Ini' : ($period === 'year' ? 'Tahun Ini' : 'Semua Data') }}
-                        </button>
-                        
-                        <!-- Dropdown Menu -->
-                        <div x-show="showFilters" @click.away="showFilters = false" style="display: none;"
-                             class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-background-dark py-2 z-50 origin-top-right transition-all transform key-filter-dropdown"
-                             x-transition:enter="transition ease-out duration-100"
-                             x-transition:enter-start="opacity-0 scale-95"
-                             x-transition:enter-end="opacity-100 scale-100"
-                             x-transition:leave="transition ease-in duration-75"
-                             x-transition:leave-start="opacity-100 scale-100"
-                             x-transition:leave-end="opacity-0 scale-95">
-                            <button wire:click="$set('period', 'month')" @click="showFilters = false" class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 {{ $period === 'month' ? 'text-primary font-bold bg-primary/5 dark:bg-primary/10' : 'text-gray-600 dark:text-gray-300' }}">Bulan Ini</button>
-                            <button wire:click="$set('period', 'year')" @click="showFilters = false" class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 {{ $period === 'year' ? 'text-primary font-bold bg-primary/5 dark:bg-primary/10' : 'text-gray-600 dark:text-gray-300' }}">Tahun Ini</button>
-                            <button wire:click="$set('period', 'all')" @click="showFilters = false" class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 {{ $period === 'all' ? 'text-primary font-bold bg-primary/5 dark:bg-primary/10' : 'text-gray-600 dark:text-gray-300' }}">Semua Data</button>
-                        </div>
-                    </div>
-                </div>
+                <!-- Buttons Removed -->
             </div>
 
             <!-- Stats Grid -->
@@ -161,12 +134,43 @@
 
                 <!-- Transaction History -->
                 <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-300 dark:border-background-dark overflow-hidden shadow-sm">
-                    <div class="p-6 border-b border-gray-200 dark:border-background-dark flex items-center justify-between bg-white dark:bg-gray-800">
+                    <div class="p-6 border-b border-gray-200 dark:border-background-dark flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white dark:bg-gray-800">
                         <h4 class="text-lg font-bold text-[#0c1d1d] dark:text-white transition-colors">Riwayat Transaksi Terbaru</h4>
-                        <!-- Search Input -->
-                        <div class="relative w-48 group">
-                            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari..." class="w-full text-xs bg-gray-50 dark:bg-gray-700 border-none rounded-full py-2.5 pl-4 pr-10 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-gray-800 text-gray-700 dark:text-gray-200 transition-all">
-                            <span class="material-symbols-outlined text-sm absolute right-3 top-2.5 text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+                        
+                        <div class="flex flex-wrap items-center gap-3">
+                             <button wire:click="exportExcel"
+                                class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 py-2 px-4 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 hover:border-primary/30 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light flex items-center gap-2 font-bold text-xs transition-all shadow-sm">
+                                <span class="material-symbols-outlined text-lg">download</span> Unduh Excel
+                            </button>
+
+                            <!-- Date Filter -->
+                            <div class="relative">
+                                <button @click="showFilters = !showFilters"
+                                    class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 py-2 px-4 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 hover:border-primary/30 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light flex items-center gap-2 font-bold text-xs transition-all shadow-sm">
+                                    <span class="material-symbols-outlined text-lg">filter_list</span>
+                                    {{ $period === 'month' ? 'Bulan Ini' : ($period === 'year' ? 'Tahun Ini' : 'Semua Data') }}
+                                </button>
+                                
+                                <!-- Dropdown Menu -->
+                                <div x-show="showFilters" @click.away="showFilters = false" style="display: none;"
+                                     class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-background-dark py-2 z-50 origin-top-right transition-all transform key-filter-dropdown"
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="opacity-0 scale-95"
+                                     x-transition:enter-end="opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="opacity-100 scale-100"
+                                     x-transition:leave-end="opacity-0 scale-95">
+                                    <button wire:click="$set('period', 'month')" @click="showFilters = false" class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 {{ $period === 'month' ? 'text-primary font-bold bg-primary/5 dark:bg-primary/10' : 'text-gray-600 dark:text-gray-300' }}">Bulan Ini</button>
+                                    <button wire:click="$set('period', 'year')" @click="showFilters = false" class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 {{ $period === 'year' ? 'text-primary font-bold bg-primary/5 dark:bg-primary/10' : 'text-gray-600 dark:text-gray-300' }}">Tahun Ini</button>
+                                    <button wire:click="$set('period', 'all')" @click="showFilters = false" class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 {{ $period === 'all' ? 'text-primary font-bold bg-primary/5 dark:bg-primary/10' : 'text-gray-600 dark:text-gray-300' }}">Semua Data</button>
+                                </div>
+                            </div>
+
+                            <!-- Search Input -->
+                            <div class="relative w-48 group">
+                                <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari..." class="w-full text-xs bg-gray-50 dark:bg-gray-700 border-none rounded-full py-2.5 pl-4 pr-10 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-gray-800 text-gray-700 dark:text-gray-200 transition-all">
+                                <span class="material-symbols-outlined text-sm absolute right-3 top-2.5 text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+                            </div>
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -261,7 +265,7 @@
                                 <div class="flex-1 min-w-0">
                                     <!-- FIX: Changed donor name color to text-primary -->
                                     <p class="text-xs font-bold text-primary dark:text-primary-light truncate">{{ Str::limit($donor->description, 20) }}</p>
-                                    <p class="text-[9px] text-gray-400 dark:text-gray-500 uppercase font-semibold mt-0.5 tracking-wide">{{ $donor->created_at->diffForHumans() }} • <span class="text-green-600 dark:text-green-400">Rp {{ number_format($donor->amount, 0, ',', '.') }}</span></p>
+                                    <p class="text-[9px] text-gray-400 dark:text-gray-500 uppercase font-semibold mt-0.5 tracking-wide">{{ $donor->transaction_date->diffForHumans() }} • <span class="text-green-600 dark:text-green-400">Rp {{ number_format($donor->amount, 0, ',', '.') }}</span></p>
                                 </div>
                             </div>
                         @empty
