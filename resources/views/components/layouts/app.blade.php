@@ -92,7 +92,8 @@
                         </div>
                         <div class="hidden md:block">
                             <h2 class="text-xl font-bold leading-none tracking-tight">PRNU Baktijaya</h2>
-                            <p class="text-[10px] text-yellow-500 font-semibold uppercase tracking-wider mt-1">
+                            <p class="text-[10px] text-yellow-500 font-semibold uppercase tracking-wider mt-1"
+                                style="color: #EAB308;">
                                 NU Ranting Baktijaya</p>
                         </div>
                     </a>
