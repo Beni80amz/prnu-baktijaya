@@ -146,7 +146,7 @@ class LiveStreaming extends Component
     // --- YOUTUBE LOGIC ---
     private function fetchUpcomingSchedule($apiKey, $channelId)
     {
-        $cacheKey = 'youtube_upcoming_' . $channelId;
+        $cacheKey = 'youtube_upcoming_v2_' . $channelId;
 
         $this->upcomingSchedules = \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function () use ($apiKey, $channelId) { // Cache 1 hour
             // 3. Get Upcoming Videos
