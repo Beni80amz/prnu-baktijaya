@@ -283,14 +283,19 @@
                         class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5">
                         <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
                             <div class="flex-1">
-                                <h2 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
+                                <h2 class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white leading-tight">
                                     {{ $title }}
                                 </h2>
                                 <div class="flex items-center gap-4 mt-4">
                                     <div
-                                        class="w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary ring-offset-2 dark:ring-offset-slate-900">
-                                        <img alt="{{ $channelName }}" class="w-full h-full object-cover"
-                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg4azJBetkBkyD_LODwbpE-dzqvivEZBdLutvyb6bkMonZ6wvg0BUrhv6RBMCSfUoyA6tjNAtkGRvhgb9TkTdieSCIcoJ_Ihgx9RWUzko6Ke__ZOUks0_H-Nh5-343MIbwtWs-SKJl3Hqbveun2mDit_qRzklFDlZ0DnNPfiODkCkItUZmoyCaKqoJxToX1ojbUdGlsR7JO85DImoHTY7FjXTN9eXprsfb-J9oXGa0FNbhdaeDdZ9fQQsIStOJ81JcTe5UkOVaYHk" />
+                                        class="w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary ring-offset-2 dark:ring-offset-slate-900 bg-white flex items-center justify-center">
+                                        @if($siteLogo)
+                                            <img alt="{{ $channelName }}" class="w-full h-full object-contain p-1"
+                                                src="{{ Str::startsWith($siteLogo, 'http') ? $siteLogo : Storage::url($siteLogo) }}" />
+                                        @else
+                                            <img alt="{{ $channelName }}" class="w-full h-full object-cover"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg4azJBetkBkyD_LODwbpE-dzqvivEZBdLutvyb6bkMonZ6wvg0BUrhv6RBMCSfUoyA6tjNAtkGRvhgb9TkTdieSCIcoJ_Ihgx9RWUzko6Ke__ZOUks0_H-Nh5-343MIbwtWs-SKJl3Hqbveun2mDit_qRzklFDlZ0DnNPfiODkCkItUZmoyCaKqoJxToX1ojbUdGlsR7JO85DImoHTY7FjXTN9eXprsfb-J9oXGa0FNbhdaeDdZ9fQQsIStOJ81JcTe5UkOVaYHk" />
+                                        @endif
                                     </div>
                                     <div>
                                         <p

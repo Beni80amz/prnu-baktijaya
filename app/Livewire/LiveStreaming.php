@@ -14,6 +14,7 @@ class LiveStreaming extends Component
     public $title;
     public $description;
     public $channelName;
+    public $siteLogo;
     public $isLive = false;
 
     // Chat Properties
@@ -47,6 +48,7 @@ class LiveStreaming extends Component
         $this->title = Setting::getValue('youtube_live_title', 'Pengajian Rutin Lailatul Ijtima & Istighosah');
         $this->description = Setting::getValue('youtube_live_description', 'Pengasuh Majelis PRNU Baktijaya');
         $this->channelName = Setting::getValue('youtube_channel_name', 'Kiyai. Saroham Asymuni, S.Pd.I');
+        $this->siteLogo = Setting::getValue('site_logo');
 
         // Donation Settings
         $this->donationQrisImage = Setting::getValue('donation_qris_image');
