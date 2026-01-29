@@ -215,9 +215,11 @@
                         </a>
                     </div>
                 </div>
+                </div>
             </div>
+        </div>
 
-            <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex flex-col lg:flex-row gap-8">
                 <div class="lg:w-2/3 space-y-6">
                     <!-- Video Player -->
                     <div class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl group">
