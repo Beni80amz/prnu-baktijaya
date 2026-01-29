@@ -112,8 +112,27 @@
                         href="{{ route('kas-digital') }}" wire:navigate>KAS Digital</a>
                     <a class="text-sm font-medium {{ request()->routeIs('umkm.*') ? 'text-primary font-semibold' : '' }} hover:text-primary transition-colors"
                         href="{{ route('umkm.index') }}" wire:navigate>UMKM</a>
-                    <a class="text-sm font-medium {{ request()->routeIs('live-streaming') ? 'text-primary font-semibold' : '' }} hover:text-primary transition-colors animate-pulse text-red-500 font-bold"
-                        href="{{ route('live-streaming') }}" wire:navigate>LIVE</a>
+
+                    @php
+                        $channelId = \App\Models\Setting::getValue('youtube_channel_id');
+                        $isLive = false;
+                        if ($channelId) {
+                            $cacheKey = 'youtube_live_status_' . $channelId;
+                            $cachedStatus = \Illuminate\Support\Facades\Cache::get($cacheKey);
+                            if ($cachedStatus && isset($cachedStatus['is_live']) && $cachedStatus['is_live']) {
+                                $isLive = true;
+                            }
+                        }
+                        $youtubeLink = \App\Models\Setting::getValue('social_youtube', '#');
+                    @endphp
+
+                    @if($isLive)
+                        <a class="text-sm font-medium {{ request()->routeIs('live-streaming') ? 'text-primary font-semibold' : '' }} hover:text-primary transition-colors animate-pulse text-red-500 font-bold"
+                            href="{{ route('live-streaming') }}" wire:navigate>LIVE</a>
+                    @else
+                        <a class="text-sm font-medium hover:text-primary transition-colors"
+                            href="{{ $youtubeLink }}" target="_blank">Youtube</a>
+                    @endif
 
                 </div>
 
@@ -177,8 +196,14 @@
                     href="{{ route('kas-digital') }}" wire:navigate @click="mobileMenuOpen = false">KAS Digital</a>
                 <a class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('umkm.*') ? 'bg-primary/10 text-primary' : 'text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary' }} transition-colors"
                     href="{{ route('umkm.index') }}" wire:navigate @click="mobileMenuOpen = false">UMKM</a>
-                <a class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('live-streaming') ? 'bg-primary/10 text-primary' : 'text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary' }} transition-colors animate-pulse text-red-500 font-bold"
-                    href="{{ route('live-streaming') }}" wire:navigate @click="mobileMenuOpen = false">LIVE</a>
+
+                @if($isLive)
+                    <a class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('live-streaming') ? 'bg-primary/10 text-primary' : 'text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary' }} transition-colors animate-pulse text-red-500 font-bold"
+                        href="{{ route('live-streaming') }}" wire:navigate @click="mobileMenuOpen = false">LIVE</a>
+                @else
+                    <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary transition-colors"
+                        href="{{ $youtubeLink }}" target="_blank" @click="mobileMenuOpen = false">Youtube</a>
+                @endif
 
                 <div class="border-t border-gray-100 dark:border-gray-800 my-2 pt-2">
                     @auth
