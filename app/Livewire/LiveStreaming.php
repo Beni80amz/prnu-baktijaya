@@ -48,7 +48,15 @@ class LiveStreaming extends Component
         $this->title = Setting::getValue('youtube_live_title', 'Pengajian Rutin Lailatul Ijtima & Istighosah');
         $this->description = Setting::getValue('youtube_live_description', 'Pengasuh Majelis PRNU Baktijaya');
         $this->channelName = Setting::getValue('youtube_channel_name', 'Kiyai. Saroham Asymuni, S.Pd.I');
+
+        // Logo / Avatar Logic
         $this->siteLogo = Setting::getValue('site_logo');
+        if (!$this->siteLogo) {
+            $rais = \App\Models\OrganizationStructure::where('position', 'RAIS')->first();
+            if ($rais && $rais->image) {
+                $this->siteLogo = $rais->image;
+            }
+        }
 
         // Donation Settings
         $this->donationQrisImage = Setting::getValue('donation_qris_image');
