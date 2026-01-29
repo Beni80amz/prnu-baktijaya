@@ -231,7 +231,7 @@ class LiveStreaming extends Component
             $this->isLive = $data['is_live'];
             $this->youtubeId = $data['video_id'];
             $this->title = $data['title'];
-            $this->description = \Illuminate\Support\Str::limit($data['description'], 100);
+            $this->description = $data['description']; // Removed limit to show full description
         } else {
             // Fallback if API fails or returns nothing (e.g. quota exceeded)
             $this->youtubeUrl = Setting::getValue('youtube_live_url');
