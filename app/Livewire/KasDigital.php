@@ -99,9 +99,9 @@ class KasDigital extends Component
             'incomeTypes' => $incomeTypes,
             'expenseTypes' => $expenseTypes,
             'monthlyStats' => $this->getMonthlyStats(),
-            'allocationStats' => $this->getAllocationStats(),
             'recentDonors' => $this->getRecentDonors(),
             'mostActiveCategory' => $this->getMostActiveCategory(),
+            'donationContact' => \App\Models\Setting::getValue('donation_contact_person') ?? '6281234567890',
         ]);
     }
 

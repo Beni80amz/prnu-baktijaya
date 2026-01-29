@@ -265,7 +265,10 @@
                                 <div class="flex-1 min-w-0">
                                     <!-- FIX: Changed donor name color to text-primary -->
                                     <p class="text-xs font-bold text-primary dark:text-primary-light truncate">{{ Str::limit($donor->description, 20) }}</p>
-                                    <p class="text-[9px] text-gray-400 dark:text-gray-500 uppercase font-semibold mt-0.5 tracking-wide">{{ $donor->transaction_date->diffForHumans() }} • <span class="text-green-600 dark:text-green-400">Rp {{ number_format($donor->amount, 0, ',', '.') }}</span></p>
+                                    <p class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-semibold mt-1 tracking-wide">
+                                        {{ $donor->transaction_date->diffForHumans() }} • 
+                                        <span class="text-green-600 dark:text-green-400 text-xs font-black">Rp {{ number_format($donor->amount, 0, ',', '.') }}</span>
+                                    </p>
                                 </div>
                             </div>
                         @empty
@@ -284,9 +287,10 @@
                         </div>
                         <h4 class="text-lg font-bold text-[#0c1d1d] dark:text-white mb-2 transition-colors">Sistem Transparan</h4>
                         <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-6">Seluruh data keuangan diaudit secara berkala oleh Tim Audit Internal PRNU Baktijaya dan dipublikasikan secara rutin.</p>
-                        <button class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
+                        <a href="https://wa.me/{{ $donationContact }}?text=Assalamualaikum, saya ingin konfirmasi donasi untuk PRNU Baktijaya..." target="_blank" 
+                           class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
                             Hubungi Bendahara <span class="material-symbols-outlined text-sm">mail</span>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>

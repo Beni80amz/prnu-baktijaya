@@ -189,6 +189,14 @@ class SettingsSeeder extends Seeder
                 'label' => 'Nama Pemilik Rekening',
                 'description' => 'Nama pemilik rekening bank.',
             ],
+            [
+                'key' => 'donation_contact_person',
+                'value' => '6281234567890', // Default placeholder
+                'type' => 'text',
+                'group' => 'donation',
+                'label' => 'WhatsApp Bendahara',
+                'description' => 'Nomor WhatsApp konfirmasi donasi (Format: 628xxx).',
+            ],
         ];
 
         foreach ($settings as $setting) {
