@@ -120,6 +120,10 @@ class SystemMaintenance extends Page
             $output .= "\nExecuting: php artisan filament:upgrade\n";
             $output .= $this->runCommand('filament:upgrade');
 
+            // 3.5 Seed Settings (For API Keys & Dynamic Configs)
+            $output .= "\nExecuting: php artisan db:seed --class=SettingsSeeder --force\n";
+            $output .= $this->runCommand('db:seed --class=SettingsSeeder --force');
+
             // 4. Optimize
             $this->optimize();
         }
