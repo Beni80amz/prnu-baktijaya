@@ -142,15 +142,15 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'youtube_api_key',
-                'value' => '',
+                'value' => 'AIzaSyDcqYAFVV8VJHJcYnUa66Ooxp5pdJNrf9o',
                 'type' => 'text',
-                'group' => 'general',
-                'label' => 'YouTube API Key',
-                'description' => 'API Key dari Google Cloud Console untuk fitur auto-detect Live Streaming.',
+                'group' => 'youtube',
+                'label' => 'YouTube Data API Key',
+                'description' => 'API Key dari Google Cloud Console untuk akses YouTube Data API.',
             ],
             [
                 'key' => 'youtube_channel_id',
-                'value' => '', // Example: UC...
+                'value' => 'UCr8EV2XrhuuHhKZBpRGvViQ',
                 'type' => 'text',
                 'group' => 'youtube',
                 'label' => 'YouTube Channel ID',
