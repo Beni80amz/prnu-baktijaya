@@ -286,30 +286,8 @@
                                 <h2 class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white leading-tight">
                                     {{ $title }}
                                 </h2>
-                                <div class="flex items-center gap-4 mt-4">
-                                    <div
-                                        class="w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary ring-offset-2 dark:ring-offset-slate-900 bg-white flex items-center justify-center">
-                                        @if($siteLogo)
-                                            <img alt="{{ $channelName }}" class="w-full h-full object-contain p-1"
-                                                src="{{ Str::startsWith($siteLogo, 'http') ? $siteLogo : Storage::url($siteLogo) }}" />
-                                        @else
-                                            <img alt="{{ $channelName }}" class="w-full h-full object-cover"
-                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg4azJBetkBkyD_LODwbpE-dzqvivEZBdLutvyb6bkMonZ6wvg0BUrhv6RBMCSfUoyA6tjNAtkGRvhgb9TkTdieSCIcoJ_Ihgx9RWUzko6Ke__ZOUks0_H-Nh5-343MIbwtWs-SKJl3Hqbveun2mDit_qRzklFDlZ0DnNPfiODkCkItUZmoyCaKqoJxToX1ojbUdGlsR7JO85DImoHTY7FjXTN9eXprsfb-J9oXGa0FNbhdaeDdZ9fQQsIStOJ81JcTe5UkOVaYHk" />
-                                        @endif
-                                    </div>
-                                    <div>
-                                        <p
-                                            class="font-bold text-lg flex items-center gap-1.5 text-slate-900 dark:text-white">
-                                            {{ $channelName }}
-                                            <span class="material-symbols-outlined text-xl text-accent">verified</span>
-                                        </p>
-                                        <p class="text-sm text-slate-500 dark:text-gray-400 font-medium">
-                                            {{ $description }}
-                                        </p>
-                                    </div>
-                                </div>
                             </div>
-                            <div class="flex gap-2">
+                            <div class="flex gap-2 flex-shrink-0">
                                 <button @click="shareCurrentPage()"
                                     class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-gray-200 transition-colors">
                                     <span class="material-symbols-outlined text-sm">share</span>
@@ -320,6 +298,30 @@
                                     <span class="material-symbols-outlined text-sm">favorite</span>
                                     Dukung Acara
                                 </button>
+                            </div>
+                        </div>
+
+                        <!-- Channel Info (Full Width) -->
+                        <div class="flex items-start gap-4 mt-6">
+                            <div
+                                class="w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary ring-offset-2 dark:ring-offset-slate-900 bg-white flex items-center justify-center flex-shrink-0">
+                                @if($siteLogo)
+                                    <img alt="{{ $channelName }}" class="w-full h-full object-contain p-1"
+                                        src="{{ Str::startsWith($siteLogo, 'http') ? $siteLogo : Storage::url($siteLogo) }}" />
+                                @else
+                                    <img alt="{{ $channelName }}" class="w-full h-full object-cover"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg4azJBetkBkyD_LODwbpE-dzqvivEZBdLutvyb6bkMonZ6wvg0BUrhv6RBMCSfUoyA6tjNAtkGRvhgb9TkTdieSCIcoJ_Ihgx9RWUzko6Ke__ZOUks0_H-Nh5-343MIbwtWs-SKJl3Hqbveun2mDit_qRzklFDlZ0DnNPfiODkCkItUZmoyCaKqoJxToX1ojbUdGlsR7JO85DImoHTY7FjXTN9eXprsfb-J9oXGa0FNbhdaeDdZ9fQQsIStOJ81JcTe5UkOVaYHk" />
+                                @endif
+                            </div>
+                            <div class="flex-1">
+                                <p
+                                    class="font-bold text-lg flex items-center gap-1.5 text-slate-900 dark:text-white">
+                                    {{ $channelName }}
+                                    <span class="material-symbols-outlined text-xl text-accent">verified</span>
+                                </p>
+                                <p class="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed mt-1">
+                                    {{ $description }}
+                                </p>
                             </div>
                         </div>
                     </div>
