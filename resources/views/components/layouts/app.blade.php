@@ -74,7 +74,7 @@
     class="bg-background-light dark:bg-background-dark text-background-dark dark:text-white font-display overflow-x-hidden selection:bg-primary selection:text-white">
 
     <!-- Navbar -->
-    <nav
+    <nav x-data="{ mobileMenuOpen: false }"
         class="sticky top-0 z-50 border-b border-primary/10 dark:border-white/10 bg-white/95 dark:bg-background-dark/95 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
@@ -122,7 +122,7 @@
                         <span id="theme-icon" class="material-symbols-outlined">dark_mode</span>
                     </button>
 
-                    <button
+                    <button @click="$dispatch('open-search')"
                         class="text-primary/70 hover:text-primary transition-colors p-2 rounded-full hover:bg-primary/5 dark:hover:bg-white/5">
                         <span class="material-symbols-outlined">search</span>
                     </button>
@@ -146,9 +146,56 @@
                         <span class="material-symbols-outlined text-[20px]">volunteer_activism</span>
                         <span>Donasi</span>
                     </button>
-                    <button class="lg:hidden text-primary p-2">
-                        <span class="material-symbols-outlined">menu</span>
+
+                    <!-- Mobile Menu Button -->
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden text-primary p-2">
+                        <span class="material-symbols-outlined" x-text="mobileMenuOpen ? 'close' : 'menu'">menu</span>
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 -translate-y-2"
+            class="lg:hidden bg-white dark:bg-background-dark border-t border-primary/10 dark:border-white/10 shadow-lg absolute w-full left-0 z-40"
+            style="display: none;">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <a class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('home') ? 'bg-primary/10 text-primary' : 'text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary' }} transition-colors"
+                    href="{{ route('home') }}" wire:navigate @click="mobileMenuOpen = false">Beranda</a>
+                <a class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('profil') ? 'bg-primary/10 text-primary' : 'text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary' }} transition-colors"
+                    href="{{ route('profil') }}" wire:navigate @click="mobileMenuOpen = false">Profil</a>
+                <a class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('berita.*') ? 'bg-primary/10 text-primary' : 'text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary' }} transition-colors"
+                    href="{{ route('berita.index') }}" wire:navigate @click="mobileMenuOpen = false">Berita</a>
+                <a class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('artikel.*') ? 'bg-primary/10 text-primary' : 'text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary' }} transition-colors"
+                    href="{{ route('artikel.index') }}" wire:navigate @click="mobileMenuOpen = false">Artikel</a>
+                <a class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('kas-digital') ? 'bg-primary/10 text-primary' : 'text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary' }} transition-colors"
+                    href="{{ route('kas-digital') }}" wire:navigate @click="mobileMenuOpen = false">KAS Digital</a>
+                <a class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('umkm.*') ? 'bg-primary/10 text-primary' : 'text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary' }} transition-colors"
+                    href="{{ route('umkm.index') }}" wire:navigate @click="mobileMenuOpen = false">UMKM</a>
+
+                <div class="border-t border-gray-100 dark:border-gray-800 my-2 pt-2">
+                    @auth
+                        <a href="{{ url('/admin') }}"
+                            class="flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                            <span>Dashboard</span>
+                        </a>
+                    @else
+                        <a href="{{ url('/admin/login') }}"
+                            class="flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">login</span>
+                            <span>Login</span>
+                        </a>
+                    @endauth
+
+                    <a href="#"
+                        class="flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">volunteer_activism</span>
+                        <span>Donasi</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -207,8 +254,9 @@
                         <li><a class="hover:text-accent transition-colors flex items-center gap-2"
                                 href="{{ route('profil') }}" wire:navigate><span
                                     class="w-1.5 h-1.5 bg-primary rounded-full"></span> Tentang Kami</a></li>
-                        <li><a class="hover:text-accent transition-colors flex items-center gap-2" href="#"
-                                wire:navigate><span class="w-1.5 h-1.5 bg-primary rounded-full"></span> Struktur
+                        <li><a class="hover:text-accent transition-colors flex items-center gap-2"
+                                href="{{ route('profil') }}" wire:navigate><span
+                                    class="w-1.5 h-1.5 bg-primary rounded-full"></span> Struktur
                                 Organisasi</a></li>
                         <li><a class="hover:text-accent transition-colors flex items-center gap-2"
                                 href="{{ route('artikel.index') }}" wire:navigate><span
@@ -226,7 +274,7 @@
                         <li class="flex items-start gap-4">
                             <span class="material-symbols-outlined text-primary">location_on</span>
                             <span
-                                class="leading-relaxed">{{ $settings['contact_address'] ?? 'Jl. Baktijaya No. 123, Kec. Sukmajaya, Kota Depok, Jawa Barat 16418' }}</span>
+                                class="leading-relaxed">{{ $settings['contact_address'] ?? 'Jl. Baktijaya No. 6, Kec. Sukmajaya, Kota Depok, Jawa Barat 16418' }}</span>
                         </li>
                         <li class="flex items-center gap-4">
                             <span class="material-symbols-outlined text-primary">call</span>
@@ -234,7 +282,7 @@
                         </li>
                         <li class="flex items-center gap-4">
                             <span class="material-symbols-outlined text-primary">email</span>
-                            <span>{{ $settings['contact_email'] ?? 'sekretariat@prnubaktijaya.or.id' }}</span>
+                            <span>{{ $settings['contact_email'] ?? 'sekretariat@prnubaktijaya.org' }}</span>
                         </li>
                     </ul>
                 </div>
@@ -295,6 +343,42 @@
         <span class="material-symbols-outlined text-2xl">arrow_upward</span>
     </button>
 
+
+    <!-- Search Modal -->
+    <div x-data="{ searchOpen: false }"
+        @open-search.window="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
+        @keydown.escape.window="searchOpen = false" x-show="searchOpen" class="relative z-[100]"
+        aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
+
+        <div x-show="searchOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-gray-500/75 dark:bg-black/80 transition-opacity backdrop-blur-sm"></div>
+
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-start sm:p-0">
+                <div x-show="searchOpen" @click.away="searchOpen = false" x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-background-dark text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-white/10">
+
+                    <div class="absolute right-0 top-0 pr-4 pt-4 z-10">
+                        <button type="button" @click="searchOpen = false"
+                            class="rounded-md bg-transparent text-gray-400 hover:text-gray-500 focus:outline-none">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+
+                    <div class="p-6">
+                        @livewire('global-search')
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @livewireScripts
     @stack('scripts')

@@ -35,6 +35,9 @@ Route::get('/galeri', GaleriIndex::class)->name('galeri.web');
 // KAS Digital
 Route::get('/kas-digital', KasDigital::class)->name('kas-digital');
 
+// Live Streaming
+Route::get('/live-streaming', \App\Livewire\LiveStreaming::class)->name('live-streaming');
+
 // UMKM
 Route::get('/umkm', UmkmIndex::class)->name('umkm.index');
 

@@ -44,7 +44,7 @@
                                 class="p-6 bg-white dark:bg-white/5 rounded-2xl border border-primary/5 dark:border-white/10 shadow-sm">
                                 <span class="material-symbols-outlined text-primary mb-3">auto_awesome</span>
                                 <h4 class="font-bold text-sm mb-1">Didoakan Rutin</h4>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Setiap malam Jumat dan majelis
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Setiap malam Sabtu dan majelis
                                     Lailatul Ijtima'.</p>
                             </div>
                             <div

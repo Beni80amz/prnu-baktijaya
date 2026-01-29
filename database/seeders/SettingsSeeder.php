@@ -140,6 +140,55 @@ class SettingsSeeder extends Seeder
                 'label' => 'Status Live',
                 'description' => 'Aktifkan jika sedang LIVE. Jika tidak, akan menampilkan Video Terbaru.',
             ],
+            [
+                'key' => 'youtube_api_key',
+                'value' => '',
+                'type' => 'text',
+                'group' => 'general',
+                'label' => 'YouTube API Key',
+                'description' => 'API Key dari Google Cloud Console untuk fitur auto-detect Live Streaming.',
+            ],
+            [
+                'key' => 'youtube_channel_id',
+                'value' => '', // Example: UC...
+                'type' => 'text',
+                'group' => 'youtube',
+                'label' => 'YouTube Channel ID',
+                'description' => 'ID Channel YouTube untuk mengambil data jadwal live otomatis.',
+            ],
+            // --- Donation Settings ---
+            [
+                'key' => 'donation_qris_image',
+                'value' => 'https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg', // Default Placeholder
+                'type' => 'image',
+                'group' => 'donation',
+                'label' => 'QRIS Image',
+                'description' => 'Gambar QR Code QRIS untuk donasi.',
+            ],
+            [
+                'key' => 'donation_bank_name',
+                'value' => 'Bank Syariah Indonesia',
+                'type' => 'text',
+                'group' => 'donation',
+                'label' => 'Nama Bank',
+                'description' => 'Nama Bank untuk transfer donasi.',
+            ],
+            [
+                'key' => 'donation_bank_number',
+                'value' => '1234 5678 90',
+                'type' => 'text',
+                'group' => 'donation',
+                'label' => 'Nomor Rekening',
+                'description' => 'Nomor rekening untuk transfer donasi.',
+            ],
+            [
+                'key' => 'donation_bank_owner',
+                'value' => 'PRNU Baktijaya',
+                'type' => 'text',
+                'group' => 'donation',
+                'label' => 'Nama Pemilik Rekening',
+                'description' => 'Nama pemilik rekening bank.',
+            ],
         ];
 
         foreach ($settings as $setting) {

@@ -33,8 +33,6 @@ class KasDigital extends Component
         $this->resetPage();
     }
 
-
-
     public function render()
     {
         // Get total balance (Always global calculation for summary cards)
@@ -100,7 +98,120 @@ class KasDigital extends Component
             'expenseSummary' => $expenseSummary,
             'incomeTypes' => $incomeTypes,
             'expenseTypes' => $expenseTypes,
+            'monthlyStats' => $this->getMonthlyStats(),
+            'allocationStats' => $this->getAllocationStats(),
+            'recentDonors' => $this->getRecentDonors(),
+            'mostActiveCategory' => $this->getMostActiveCategory(),
         ]);
+    }
+
+    private function getMonthlyStats()
+    {
+        $stats = [];
+        $now = Carbon::now();
+
+        // Find max value for scaling
+        $maxVal = 0;
+
+        for ($i = 5; $i >= 0; $i--) {
+            $date = $now->copy()->subMonths($i);
+            $monthName = $date->format('M');
+
+            $income = Transaction::where('type', 'income')
+                ->whereYear('transaction_date', $date->year)
+                ->whereMonth('transaction_date', $date->month)
+                ->sum('amount');
+
+            $expense = Transaction::where('type', 'expense')
+                ->whereYear('transaction_date', $date->year)
+                ->whereMonth('transaction_date', $date->month)
+                ->sum('amount');
+
+            $maxVal = max($maxVal, $income, $expense);
+
+            $stats[] = [
+                'month' => $monthName,
+                'income' => $income,
+                'expense' => $expense,
+            ];
+        }
+
+        // Add percentages for UI
+        foreach ($stats as &$stat) {
+            $stat['income_pct'] = $maxVal > 0 ? ($stat['income'] / $maxVal) * 100 : 0;
+            $stat['expense_pct'] = $maxVal > 0 ? ($stat['expense'] / $maxVal) * 100 : 0;
+        }
+
+        return $stats;
+    }
+
+    private function getAllocationStats()
+    {
+        // Get expenses for the current year
+        $expenses = Transaction::with('expenseType')
+            ->where('type', 'expense')
+            ->whereYear('transaction_date', Carbon::now()->year)
+            ->get();
+
+        $total = $expenses->sum('amount');
+        if ($total == 0)
+            return [];
+
+        $colors = ['bg-primary', 'bg-accent', 'bg-teal-600', 'bg-gray-400', 'bg-red-400'];
+        $textColors = ['text-primary', 'text-accent', 'text-teal-600', 'text-gray-400', 'text-red-400'];
+
+        return $expenses->groupBy('expense_type_id')
+            ->map(function ($group, $key) use ($total, $colors, $textColors) {
+                $categoryName = $group->first()->expenseType->name ?? 'Lainnya';
+                $amount = $group->sum('amount');
+                $percentage = round(($amount / $total) * 100);
+
+                // Deterministic color assignment based on ID? Or index?
+                // Just random for now since index is tricky in map
+                $colorIndex = $key % count($colors);
+
+                return [
+                    'name' => $categoryName,
+                    'percentage' => $percentage,
+                    'color_class' => $colors[$colorIndex],
+                    'text_class' => $textColors[$colorIndex]
+                ];
+            })->sortByDesc('percentage')->take(4)->values();
+    }
+
+    private function getRecentDonors()
+    {
+        return Transaction::where('type', 'income')
+            ->latest('created_at')
+            ->take(3)
+            ->get();
+    }
+
+    private function getMostActiveCategory()
+    {
+        // Find the category (income or expense) with the most transaction count this month
+        $income = Transaction::where('type', 'income')
+            ->whereMonth('transaction_date', Carbon::now()->month)
+            ->select('income_type_id', DB::raw('count(*) as total'), DB::raw('sum(amount) as amount_sum'))
+            ->groupBy('income_type_id')
+            ->orderByDesc('total')
+            ->with('incomeType')
+            ->first();
+
+        // Calculate total stats for percentage calculation if needed
+        $totalFlow = Transaction::whereMonth('transaction_date', Carbon::now()->month)->sum('amount');
+
+        if ($income) {
+            return [
+                'name' => $income->incomeType->name ?? 'Umum',
+                'type' => 'Pemasukan',
+                'count' => $income->total,
+                'percentage' => $totalFlow > 0 ? round(($income->amount_sum / $totalFlow) * 100) : 0,
+                'description' => 'Kontribusi terbesar bulan ini'
+            ];
+        }
+
+        return null;
     }
 
     public function exportExcel()
