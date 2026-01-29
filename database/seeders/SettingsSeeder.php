@@ -156,6 +156,14 @@ class SettingsSeeder extends Seeder
                 'label' => 'YouTube Channel ID',
                 'description' => 'ID Channel YouTube untuk mengambil data jadwal live otomatis.',
             ],
+            [
+                'key' => 'youtube_channel_name',
+                'value' => 'Kiyai. Saroham Asymuni, S.Pd.I',
+                'type' => 'text',
+                'group' => 'youtube',
+                'label' => 'Nama Channel / Host',
+                'description' => 'Nama Channel atau Host yang akan ditampilkan di halaman Live Streaming.',
+            ],
             // --- Donation Settings ---
             [
                 'key' => 'donation_qris_image',
