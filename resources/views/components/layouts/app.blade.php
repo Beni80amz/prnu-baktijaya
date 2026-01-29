@@ -92,9 +92,8 @@
                         </div>
                         <div class="hidden md:block">
                             <h2 class="text-xl font-bold leading-none tracking-tight">PRNU Baktijaya</h2>
-                            <p
-                                class="text-[10px] text-primary/70 dark:text-white/60 font-semibold uppercase tracking-wider mt-1">
-                                Nahdlatul Ulama Ranting Baktijaya</p>
+                            <p class="text-[10px] text-yellow-500 font-semibold uppercase tracking-wider mt-1">
+                                NU Ranting Baktijaya</p>
                         </div>
                     </a>
                 </div>
@@ -112,6 +111,8 @@
                         href="{{ route('kas-digital') }}" wire:navigate>KAS Digital</a>
                     <a class="text-sm font-medium {{ request()->routeIs('umkm.*') ? 'text-primary font-semibold' : '' }} hover:text-primary transition-colors"
                         href="{{ route('umkm.index') }}" wire:navigate>UMKM</a>
+                    <a class="text-sm font-medium {{ request()->routeIs('live-streaming') ? 'text-primary font-semibold' : '' }} hover:text-primary transition-colors animate-pulse text-red-500 font-bold"
+                        href="{{ route('live-streaming') }}" wire:navigate>LIVE</a>
 
                 </div>
 
@@ -175,6 +176,8 @@
                     href="{{ route('kas-digital') }}" wire:navigate @click="mobileMenuOpen = false">KAS Digital</a>
                 <a class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('umkm.*') ? 'bg-primary/10 text-primary' : 'text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary' }} transition-colors"
                     href="{{ route('umkm.index') }}" wire:navigate @click="mobileMenuOpen = false">UMKM</a>
+                <a class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('live-streaming') ? 'bg-primary/10 text-primary' : 'text-gray-700 dark:text-gray-200 hover:bg-primary/5 hover:text-primary' }} transition-colors animate-pulse text-red-500 font-bold"
+                    href="{{ route('live-streaming') }}" wire:navigate @click="mobileMenuOpen = false">LIVE</a>
 
                 <div class="border-t border-gray-100 dark:border-gray-800 my-2 pt-2">
                     @auth
