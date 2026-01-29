@@ -189,6 +189,48 @@ class SettingsSeeder extends Seeder
                 'label' => 'Nama Pemilik Rekening',
                 'description' => 'Nama pemilik rekening bank.',
             ],
+            // Additional Banks
+            [
+                'key' => 'donation_bank_bri',
+                'value' => '-',
+                'type' => 'text',
+                'group' => 'donation',
+                'label' => 'No. Rekening BRI',
+                'description' => 'Nomor rekening BRI (Kosongkan jika tidak ada).',
+            ],
+            [
+                'key' => 'donation_bank_bca',
+                'value' => '-',
+                'type' => 'text',
+                'group' => 'donation',
+                'label' => 'No. Rekening BCA',
+                'description' => 'Nomor rekening BCA (Kosongkan jika tidak ada).',
+            ],
+            [
+                'key' => 'donation_bank_mandiri',
+                'value' => '-',
+                'type' => 'text',
+                'group' => 'donation',
+                'label' => 'No. Rekening Mandiri',
+                'description' => 'Nomor rekening Mandiri (Kosongkan jika tidak ada).',
+            ],
+            // E-Wallets
+            [
+                'key' => 'donation_ewallet_ovo',
+                'value' => '-',
+                'type' => 'text',
+                'group' => 'donation',
+                'label' => 'Nomor OVO',
+                'description' => 'Nomor OVO untuk transfer (Kosongkan jika tidak ada).',
+            ],
+            [
+                'key' => 'donation_ewallet_gopay',
+                'value' => '-',
+                'type' => 'text',
+                'group' => 'donation',
+                'label' => 'Nomor Gopay',
+                'description' => 'Nomor Gopay untuk transfer (Kosongkan jika tidak ada).',
+            ],
             [
                 'key' => 'donation_contact_person',
                 'value' => '6281234567890', // Default placeholder

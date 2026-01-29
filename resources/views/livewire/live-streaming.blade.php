@@ -44,10 +44,12 @@
                 </div>
 
                 <div class="flex flex-col items-center text-center space-y-4">
-                    <div class="w-48 h-48 bg-white p-2 rounded-xl border border-slate-200 shadow-sm overflow-hidden relative">
+                    <div
+                        class="w-48 h-48 bg-white p-2 rounded-xl border border-slate-200 shadow-sm overflow-hidden relative">
                         <!-- Placeholder QRIS -->
                         @if($donationQrisImage)
-                            <img src="{{ Str::startsWith($donationQrisImage, 'http') ? $donationQrisImage : Storage::url($donationQrisImage) }}" alt="QRIS Donasi" class="w-full h-full object-contain">
+                            <img src="{{ Str::startsWith($donationQrisImage, 'http') ? $donationQrisImage : Storage::url($donationQrisImage) }}"
+                                alt="QRIS Donasi" class="w-full h-full object-contain">
                         @else
                             <div class="w-full h-full flex flex-col items-center justify-center text-slate-400">
                                 <span class="material-symbols-outlined text-4xl mb-2">qr_code_2</span>
@@ -59,28 +61,140 @@
                         <p class="text-sm font-bold text-slate-800 dark:text-gray-200">Scan QRIS (Infaq Dakwah)</p>
                         <p class="text-xs text-slate-500 dark:text-gray-400">Atau transfer melalui:</p>
                     </div>
-                    
-                    <div class="w-full bg-slate-50 dark:bg-white/5 p-4 rounded-xl border border-slate-100 dark:border-white/5 text-left flex items-center gap-4">
-                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 text-blue-600 font-bold text-[10px] uppercase text-center leading-tight">
-                            {{ substr($donationBankName ?? 'BANK', 0, 4) }}
+
+                    <div class="space-y-3 w-full">
+                        <!-- Primary Bank (BSI usually) -->
+                        <div
+                            class="w-full bg-slate-50 dark:bg-white/5 p-4 rounded-xl border border-slate-100 dark:border-white/5 text-left flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 text-blue-600 font-bold text-[10px] uppercase text-center leading-tight">
+                                {{ substr($donationBankName ?? 'BANK', 0, 4) }}
+                            </div>
+                            <div class="flex-1">
+                                <p
+                                    class="text-[10px] text-slate-500 dark:text-gray-400 font-bold uppercase tracking-wider">
+                                    {{ $donationBankName ?? 'Nama Bank' }}</p>
+                                <p
+                                    class="text-base font-black text-slate-800 dark:text-white tracking-widest font-mono">
+                                    {{ $donationBankNumber ?? '-' }}</p>
+                                <p class="text-xs text-slate-600 dark:text-gray-300 font-medium">a.n
+                                    {{ $donationBankOwner ?? '-' }}</p>
+                            </div>
+                            <button
+                                onclick="navigator.clipboard.writeText('{{ $donationBankNumber }}'); alert('No. Rekening disalin!')"
+                                class="p-2 text-slate-400 hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-lg">content_copy</span>
+                            </button>
                         </div>
-                        <div class="flex-1">
-                            <p class="text-[10px] text-slate-500 dark:text-gray-400 font-bold uppercase tracking-wider">{{ $donationBankName ?? 'Nama Bank' }}</p>
-                            <p class="text-base font-black text-slate-800 dark:text-white tracking-widest font-mono">{{ $donationBankNumber ?? '-' }}</p>
-                            <p class="text-xs text-slate-600 dark:text-gray-300 font-medium">a.n {{ $donationBankOwner ?? '-' }}</p>
-                        </div>
-                        <button onclick="navigator.clipboard.writeText('{{ $donationBankNumber }}'); alert('No. Rekening disalin!')" class="p-2 text-slate-400 hover:text-primary transition-colors">
-                            <span class="material-symbols-outlined text-lg">content_copy</span>
-                        </button>
+
+                        <!-- Additional Banks (BRI, BCA, Mandiri) -->
+                        @if($donationBankBri && $donationBankBri !== '-')
+                            <div
+                                class="w-full bg-slate-50 dark:bg-white/5 p-3 rounded-xl border border-slate-100 dark:border-white/5 text-left flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold text-[8px]">
+                                    BRI</div>
+                                <div class="flex-1">
+                                    <p class="text-[10px] text-slate-500 dark:text-gray-400 font-bold uppercase">Bank BRI
+                                    </p>
+                                    <p class="text-sm font-black text-slate-800 dark:text-white font-mono">
+                                        {{ $donationBankBri }}</p>
+                                </div>
+                                <button
+                                    onclick="navigator.clipboard.writeText('{{ $donationBankBri }}'); alert('No. Rekening BRI disalin!')"
+                                    class="p-1.5 text-slate-400 hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-base">content_copy</span>
+                                </button>
+                            </div>
+                        @endif
+
+                        @if($donationBankBca && $donationBankBca !== '-')
+                            <div
+                                class="w-full bg-slate-50 dark:bg-white/5 p-3 rounded-xl border border-slate-100 dark:border-white/5 text-left flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 bg-blue-800 rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold text-[8px]">
+                                    BCA</div>
+                                <div class="flex-1">
+                                    <p class="text-[10px] text-slate-500 dark:text-gray-400 font-bold uppercase">Bank BCA
+                                    </p>
+                                    <p class="text-sm font-black text-slate-800 dark:text-white font-mono">
+                                        {{ $donationBankBca }}</p>
+                                </div>
+                                <button
+                                    onclick="navigator.clipboard.writeText('{{ $donationBankBca }}'); alert('No. Rekening BCA disalin!')"
+                                    class="p-1.5 text-slate-400 hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-base">content_copy</span>
+                                </button>
+                            </div>
+                        @endif
+
+                        @if($donationBankMandiri && $donationBankMandiri !== '-')
+                            <div
+                                class="w-full bg-slate-50 dark:bg-white/5 p-3 rounded-xl border border-slate-100 dark:border-white/5 text-left flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center flex-shrink-0 text-slate-900 font-bold text-[8px]">
+                                    MDR</div>
+                                <div class="flex-1">
+                                    <p class="text-[10px] text-slate-500 dark:text-gray-400 font-bold uppercase">Bank
+                                        Mandiri</p>
+                                    <p class="text-sm font-black text-slate-800 dark:text-white font-mono">
+                                        {{ $donationBankMandiri }}</p>
+                                </div>
+                                <button
+                                    onclick="navigator.clipboard.writeText('{{ $donationBankMandiri }}'); alert('No. Rekening Mandiri disalin!')"
+                                    class="p-1.5 text-slate-400 hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-base">content_copy</span>
+                                </button>
+                            </div>
+                        @endif
+
+                        <!-- E-Wallets (OVO, Gopay) -->
+                        @if(($donationEwalletOvo && $donationEwalletOvo !== '-') || ($donationEwalletGopay && $donationEwalletGopay !== '-'))
+                            <div class="grid grid-cols-2 gap-3">
+                                @if($donationEwalletOvo && $donationEwalletOvo !== '-')
+                                    <div
+                                        class="bg-slate-50 dark:bg-white/5 p-3 rounded-xl border border-slate-100 dark:border-white/5 text-left">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <div
+                                                class="w-5 h-5 bg-purple-600 rounded-full flex items-center justify-center text-white text-[8px] font-bold">
+                                                O</div>
+                                            <span class="text-[10px] font-bold text-slate-500 dark:text-gray-400">OVO</span>
+                                        </div>
+                                        <p class="text-xs font-black text-slate-800 dark:text-white font-mono mb-1">
+                                            {{ $donationEwalletOvo }}</p>
+                                        <button
+                                            onclick="navigator.clipboard.writeText('{{ $donationEwalletOvo }}'); alert('Nomor OVO disalin!')"
+                                            class="text-[10px] text-primary hover:underline">Salin</button>
+                                    </div>
+                                @endif
+
+                                @if($donationEwalletGopay && $donationEwalletGopay !== '-')
+                                    <div
+                                        class="bg-slate-50 dark:bg-white/5 p-3 rounded-xl border border-slate-100 dark:border-white/5 text-left">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <div
+                                                class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-[8px] font-bold">
+                                                G</div>
+                                            <span class="text-[10px] font-bold text-slate-500 dark:text-gray-400">Gopay</span>
+                                        </div>
+                                        <p class="text-xs font-black text-slate-800 dark:text-white font-mono mb-1">
+                                            {{ $donationEwalletGopay }}</p>
+                                        <button
+                                            onclick="navigator.clipboard.writeText('{{ $donationEwalletGopay }}'); alert('Nomor Gopay disalin!')"
+                                            class="text-[10px] text-primary hover:underline">Salin</button>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
                     </div>
                 </div>
 
                 <div class="mt-6 pt-4 border-t border-slate-100 dark:border-white/5">
-                    <button
-                        class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                    <a href="https://wa.me/{{ $donationContact }}?text=Assalamualaikum, saya ingin konfirmasi donasi untuk acara..." target="_blank"
+                        class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-green-500/20">
                         <span class="material-symbols-outlined">whatsapp</span>
                         Konfirmasi Donasi
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

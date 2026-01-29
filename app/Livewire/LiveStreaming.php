@@ -33,6 +33,12 @@ class LiveStreaming extends Component
     public $donationBankName;
     public $donationBankNumber;
     public $donationBankOwner;
+    public $donationBankBri;
+    public $donationBankBca;
+    public $donationBankMandiri;
+    public $donationEwalletOvo;
+    public $donationEwalletGopay;
+    public $donationContact;
 
     public function mount()
     {
@@ -45,6 +51,12 @@ class LiveStreaming extends Component
         $this->donationBankName = Setting::getValue('donation_bank_name');
         $this->donationBankNumber = Setting::getValue('donation_bank_number');
         $this->donationBankOwner = Setting::getValue('donation_bank_owner');
+        $this->donationBankBri = Setting::getValue('donation_bank_bri');
+        $this->donationBankBca = Setting::getValue('donation_bank_bca');
+        $this->donationBankMandiri = Setting::getValue('donation_bank_mandiri');
+        $this->donationEwalletOvo = Setting::getValue('donation_ewallet_ovo');
+        $this->donationEwalletGopay = Setting::getValue('donation_ewallet_gopay');
+        $this->donationContact = Setting::getValue('donation_contact_person');
 
         // 2. Check for API Credentials
         $apiKey = Setting::getValue('youtube_api_key');
