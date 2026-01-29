@@ -357,11 +357,11 @@
                                         <p class="text-sm text-slate-500 dark:text-gray-400 mt-1 line-clamp-1">
                                             {{ $schedule['description'] }}
                                         </p>
-                                        <button
+                                        <a href="https://www.youtube.com/watch?v={{ $schedule['video_id'] }}" target="_blank"
                                             class="mt-4 w-full flex items-center justify-center gap-2 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-light py-3 rounded-xl text-sm font-bold hover:bg-primary hover:text-white transition-all">
                                             <span class="material-symbols-outlined text-sm">notifications_active</span>
                                             Ingatkan Saya
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             @empty

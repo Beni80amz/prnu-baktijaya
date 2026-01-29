@@ -165,11 +165,9 @@ class LiveStreaming extends Component
                     return [
                         'title' => $item['snippet']['title'],
                         'thumbnail' => $item['snippet']['thumbnails']['medium']['url'],
-                        'scheduled_start' => isset($item['snippet']['publishedAt']) ? \Carbon\Carbon::parse($item['snippet']['publishedAt'])->translatedFormat('l, H:i WIB') : 'Segera', // Note: API returns publishedAt for upcoming? Actually snippet has liveBroadcastContent. Upcoming usually needs video details to get scheduledStartTime. Search endpoint might not return exact schedule time in snippet. Let's us publishedAt as proxy or just show "Segera". 
-                        // Correction: Search API snippet doesn't have scheduledStartTime. We need 'video' detail API. 
-                        // For simplicity in this iteration, we use publishedAt or a generic label if unavailable, OR we risk an extra API call.
-                        // Let's stick to simple display first.
+                        'scheduled_start' => isset($item['snippet']['publishedAt']) ? \Carbon\Carbon::parse($item['snippet']['publishedAt'])->translatedFormat('l, H:i WIB') : 'Segera',
                         'description' => $item['snippet']['description'],
+                        'video_id' => $item['id']['videoId'],
                     ];
                 })->toArray();
             }
