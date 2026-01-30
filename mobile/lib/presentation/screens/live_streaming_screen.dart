@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/theme/app_theme.dart';
 import '../providers/providers.dart';
@@ -78,7 +79,7 @@ class LiveStreamingPage extends StatefulWidget {
 }
 
 class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTickerProviderStateMixin {
-  YoutubePlayerController? _controller;
+  WebViewController? _controller;
   late TabController _tabController;
   bool _hasValidVideo = false;
 
@@ -91,36 +92,19 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
 
   void _initializePlayer() {
     final videoId = widget.data.video.youtubeId;
-    final isLive = widget.data.video.isLive;
-    
-    debugPrint('>>> Initializing YouTube Player');
-    debugPrint('>>> Video ID: $videoId');
-    debugPrint('>>> Is Live: $isLive');
     
     if (videoId != null && videoId.isNotEmpty) {
       _hasValidVideo = true;
-      _controller = YoutubePlayerController(
-        initialVideoId: videoId,
-        flags: YoutubePlayerFlags(
-          autoPlay: true,
-          mute: false,
-          isLive: isLive, // Use actual live status
-          forceHD: false,
-          enableCaption: false,
-          hideControls: false,
-          controlsVisibleAtStart: true,
-        ),
-      );
-      debugPrint('>>> YouTube Player created successfully');
-    } else {
-      debugPrint('>>> No valid video ID, skipping player creation');
+      _controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setBackgroundColor(const Color(0xFF000000))
+        ..loadRequest(Uri.parse('https://www.youtube.com/embed/$videoId?autoplay=0&controls=1&playsinline=1'));
     }
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _controller?.dispose();
     super.dispose();
   }
 
@@ -157,55 +141,43 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
       );
     }
 
-    return YoutubePlayerBuilder(
-      player: YoutubePlayer(
-        controller: _controller!,
-        showVideoProgressIndicator: true,
-        progressIndicatorColor: AppTheme.teal,
-        onReady: () {
-          // Player is ready - optionally play
-          _controller!.play();
-        },
-      ),
-      builder: (context, player) {
-        return Scaffold(
-          backgroundColor: backgroundColor,
-          body: SafeArea(
-            child: Column(
-              children: [
-                // HEADER
-                _buildHeader(context, isDark, widget.data.video.youtubeUrl),
-                
-                // VIDEO SECTION
-                _buildVideoSection(widget.data.video, player),
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // HEADER
+            _buildHeader(context, isDark, widget.data.video.youtubeUrl),
+            
+            // VIDEO PLAYER
+            if (_hasValidVideo && _controller != null)
+               _buildVideoSection(widget.data.video, WebViewWidget(controller: _controller!))
+            else
+               _buildNoVideoPlaceholder(isDark),
 
-                // EVENT INFO
-                _buildEventInfo(isDark, widget.data.info),
+            // EVENT INFO
+            _buildEventInfo(isDark, widget.data.info),
 
-                // UPCOMING SCHEDULES (Outside tabs, collapsible)
-                if (widget.data.upcoming.isNotEmpty)
-                  _buildUpcomingSection(isDark, widget.data.upcoming),
+            // UPCOMING SCHEDULES
+            if (widget.data.upcoming.isNotEmpty)
+              _buildUpcomingSection(isDark, widget.data.upcoming),
 
-                // TABS
-                _buildTabBar(isDark),
-                
-                // TAB CONTENT
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: const [
-                      // LIVE CHAT TAB (No more upcoming here)
-                      LiveChatTab(),
-                      // ATTENDANCE TAB
-                      AttendanceTab(),
-                    ],
-                  ),
-                ),
-              ],
+            // TABS
+            _buildTabBar(isDark),
+            
+            // TAB CONTENT
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: const [
+                  LiveChatTab(),
+                  AttendanceTab(),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 
@@ -349,7 +321,6 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
     return Column(
       children: [
         Stack(
-          alignment: Alignment.center, // Center for play button
           children: [
             // The Player Widget passed from Builder
             playerWidget,
