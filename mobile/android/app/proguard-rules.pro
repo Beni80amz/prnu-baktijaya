@@ -1,0 +1,12 @@
+-dontwarn android.window.**
+-dontwarn android.view.**
+-dontwarn androidx.window.**
+-dontwarn androidx.view.**
+-keep class android.window.** { *; }
+-keep class android.view.** { *; }
+-keep class androidx.window.** { *; }
+-keep class androidx.view.** { *; }
+-keepattributes Signature,Exceptions,*Annotation*,InnerClasses
+-dontnote **
+-ignorewarnings
+-keep class com.pichillilorenzo.flutter_inappwebview.** { *; }

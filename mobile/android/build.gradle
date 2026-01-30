@@ -41,6 +41,22 @@ subprojects {
     }
 }
 
+// Global fix for R8 errors in plugins - forcing minification OFF and applying unified proguard rules
+subprojects {
+    project.plugins.withId('com.android.library') {
+        project.android {
+            buildTypes {
+                release {
+                    minifyEnabled false
+                    shrinkResources false
+                    // Force-apply our rules to all plugins just in case they still run R8
+                    proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), "${rootProject.projectDir}/app/proguard-rules.pro"
+                }
+            }
+        }
+    }
+}
+
 
 
 tasks.register("clean", Delete) {
