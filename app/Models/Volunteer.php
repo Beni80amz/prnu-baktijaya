@@ -7,7 +7,7 @@ use App\Models\Region;
 
 class Volunteer extends Model
 {
-    protected $fillable = ['name', 'region_id'];
+    protected $fillable = ['name', 'region_id', 'photo'];
 
     public function region()
     {

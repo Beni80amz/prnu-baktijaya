@@ -31,6 +31,9 @@ class VolunteerResource extends Resource
                 Forms\Components\Select::make('region_id')
                     ->relationship('region', 'name')
                     ->required(),
+                Forms\Components\FileUpload::make('photo')
+                    ->image()
+                    ->directory('volunteers'),
             ]);
     }
 
