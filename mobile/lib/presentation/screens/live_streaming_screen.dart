@@ -46,12 +46,14 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
     
     _controller = YoutubePlayerController(
       initialVideoId: widget.data.video.youtubeId!,
-      flags: const YoutubePlayerFlags(
-        autoPlay: true, // Enable autoPlay for better UX
+      flags: YoutubePlayerFlags(
+        autoPlay: true,
         mute: false,
-        isLive: false,
+        isLive: widget.data.video.isLive, // Use actual live status from data
         forceHD: false,
         enableCaption: false,
+        hideControls: false,
+        controlsVisibleAtStart: true,
       ),
     );
   }
@@ -74,7 +76,7 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
         showVideoProgressIndicator: true,
         progressIndicatorColor: AppTheme.teal,
         onReady: () {
-          // You could add logic here if needed when player is ready
+          // Player is ready
         },
       ),
       builder: (context, player) {
@@ -89,23 +91,25 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
                 // VIDEO SECTION
                 _buildVideoSection(widget.data.video, player),
 
-                // TABS & CONTENT
+                // EVENT INFO
+                _buildEventInfo(isDark, widget.data.info),
+
+                // UPCOMING SCHEDULES (Outside tabs, collapsible)
+                if (widget.data.upcoming.isNotEmpty)
+                  _buildUpcomingSection(isDark, widget.data.upcoming),
+
+                // TABS
+                _buildTabBar(isDark),
+                
+                // TAB CONTENT
                 Expanded(
-                  child: Column(
+                  child: TabBarView(
+                    controller: _tabController,
                     children: [
-                      _buildEventInfo(isDark, widget.data.info),
-                      _buildTabBar(isDark),
-                       Expanded(
-                        child: TabBarView(
-                          controller: _tabController,
-                          children: [
-                            // LIVE CHAT TAB (Isolated Consumer)
-                            LiveChatTab(upcoming: widget.data.upcoming),
-                            // ATTENDANCE TAB
-                            const AttendanceTab(),
-                          ],
-                        ),
-                      ),
+                      // LIVE CHAT TAB (No more upcoming here)
+                      const LiveChatTab(),
+                      // ATTENDANCE TAB
+                      const AttendanceTab(),
                     ],
                   ),
                 ),
@@ -114,6 +118,86 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
           ),
         );
       },
+    );
+  }
+
+  Widget _buildUpcomingSection(bool isDark, List<UpcomingSchedule> upcoming) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: isDark ? Colors.white10 : Colors.black12)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'JADWAL MENDATANG',
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1),
+            ),
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 70,
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              scrollDirection: Axis.horizontal,
+              itemCount: upcoming.length,
+              itemBuilder: (context, index) {
+                final schedule = upcoming[index];
+                return _buildCompactUpcomingCard(schedule, isDark);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactUpcomingCard(UpcomingSchedule schedule, bool isDark) {
+    return Container(
+      width: 200,
+      margin: const EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white10 : Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Image.network(
+              schedule.thumbnail,
+              width: 50,
+              height: 50,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(width: 50, height: 50, color: Colors.grey),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  schedule.scheduledStart,
+                  style: TextStyle(fontSize: 9, color: AppTheme.teal, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  schedule.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -289,8 +373,7 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
 // 3. LIVE CHAT TAB (Isolated Consumer)
 // ==========================================
 class LiveChatTab extends ConsumerStatefulWidget {
-  final List<UpcomingSchedule> upcoming;
-  const LiveChatTab({super.key, required this.upcoming});
+  const LiveChatTab({super.key});
 
   @override
   ConsumerState<LiveChatTab> createState() => _LiveChatTabState();
@@ -300,7 +383,7 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
   final TextEditingController _chatController = TextEditingController();
 
   Future<void> _onRefresh() async {
-     return ref.refresh(liveStreamingProvider.future);
+     return ref.refresh(liveChatsProvider.future);
   }
 
   void _sendChat() async {
@@ -312,8 +395,12 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
     try {
       final repository = ref.read(repositoryProvider);
       await repository.postLiveChat(name, message);
+      // Refresh chat list after sending
+      ref.invalidate(liveChatsProvider);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal mengirim pesan: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal mengirim pesan: $e')));
+      }
     }
   }
 
@@ -330,16 +417,22 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
 
     return Column(
       children: [
-        _buildUpcomingCarousel(isDark, widget.upcoming), // Move to top
+        // CHAT LIST
         Expanded(
           child: RefreshIndicator(
             onRefresh: _onRefresh,
             child: chatsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Center(child: Text('Gagal memuat chat')),
+              error: (err, _) => Center(child: Text('Gagal memuat chat', style: TextStyle(color: Colors.grey))),
               data: (chats) {
                 if (chats.isEmpty) {
-                   return Center(child: Text('Belum ada pesan. Jadilah yang pertama!', style: TextStyle(color: Colors.grey)));
+                   return ListView(
+                     physics: const AlwaysScrollableScrollPhysics(),
+                     children: const [
+                       SizedBox(height: 100),
+                       Center(child: Text('Belum ada pesan. Jadilah yang pertama!', style: TextStyle(color: Colors.grey))),
+                     ],
+                   );
                 }
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
@@ -369,6 +462,7 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
             ),
           ),
         ),
+        // CHAT INPUT
         _buildChatInput(isDark),
       ],
     );
@@ -439,104 +533,6 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUpcomingCarousel(bool isDark, List<UpcomingSchedule> upcoming) {
-    if (upcoming.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Text(
-            'JADWAL LIVE MENDATANG',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1),
-          ),
-        ),
-        SizedBox(
-          height: 140,
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            scrollDirection: Axis.horizontal,
-            itemCount: upcoming.length,
-            itemBuilder: (context, index) {
-              final schedule = upcoming[index];
-              return _buildUpcomingCard(
-                schedule.title,
-                schedule.description,
-                schedule.scheduledStart,
-                schedule.thumbnail,
-                isDark,
-              );
-            },
-          ),
-        ),
-        const Divider(height: 32),
-      ],
-    );
-  }
-
-  Widget _buildUpcomingCard(String title, String subtitle, String time, String imageUrl, bool isDark) {
-    return Container(
-      width: 280,
-      margin: const EdgeInsets.only(right: 16),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.white10 : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
-            child: Image.network(
-              imageUrl,
-              width: 100,
-              height: 140,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(color: Colors.grey, width: 100, child: const Icon(Icons.video_library)),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppTheme.teal.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      time,
-                      style: const TextStyle(color: AppTheme.teal, fontSize: 10, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.grey[500], fontSize: 11),
-                  ),
-                ],
-              ),
             ),
           ),
         ],
