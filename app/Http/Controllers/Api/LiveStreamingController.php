@@ -223,7 +223,6 @@ class LiveStreamingController extends Controller
                 return [
                     'is_live' => true,
                     'video_id' => $item['id']['videoId'],
-                    'video_id' => $item['id']['videoId'],
                     'title' => $item['snippet']['title'],
                     'description' => $item['snippet']['description'],
                     'thumbnail' => $item['snippet']['thumbnails']['high']['url'] ?? $item['snippet']['thumbnails']['medium']['url'],
@@ -257,7 +256,14 @@ class LiveStreamingController extends Controller
 
     private function extractYoutubeId($url)
     {
-        $pattern = '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i';
+        // Support various YouTube URL formats including /live/
+        // Examples:
+        // - https://www.youtube.com/watch?v=VIDEO_ID
+        // - https://youtu.be/VIDEO_ID
+        // - https://www.youtube.com/embed/VIDEO_ID
+        // - https://www.youtube.com/live/VIDEO_ID
+        // - https://www.youtube.com/v/VIDEO_ID
+        $pattern = '/(?:youtube\.com\/(?:live\/|watch\?v=|embed\/|v\/|.+\?v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i';
         if (preg_match($pattern, $url, $matches)) {
             return $matches[1];
         }

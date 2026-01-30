@@ -239,7 +239,8 @@ class LiveStreaming extends Component
 
     private function extractYoutubeId($url)
     {
-        $pattern = '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i';
+        // Support various YouTube URL formats including /live/
+        $pattern = '/(?:youtube\.com\/(?:live\/|watch\?v=|embed\/|v\/|.+\?v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i';
         if (preg_match($pattern, $url, $matches)) {
             return $matches[1];
         }
