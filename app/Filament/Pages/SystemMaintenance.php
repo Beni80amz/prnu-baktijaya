@@ -73,9 +73,19 @@ class SystemMaintenance extends Page
         $repoUrl = config('app.repository_url', 'https://github.com/Beni80amz/prnu-baktijaya.git');
 
         // Use config() instead of env() to support cached configuration in production
-        $token = config('services.github.token');
+        $token = trim(config('services.github.token'));
+        $repoUrl = trim(config('app.repository_url', 'https://github.com/Beni80amz/prnu-baktijaya.git'));
 
         $output .= "Target Repo: {$repoUrl}\n";
+
+        // Connectivity Check
+        $output .= "Checking connection to github.com...\n";
+        if (checkdnsrr('github.com', 'A')) {
+            $output .= "DNS Resolve: OK\n";
+        } else {
+            $output .= "DNS Resolve: FAILED (Server cannot resolve github.com)\n";
+            $output .= "Possible cause: No Internet connection or DNS misconfiguration.\n";
+        }
 
         if ($token) {
             $output .= "Mode: HTTPS (Token Auth)\n";
