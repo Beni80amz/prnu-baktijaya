@@ -24,6 +24,12 @@ class LiveStreamingData {
   }
 }
 
+// Helper function for safe string conversion
+String _safeString(dynamic value, [String defaultValue = '']) {
+  if (value == null) return defaultValue;
+  return value.toString();
+}
+
 class LiveInfo {
   final String title;
   final String description;
@@ -39,10 +45,10 @@ class LiveInfo {
 
   factory LiveInfo.fromJson(Map<String, dynamic> json) {
     return LiveInfo(
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      channelName: json['channel_name'] ?? '',
-      speakerAvatar: json['speaker_avatar'],
+      title: _safeString(json['title']),
+      description: _safeString(json['description']),
+      channelName: _safeString(json['channel_name']),
+      speakerAvatar: json['speaker_avatar']?.toString(),
     );
   }
 }
@@ -67,11 +73,11 @@ class LiveVideo {
   factory LiveVideo.fromJson(Map<String, dynamic> json) {
     return LiveVideo(
       isLive: json['is_live'] ?? false,
-      youtubeId: json['youtube_id'],
-      youtubeUrl: json['youtube_url'],
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      thumbnail: json['thumbnail'],
+      youtubeId: json['youtube_id']?.toString(),
+      youtubeUrl: json['youtube_url']?.toString(),
+      title: _safeString(json['title']),
+      description: _safeString(json['description']),
+      thumbnail: json['thumbnail']?.toString(),
     );
   }
 }
@@ -91,10 +97,10 @@ class LiveDonation {
 
   factory LiveDonation.fromJson(Map<String, dynamic> json) {
     return LiveDonation(
-      qrisImage: json['qris_image'],
-      bankName: json['bank_name'],
-      bankNumber: json['bank_number'],
-      bankOwner: json['bank_owner'],
+      qrisImage: json['qris_image']?.toString(),
+      bankName: json['bank_name']?.toString(),
+      bankNumber: json['bank_number']?.toString(),
+      bankOwner: json['bank_owner']?.toString(),
     );
   }
 }
@@ -116,11 +122,11 @@ class UpcomingSchedule {
 
   factory UpcomingSchedule.fromJson(Map<String, dynamic> json) {
     return UpcomingSchedule(
-      title: json['title'] ?? '',
-      thumbnail: json['thumbnail'] ?? '',
-      scheduledStart: json['scheduled_start'] ?? '',
-      description: json['description'] ?? '',
-      videoId: json['video_id'] ?? '',
+      title: _safeString(json['title']),
+      thumbnail: _safeString(json['thumbnail']),
+      scheduledStart: _safeString(json['scheduled_start']),
+      description: _safeString(json['description']),
+      videoId: _safeString(json['video_id']),
     );
   }
 }
@@ -142,11 +148,12 @@ class LiveChatModel {
 
   factory LiveChatModel.fromJson(Map<String, dynamic> json) {
     return LiveChatModel(
-      id: json['id'],
-      name: json['name'],
-      message: json['message'],
-      avatarColor: json['avatar_color'] ?? 'bg-gray-500',
-      createdAt: json['created_at'] ?? '',
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
+      name: _safeString(json['name']),
+      message: _safeString(json['message']),
+      avatarColor: _safeString(json['avatar_color'], 'bg-gray-500'),
+      createdAt: _safeString(json['created_at']),
     );
   }
 }
+
