@@ -590,12 +590,6 @@ class _AgendaScreenState extends ConsumerState<AgendaScreen> {
 
   String _extractHijriMonthYear(String? hijriFull) {
     if (hijriFull == null) return 'Hijriyah';
-    // Example format: "10 Ramadhan 1445 H" -> Extract "Ramadhan 1445 H"
-    // Split by space
-    final parts = hijriFull.split(' ');
-    if (parts.length > 2) {
-      return parts.sublist(1).join(' ');
-    }
     return hijriFull;
   }
 }

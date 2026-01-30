@@ -56,8 +56,8 @@ class OrganizationProfileScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(16),
                     image: DecorationImage(
                       image: (org.image != null && org.image!.isNotEmpty)
-                          ? NetworkImage(org.image!) as ImageProvider
-                          : const NetworkImage("https://lh3.googleusercontent.com/aida-public/AB6AXuAYfiT8uFZk04njY-GOXnF2vMxX8oIiDKlYJoLrt8RCRBm6kCVR1o_88LscRcqClzR-Jt6o4kmhE6qoAegizTKtORjPfVJC5gTRIrtgX6eD5YT4ybqPWj-MKMvgA3O_u1EXiUVLOVgZWWP3FL4gVjuAWrNc4jZEkX9n_XMh7c2574qxqEv3BH5_qgDw5zlVuQ1-LP9wqRjnC1RuWidxAxLAFIonBy8jE2I74k9Ll1O0DbWILWWqUYf19BDDoNuKZ8SFIzqcUcSAmKI"),
+                          ? NetworkImage(org.image!)
+                          : NetworkImage("https://lh3.googleusercontent.com/aida-public/AB6AXuAYfiT8uFZk04njY-GOXnF2vMxX8oIiDKlYJoLrt8RCRBm6kCVR1o_88LscRcqClzR-Jt6o4kmhE6qoAegizTKtORjPfVJC5gTRIrtgX6eD5YT4ybqPWj-MKMvgA3O_u1EXiUVLOVgZWWP3FL4gVjuAWrNc4jZEkX9n_XMh7c2574qxqEv3BH5_qgDw5zlVuQ1-LP9wqRjnC1RuWidxAxLAFIonBy8jE2I74k9Ll1O0DbWILWWqUYf19BDDoNuKZ8SFIzqcUcSAmKI"),
                       fit: BoxFit.cover,
                       colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
                     ),
@@ -78,10 +78,10 @@ class OrganizationProfileScreen extends ConsumerWidget {
                                 shape: BoxShape.circle,
                                 border: Border.all(color: AppTheme.teal.withOpacity(0.5)),
                               ),
-                              child: org.siteLogo != null 
+                              child: (org.siteLogo != null && org.siteLogo!.isNotEmpty)
                                 ? ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
-                                    child: Image.network(org.siteLogo!, width: 32, height: 32, fit: BoxFit.contain),
+                                    child: Image.network(org.siteLogo!, width: 32, height: 32, fit: BoxFit.contain, errorBuilder: (_,__,___) => const Icon(Icons.mosque, color: AppTheme.teal, size: 24)),
                                   )
                                 : const Icon(Icons.mosque, color: AppTheme.teal, size: 24),
                             ),
@@ -93,7 +93,7 @@ class OrganizationProfileScreen extends ConsumerWidget {
                                 borderRadius: BorderRadius.circular(4),
                                 border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.3)),
                               ),
-                              child: const Text('Nahdlatul Ulama', style: TextStyle(color: Color(0xFFFFD700), fontSize: 10, fontWeight: FontWeight.bold)),
+                              child: Text(org.siteName ?? 'Nahdlatul Ulama', style: const TextStyle(color: Color(0xFFFFD700), fontSize: 10, fontWeight: FontWeight.bold)),
                             ),
                           ],
                         ),
@@ -150,6 +150,33 @@ class OrganizationProfileScreen extends ConsumerWidget {
               ),
             ),
 
+            // Volunteers Section
+            if (org.volunteers.isNotEmpty)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionHeader('Relawan & Kontributor', trailing: Icons.people_outline),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        height: 180,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: org.volunteers.length,
+                          itemBuilder: (context, index) {
+                            final volunteer = org.volunteers[index];
+                            return _buildVolunteerCard(volunteer, isDark);
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ),
+
             // Contact & Location
             SliverToBoxAdapter(
               child: Padding(
@@ -162,7 +189,6 @@ class OrganizationProfileScreen extends ConsumerWidget {
                     // Map Section
                     GestureDetector(
                       onTap: () {
-                        // Using the address for search is much more reliable than using the embed URL
                         final encodedAddress = Uri.encodeComponent(org.address ?? 'Sekretariat PRNU Baktijaya');
                         final googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$encodedAddress';
                         _launchUrl(googleMapsUrl);
@@ -308,6 +334,51 @@ class OrganizationProfileScreen extends ConsumerWidget {
     return widgets;
   }
 
+  Widget _buildVolunteerCard(VolunteerItem item, bool isDark) {
+    return Container(
+      width: 140,
+      margin: const EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E2E23) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.teal.withOpacity(0.1)),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppTheme.teal, width: 2),
+              image: DecorationImage(
+                image: (item.photo != null && item.photo!.isNotEmpty) ? NetworkImage(item.photo!) : NetworkImage("https://via.placeholder.com/150"),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            item.name,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            item.region,
+            style: TextStyle(color: AppTheme.teal, fontSize: 11, fontWeight: FontWeight.w600),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildMemberCard(StructureItem item, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -326,7 +397,7 @@ class OrganizationProfileScreen extends ConsumerWidget {
               shape: BoxShape.circle,
               border: Border.all(color: AppTheme.teal, width: 1.5),
               image: DecorationImage(
-                image: item.photo != null ? NetworkImage(item.photo!) : const NetworkImage("https://via.placeholder.com/150"),
+                image: (item.photo != null && item.photo!.isNotEmpty) ? NetworkImage(item.photo!) : NetworkImage("https://via.placeholder.com/150"),
                 fit: BoxFit.cover,
               ),
             ),

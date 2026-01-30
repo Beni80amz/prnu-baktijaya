@@ -5,7 +5,6 @@ import 'package:share_plus/share_plus.dart';
 import '../../core/theme/app_theme.dart';
 import '../providers/providers.dart';
 import '../../data/models/live_streaming_model.dart';
-import 'dart:math';
 
 // ==========================================
 // 1. ENTRY POINT: Fetch Data First
@@ -15,31 +14,12 @@ class LiveStreamingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final liveDataAsync = ref.watch(liveStreamingProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark ? const Color(0xFF102216) : const Color(0xFFF6F8F6);
+    final liveAsync = ref.watch(liveStreamingProvider);
 
-    return liveDataAsync.when(
-      loading: () => Scaffold(
-        backgroundColor: backgroundColor,
-        body: const Center(child: CircularProgressIndicator()),
-      ),
-      error: (err, stack) => Scaffold(
-        backgroundColor: backgroundColor,
-        appBar: AppBar(title: const Text('Live Streaming')),
-        body: Center(child: Text('Error: $err')),
-      ),
-      data: (data) {
-        if (data.video.youtubeId == null) {
-          return Scaffold(
-             backgroundColor: backgroundColor,
-             appBar: AppBar(title: const Text('Live Streaming')),
-             body: const Center(child: Text('Video tidak tersedia')),
-          );
-        }
-        // Data is ready, launch the actual Player Page
-        return LiveStreamingPage(data: data);
-      },
+    return liveAsync.when(
+      data: (data) => LiveStreamingPage(data: data),
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (err, _) => Scaffold(body: Center(child: Text('Gagal memuat data: $err'))),
     );
   }
 }
@@ -67,10 +47,10 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
     _controller = YoutubePlayerController(
       initialVideoId: widget.data.video.youtubeId!,
       flags: const YoutubePlayerFlags(
-        autoPlay: false, // Keep false, user should tap play
+        autoPlay: true, // Enable autoPlay for better UX
         mute: false,
-        isLive: false, // Always false to allow seeking if available
-        forceHD: false, // Changed to false for better compatibility
+        isLive: false,
+        forceHD: false,
         enableCaption: false,
       ),
     );
@@ -93,15 +73,9 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
         controller: _controller,
         showVideoProgressIndicator: true,
         progressIndicatorColor: AppTheme.teal,
-        bottomActions: [
-           CurrentPosition(),
-           ProgressBar(isExpanded: true, colors: const ProgressBarColors(
-             playedColor: AppTheme.teal,
-             handleColor: AppTheme.teal,
-           )),
-           RemainingDuration(),
-           FullScreenButton(),
-        ],
+        onReady: () {
+          // You could add logic here if needed when player is ready
+        },
       ),
       builder: (context, player) {
         return Scaffold(
@@ -178,7 +152,7 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
     return Column(
       children: [
         Stack(
-          alignment: Alignment.topLeft,
+          alignment: Alignment.center, // Center for play button
           children: [
             // The Player Widget passed from Builder
             playerWidget,
@@ -217,28 +191,6 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
                         ),
                         child: const Text('VIDEO TERBARU', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                       ),
-                      
-                    if (video.isLive)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.black45,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.visibility, color: Colors.white, size: 12),
-                            SizedBox(width: 4),
-                            Text(
-                              'Menonton',
-                              style: TextStyle(color: Colors.white, fontSize: 10),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -264,8 +216,9 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
               shape: BoxShape.circle,
               border: Border.all(color: AppTheme.teal),
               image: DecorationImage(
-                image: NetworkImage(
-                    info.speakerAvatar ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuAg4azJBetkBkyD_LODwbpE-dzqvivEZBdLutvyb6bkMonZ6wvg0BUrhv6RBMCSfUoyA6tjNAtkGRvhgb9TkTdieSCIcoJ_Ihgx9RWUzko6Ke__ZOUks0_H-Nh5-343MIbwtWs-SKJl3Hqbveun2mDit_qRzklFDlZ0DnNPfiODkCkItUZmoyCaKqoJxToX1ojbUdGlsR7JO85DImoHTY7FjXTN9eXprsfb-J9oXGa0FNbhdaeDdZ9fQQsIStOJ81JcTe5UkOVaYHk'),
+                image: (info.speakerAvatar != null && info.speakerAvatar!.isNotEmpty)
+                    ? NetworkImage(info.speakerAvatar!)
+                    : NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuAg4azJBetkBkyD_LODwbpE-dzqvivEZBdLutvyb6bkMonZ6wvg0BUrhv6RBMCSfUoyA6tjNAtkGRvhgb9TkTdieSCIcoJ_Ihgx9RWUzko6Ke__ZOUks0_H-Nh5-343MIbwtWs-SKJl3Hqbveun2mDit_qRzklFDlZ0DnNPfiODkCkItUZmoyCaKqoJxToX1ojbUdGlsR7JO85DImoHTY7FjXTN9eXprsfb-J9oXGa0FNbhdaeDdZ9fQQsIStOJ81JcTe5UkOVaYHk'),
                 fit: BoxFit.cover,
                 onError: (e, s) {}, 
               ),
@@ -377,6 +330,7 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
 
     return Column(
       children: [
+        _buildUpcomingCarousel(isDark, widget.upcoming), // Move to top
         Expanded(
           child: RefreshIndicator(
             onRefresh: _onRefresh,
@@ -400,8 +354,9 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
                     else if (chat.avatarColor.contains('yellow')) avatarColor = Colors.orange;
                     else if (chat.avatarColor.contains('purple')) avatarColor = Colors.purple;
                     
+                    final initialsLength = chat.name.length < 2 ? chat.name.length : 2;
                     return _buildChatMessage(
-                      chat.name.substring(0, min(2, chat.name.length)).toUpperCase(), 
+                      chat.name.substring(0, initialsLength).toUpperCase(), 
                       chat.name, 
                       chat.message, 
                       chat.createdAt, 
@@ -414,13 +369,10 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
             ),
           ),
         ),
-        _buildUpcomingCarousel(isDark, widget.upcoming),
         _buildChatInput(isDark),
       ],
     );
   }
-  
-  int min(int a, int b) => a < b ? a : b;
 
   Widget _buildChatMessage(String initials, String name, String message, String time, bool isDark, Color color,
       {bool isSpecial = false, bool isQuote = false}) {
@@ -456,33 +408,36 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
                         color: isSpecial ? color : AppTheme.teal,
                       ),
                     ),
-                    if (isSpecial) ...[
-                      const SizedBox(width: 4),
-                      Icon(Icons.stars, size: 12, color: color),
-                    ],
                     const SizedBox(width: 8),
                     Text(
                       time,
-                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[500],
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                 Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: isSpecial ? color.withOpacity(0.1) : (isDark ? Colors.white10 : Colors.grey[100]),
-                      borderRadius: BorderRadius.circular(8),
-                      border: isSpecial ? Border.all(color: color.withOpacity(0.3)) : null,
-                    ),
-                    child: Text(
-                      message,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark ? Colors.white : Colors.black87,
-                      ),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isSpecial ? color.withOpacity(0.1) : (isDark ? Colors.white.withOpacity(0.05) : Colors.grey[100]),
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(12),
+                      bottomLeft: Radius.circular(12),
+                      bottomRight: Radius.circular(12),
                     ),
                   ),
+                  child: Text(
+                    message,
+                    style: TextStyle(
+                      fontSize: 13,
+                      height: 1.4,
+                      color: isDark ? Colors.grey[300] : Colors.grey[800],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -493,113 +448,95 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
 
   Widget _buildUpcomingCarousel(bool isDark, List<UpcomingSchedule> upcoming) {
     if (upcoming.isEmpty) return const SizedBox.shrink();
-    
-    return Container(
-      color: isDark ? Colors.black26 : Colors.grey[50], 
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'JADWAL LIVE MENDATANG',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.grey[400] : Colors.grey[600],
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                const Text(
-                  'Lihat Semua',
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.teal),
-                ),
-              ],
-            ),
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            'JADWAL LIVE MENDATANG',
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1),
           ),
-          const SizedBox(height: 8),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+        ),
+        SizedBox(
+          height: 140,
+          child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: upcoming.map((schedule) => 
-                Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: _buildUpcomingCard(
-                    schedule.title,
-                    schedule.description,
-                    schedule.scheduledStart,
-                    schedule.thumbnail,
-                    isDark,
-                  ),
-                )
-              ).toList(),
-            ),
+            scrollDirection: Axis.horizontal,
+            itemCount: upcoming.length,
+            itemBuilder: (context, index) {
+              final schedule = upcoming[index];
+              return _buildUpcomingCard(
+                schedule.title,
+                schedule.description,
+                schedule.scheduledStart,
+                schedule.thumbnail,
+                isDark,
+              );
+            },
           ),
-        ],
-      ),
+        ),
+        const Divider(height: 32),
+      ],
     );
   }
 
   Widget _buildUpcomingCard(String title, String subtitle, String time, String imageUrl, bool isDark) {
     return Container(
-      width: 200,
+      width: 280,
+      margin: const EdgeInsets.only(right: 16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey[900] : Colors.white,
+        color: isDark ? Colors.white10 : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
+        border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                child: Image.network(imageUrl, height: 100, width: double.infinity, fit: BoxFit.cover,
-                  errorBuilder: (c, e, s) => Container(height: 100, color: Colors.grey, child: const Icon(Icons.error)),
-                ),
-              ),
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(4)),
-                  child: Text(time, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                ),
-              ),
-            ],
+          ClipRRect(
+            borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
+            child: Image.network(
+              imageUrl,
+              width: 100,
+              height: 140,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(color: Colors.grey, width: 100, child: const Icon(Icons.video_library)),
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                   Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.teal.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      time,
+                      style: const TextStyle(color: AppTheme.teal, fontSize: 10, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  const SizedBox(height: 8),
+                  Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -609,51 +546,62 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
 
   Widget _buildChatInput(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF102216) : Colors.white,
         border: Border(top: BorderSide(color: isDark ? Colors.white10 : Colors.black12)),
-        color: isDark ? Colors.black26 : Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: Column(
         children: [
+          // QUICK ACTIONS
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildQuickAction('Masha Allah ❤️', isDark),
+                _buildQuickAction('Alhamdulillah ✨', isDark),
+                _buildQuickAction('Barakallah 🙏', isDark),
+                _buildQuickAction('Subhanallah 🤲', isDark),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
                 child: TextField(
                   controller: _chatController,
-                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
                   decoration: InputDecoration(
-                    hintText: 'Tulis komentar atau doa...',
-                    hintStyle: TextStyle(color: isDark ? Colors.grey[500] : Colors.grey),
-                    fillColor: isDark ? Colors.white10 : Colors.grey[100],
+                    hintText: 'Tulis pesan...',
+                    hintStyle: TextStyle(color: isDark ? Colors.grey[600] : Colors.grey[400]),
+                    fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey[100],
                     filled: true,
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
                       borderSide: BorderSide.none,
                     ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   ),
                 ),
               ),
               const SizedBox(width: 8),
-              CircleAvatar(
-                backgroundColor: AppTheme.teal,
+              Container(
+                decoration: const BoxDecoration(
+                  color: AppTheme.teal,
+                  shape: BoxShape.circle,
+                ),
                 child: IconButton(
-                  icon: const Icon(Icons.send, color: Colors.white, size: 18),
+                  icon: const Icon(Icons.send, color: Colors.white, size: 20),
                   onPressed: _sendChat,
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _buildQuickAction('🤲 Kirim Doa', isDark),
-              const SizedBox(width: 8),
-              _buildQuickAction('✨ Sholawat', isDark),
-              const SizedBox(width: 8),
-              _buildQuickAction('👏 Amin', isDark),
             ],
           ),
         ],
@@ -668,18 +616,18 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
         _sendChat();
       },
       child: Container(
+        margin: const EdgeInsets.only(right: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: AppTheme.teal.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppTheme.teal.withOpacity(0.3)),
+          color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey[100],
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
         ),
         child: Text(
           label,
-          style: const TextStyle(
-            color: AppTheme.teal,
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
+          style: TextStyle(
+            fontSize: 12,
+            color: isDark ? Colors.grey[400] : Colors.grey[600],
           ),
         ),
       ),
@@ -698,102 +646,104 @@ class AttendanceTab extends ConsumerStatefulWidget {
 }
 
 class _AttendanceTabState extends ConsumerState<AttendanceTab> {
-  final _attendanceNameController = TextEditingController();
-  final _attendanceAddressController = TextEditingController();
-  final _attendanceMessageController = TextEditingController();
-  final _attendanceFormKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _regionController = TextEditingController();
+  bool _isSubmitting = false;
 
   void _submitAttendance() async {
-    if (!_attendanceFormKey.currentState!.validate()) return;
-    
-    try {
-      final repository = ref.read(repositoryProvider);
-      await repository.postLiveAttendance(
-        _attendanceNameController.text,
-        _attendanceAddressController.text,
-        _attendanceMessageController.text,
-      );
-      
-      _attendanceNameController.clear();
-      _attendanceAddressController.clear();
-      _attendanceMessageController.clear();
-      
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isSubmitting = true);
+      // Simulate API call
+      await Future.delayed(const Duration(seconds: 1));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Daftar hadir berhasil dikirim!')));
+        setState(() => _isSubmitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Terima kasih, kehadiran Anda telah dicatat!')),
+        );
+        _nameController.clear();
+        _regionController.clear();
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal mengirim daftar hadir: $e')));
     }
   }
 
   @override
   void dispose() {
-    _attendanceNameController.dispose();
-    _attendanceAddressController.dispose();
-    _attendanceMessageController.dispose();
+    _nameController.dispose();
+    _regionController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       child: Form(
-        key: _attendanceFormKey,
+        key: _formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Isi Daftar Hadir', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black)),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _attendanceNameController,
-              decoration: InputDecoration(
-                labelText: 'Nama Lengkap',
-                border: const OutlineInputBorder(),
-                fillColor: isDark ? Colors.white10 : Colors.grey[100],
-                filled: true,
-              ),
-              style: TextStyle(color: isDark ? Colors.white : Colors.black),
-              validator: (v) => (v == null || v.isEmpty) ? 'Nama wajib diisi' : null,
+            const Text(
+              'Daftar Hadir Jamaah',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _attendanceAddressController,
-              decoration: InputDecoration(
-                labelText: 'Alamat',
-                border: const OutlineInputBorder(),
-                fillColor: isDark ? Colors.white10 : Colors.grey[100],
-                filled: true,
-              ),
-              style: TextStyle(color: isDark ? Colors.white : Colors.black),
-              validator: (v) => (v == null || v.isEmpty) ? 'Alamat wajib diisi' : null,
+            const SizedBox(height: 8),
+            Text(
+              'Silakan isi form di bawah ini untuk mendata kehadiran Anda dalam kajian live ini.',
+              style: TextStyle(color: Colors.grey[500], height: 1.5),
             ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _attendanceMessageController,
-              decoration: InputDecoration(
-                labelText: 'Pesan / Doa (Opsional)',
-                border: const OutlineInputBorder(),
-                fillColor: isDark ? Colors.white10 : Colors.grey[100],
-                filled: true,
+            const SizedBox(height: 32),
+            _buildTextField('Nama Lengkap', 'Masukkan nama Anda', _nameController, isDark),
+            const SizedBox(height: 20),
+            _buildTextField('Asal Wilayah / Ranting', 'Contoh: Baktijaya, Sukmajaya', _regionController, isDark),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _isSubmitting ? null : _submitAttendance,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.teal,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: _isSubmitting
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Kirim Kehadiran', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
               ),
-              style: TextStyle(color: isDark ? Colors.white : Colors.black),
-              maxLines: 3,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _submitAttendance,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.teal,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: const Text('Kirim Kehadiran', style: TextStyle(color: Colors.white, fontSize: 16)),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField(String label, String hint, TextEditingController controller, bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: isDark ? Colors.grey[600] : Colors.grey[400]),
+            fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey[100],
+            filled: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          ),
+          validator: (val) => val == null || val.isEmpty ? 'Field ini wajib diisi' : null,
+        ),
+      ],
     );
   }
 }

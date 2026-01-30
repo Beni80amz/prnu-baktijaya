@@ -29,7 +29,7 @@ class HomeScreen extends ConsumerWidget {
                   image: DecorationImage(
                     image: (settings.siteLogo != null)
                         ? NetworkImage(settings.siteLogo!)
-                        : const NetworkImage("https://lh3.googleusercontent.com/aida-public/AB6AXuBiUPY8ypA38vHHlqPv7iyc77_QOm1GszqASPGNUhNzmMqH5-GlGusH0lXxh5nZaUtlWHH3c9E8ie4xIizKJ3glvUsGIJbXByC3P9vTAro773GC4MZWYjxcG9ekmokDl7uH7y1CbrZxFIQ8E3Gj26_JExXK9pzW9F8vAc_LdgSxowDvGqvOK7KdyvL7hjDujVeLWnvRoxziX0TaZZN1oWQ4yCEJGVIyjnCxM6flDZTmp_9XDoeC8u-Jbz7eZlWR2RmDRRXoj94NDsQ"),
+                        : NetworkImage("https://lh3.googleusercontent.com/aida-public/AB6AXuBiUPY8ypA38vHHlqPv7iyc77_QOm1GszqASPGNUhNzmMqH5-GlGusH0lXxh5nZaUtlWHH3c9E8ie4xIizKJ3glvUsGIJbXByC3P9vTAro773GC4MZWYjxcG9ekmokDl7uH7y1CbrZxFIQ8E3Gj26_JExXK9pzW9F8vAc_LdgSxowDvGqvOK7KdyvL7hjDujVeLWnvRoxziX0TaZZN1oWQ4yCEJGVIyjnCxM6flDZTmp_9XDoeC8u-Jbz7eZlWR2RmDRRXoj94NDsQ"),
                     fit: BoxFit.cover,
                   ),
                 ),

@@ -152,6 +152,8 @@ class UtilityController extends Controller
                 ->orderBy('order', 'asc')
                 ->get();
 
+            $volunteers = \App\Models\Volunteer::with('region')->get();
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -161,9 +163,20 @@ class UtilityController extends Controller
                             'id' => $item->id,
                             'name' => $item->name,
                             'type' => $item->type,
-                            'photo' => ($item->image && !Str::startsWith($item->image, ['http://', 'https://']))
+                            'position' => $item->position,
+                            'photo' => ($item->image && !\Illuminate\Support\Str::startsWith($item->image, ['http://', 'https://']))
                                 ? url('storage/' . $item->image)
                                 : $item->image,
+                        ];
+                    }),
+                    'volunteers' => $volunteers->map(function ($volunteer) {
+                        return [
+                            'id' => $volunteer->id,
+                            'name' => $volunteer->name,
+                            'region' => $volunteer->region ? $volunteer->region->name : '-',
+                            'photo' => ($volunteer->photo && !\Illuminate\Support\Str::startsWith($volunteer->photo, ['http://', 'https://']))
+                                ? url('storage/' . $volunteer->photo)
+                                : $volunteer->photo,
                         ];
                     })
                 ]

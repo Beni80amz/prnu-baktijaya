@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_html/flutter_html.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/api_constants.dart';
 import '../providers/providers.dart';
@@ -230,24 +231,6 @@ class _ArticleListScreenState extends ConsumerState<ArticleListScreen> {
                       ),
               ),
             ),
-            // Type Badge
-            if (article['type'] != null)
-              Positioned(
-                top: 12,
-                left: 12,
-                child: Container(
-                  margin: const EdgeInsets.only(left: 12, top: 12),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFB8860B),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    _capitalize(article['type']),
-                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
             // Content
             Padding(
               padding: const EdgeInsets.all(16),
@@ -306,7 +289,7 @@ class _ArticleListScreenState extends ConsumerState<ArticleListScreen> {
     );
   }
 
-  String _capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+  String _capitalize(String s) => s.isEmpty ? '' : s[0].toUpperCase() + s.substring(1);
 
   String _formatDate(String? dateStr) {
     if (dateStr == null) return '';
@@ -328,6 +311,7 @@ class ArticleDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final content = article['content'] ?? article['excerpt'] ?? '';
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF102210) : const Color(0xFFF5F8F8),
@@ -358,7 +342,7 @@ class ArticleDetailScreen extends StatelessWidget {
                             ? article['featured_image']
                             : '${ApiConstants.baseUrl.replaceAll('/api/', '')}/storage/${article['featured_image']}',
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(color: Colors.grey[300]),
+                        errorBuilder: (_, __, ___) => Container(color: Colors.grey[300], child: const Icon(Icons.error)),
                       ),
                     ),
                   Padding(
@@ -395,10 +379,20 @@ class ArticleDetailScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        // Content
-                        Text(
-                          article['content'] ?? article['excerpt'] ?? '',
-                          style: TextStyle(fontSize: 15, height: 1.8, color: isDark ? Colors.white70 : Colors.black87),
+                        // Content (HTML)
+                        Html(
+                          data: content,
+                          style: {
+                            "body": Style(
+                              fontSize: FontSize(15.0),
+                              lineHeight: LineHeight(1.8),
+                              color: isDark ? Colors.white70 : Colors.black87,
+                              margin: Margins.zero,
+                              padding: HtmlPaddings.zero,
+                            ),
+                            "p": Style(margin: Margins.only(bottom: 12)),
+                            "img": Style(width: Width(100, Unit.percent)),
+                          },
                         ),
                       ],
                     ),
