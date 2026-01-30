@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'home_screen.dart';
 import 'kas_digital_screen.dart';
-import 'news_list_screen.dart';
+import 'kas_digital_screen.dart';
+import 'agenda_screen.dart';
 import 'gallery_screen.dart';
+import 'organization_profile_screen.dart';
 import 'organization_profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -18,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = const [
     HomeScreen(),
-    NewsListScreen(),
+    AgendaScreen(),
     KasDigitalScreen(), // FAB navigation
     GalleryScreen(), // Galeri tab
     OrganizationProfileScreen(),
@@ -79,8 +81,8 @@ class _MainScreenState extends State<MainScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildNavItem(0, Icons.home, 'Home'),
-            _buildNavItem(1, Icons.newspaper, 'Berita'),
+            _buildNavItem(0, Icons.home, 'Beranda'),
+            _buildNavItem(1, Icons.calendar_month, 'Agenda'),
             const SizedBox(width: 48), // Space for FAB
             _buildNavItem(3, Icons.collections, 'Galeri'),
             _buildNavItem(4, Icons.person, 'Profil'),

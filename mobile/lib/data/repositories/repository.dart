@@ -10,12 +10,25 @@ import '../models/category_model.dart';
 import '../models/organization_model.dart';
 import '../models/gallery_model.dart';
 import '../models/news_comment_model.dart';
+import '../models/agenda_model.dart';
+import '../models/agenda_model.dart';
+import '../models/live_streaming_model.dart';
 import '../../core/constants/api_constants.dart';
 
 class Repository {
   final DioClient _dioClient;
 
   Repository(this._dioClient);
+
+  Future<List<Agenda>> getAgendas() async {
+    try {
+      final response = await _dioClient.dio.get(ApiConstants.agenda);
+      final List data = response.data['data'] ?? [];
+      return data.map((e) => Agenda.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Failed to load agendas: $e');
+    }
+  }
 
   Future<List<News>> getNews() async {
     try {
@@ -172,6 +185,51 @@ class Repository {
       });
     } catch (e) {
       throw Exception('Failed to post comment: $e');
+    }
+  }
+
+  // --- Live Streaming Methods ---
+  
+  Future<LiveStreamingData> getLiveStreamingData() async {
+    try {
+      final response = await _dioClient.dio.get('/live-streaming');
+      return LiveStreamingData.fromJson(response.data['data']);
+    } catch (e) {
+      throw Exception('Failed to load live streaming data: $e');
+    }
+  }
+
+  Future<List<LiveChatModel>> getLiveChats() async {
+    try {
+      final response = await _dioClient.dio.get('/live-streaming/chats');
+      final List data = response.data['data'] ?? [];
+      return data.map((e) => LiveChatModel.fromJson(e)).toList();
+    } catch (e) {
+      // Return empty list instead of throwing to prevent blocking the stream
+      return []; 
+    }
+  }
+
+  Future<void> postLiveChat(String name, String message) async {
+    try {
+      await _dioClient.dio.post('/live-streaming/chat', data: {
+        'name': name,
+        'message': message,
+      });
+    } catch (e) {
+      throw Exception('Failed to send chat: $e');
+    }
+  }
+
+  Future<void> postLiveAttendance(String name, String address, String? message) async {
+    try {
+      await _dioClient.dio.post('/live-streaming/attendance', data: {
+        'name': name,
+        'address': address,
+        'message': message,
+      });
+    } catch (e) {
+      throw Exception('Failed to submit attendance: $e');
     }
   }
 }

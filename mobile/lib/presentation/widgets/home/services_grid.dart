@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../screens/kas_digital_screen.dart';
 import '../../screens/news_list_screen.dart';
-import '../../screens/tanya_kiai_screen.dart';
 import '../../screens/umkm_screen.dart';
-import '../../screens/ruang_doa_screen.dart';
-import '../../screens/zakat_calculator_screen.dart';
-import '../../screens/peta_masjid_screen.dart';
+import '../../screens/member_services_screen.dart';
+import '../../screens/live_streaming_screen.dart';
+import '../../screens/donation_screen.dart';
 import '../../screens/article_list_screen.dart';
 
 class ServicesGrid extends StatelessWidget {
@@ -54,39 +53,33 @@ class ServicesGrid extends StatelessWidget {
             ),
             _buildServiceItem(
               context,
+              'Live Streaming',
+              Icons.live_tv,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LiveStreamingScreen())),
+            ),
+            _buildServiceItem(
+              context,
               'Kas Digital',
               Icons.account_balance_wallet,
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KasDigitalScreen())),
             ),
             _buildServiceItem(
               context,
-              'Tanya Kiai',
-              Icons.school,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TanyaKiaiScreen())),
+              'Donasi',
+              Icons.volunteer_activism,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DonationScreen())),
+            ),
+            _buildServiceItem(
+              context,
+              'Layanan Jama\'ah',
+              Icons.mosque,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MemberServicesScreen())),
             ),
             _buildServiceItem(
               context,
               'UMKM',
               Icons.storefront,
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UmkmScreen())),
-            ),
-            _buildServiceItem(
-              context,
-              'Ruang Doa',
-              Icons.volunteer_activism,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RuangDoaScreen())),
-            ),
-            _buildServiceItem(
-              context,
-              'Zakat',
-              Icons.calculate,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ZakatCalculatorScreen())),
-            ),
-            _buildServiceItem(
-              context,
-              'Peta Masjid',
-              Icons.mosque,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PetaMasjidScreen())),
             ),
             _buildServiceItem(
               context,

@@ -21,7 +21,7 @@ Route::apiResource('galleries', \App\Http\Controllers\Api\GaleriController::clas
 Route::get('/jadwal-sholat', [\App\Http\Controllers\Api\UtilityController::class, 'getJadwalSholat']);
 Route::get('/kota', [\App\Http\Controllers\Api\UtilityController::class, 'getCities']);
 Route::get('/settings', [\App\Http\Controllers\Api\UtilityController::class, 'getSettings']);
-Route::get('/agenda', [\App\Http\Controllers\Api\UtilityController::class, 'getAgenda']);
+Route::get('/agenda', [\App\Http\Controllers\Api\AgendaController::class, 'index']);
 Route::get('/dawuh', [\App\Http\Controllers\Api\UtilityController::class, 'getDawuh']);
 Route::get('/categories', [\App\Http\Controllers\Api\UtilityController::class, 'getCategories']);
 Route::get('/organization', [\App\Http\Controllers\Api\UtilityController::class, 'getOrganization']);
@@ -37,6 +37,12 @@ Route::apiResource('ruang-doa', \App\Http\Controllers\Api\RuangDoaController::cl
 Route::get('/mosques', [\App\Http\Controllers\Api\MosqueController::class, 'index']);
 Route::get('/profile', [\App\Http\Controllers\Api\ProfileController::class, 'index']);
 Route::get('/zakat/config', [\App\Http\Controllers\Api\ZakatController::class, 'config']);
+
+// Live Streaming
+Route::get('/live-streaming', [\App\Http\Controllers\Api\LiveStreamingController::class, 'index']);
+Route::get('/live-streaming/chats', [\App\Http\Controllers\Api\LiveStreamingController::class, 'getChats']);
+Route::post('/live-streaming/chat', [\App\Http\Controllers\Api\LiveStreamingController::class, 'sendChat']);
+Route::post('/live-streaming/attendance', [\App\Http\Controllers\Api\LiveStreamingController::class, 'submitAttendance']);
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);

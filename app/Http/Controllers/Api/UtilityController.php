@@ -36,7 +36,7 @@ class UtilityController extends Controller
     public function getSettings()
     {
         try {
-            $settings = \App\Models\Setting::whereIn('key', ['site_name', 'site_logo'])
+            $settings = \App\Models\Setting::whereIn('key', ['site_name', 'site_logo', 'youtube_channel_id', 'social_youtube'])
                 ->get()
                 ->pluck('value', 'key');
             $siteLogo = $settings['site_logo'] ?? null;
@@ -44,11 +44,22 @@ class UtilityController extends Controller
                 $siteLogo = url('storage/' . $siteLogo);
             }
 
+            $isLive = false;
+            if (isset($settings['youtube_channel_id'])) {
+                $cacheKey = 'youtube_live_status_' . $settings['youtube_channel_id'];
+                $cachedStatus = \Illuminate\Support\Facades\Cache::get($cacheKey);
+                if ($cachedStatus && isset($cachedStatus['is_live']) && $cachedStatus['is_live']) {
+                    $isLive = true;
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'site_name' => $settings['site_name'] ?? 'PRNU Baktijaya',
                     'site_logo' => $siteLogo,
+                    'social_youtube' => $settings['social_youtube'] ?? null,
+                    'is_live' => $isLive,
                 ]
             ]);
         } catch (\Exception $e) {

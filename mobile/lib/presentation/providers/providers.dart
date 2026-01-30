@@ -11,6 +11,8 @@ import '../../data/models/city_model.dart';
 import '../../data/models/setting_model.dart';
 import '../../data/models/kas_summary_model.dart';
 import '../../data/models/dawuh_model.dart';
+import '../../data/models/agenda_model.dart';
+import '../../data/models/live_streaming_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -107,6 +109,11 @@ final organizationProvider = FutureProvider<OrganizationProfile>((ref) async {
   return repository.getOrganization();
 });
 
+final agendaProvider = FutureProvider<List<Agenda>>((ref) async {
+  final repository = ref.watch(repositoryProvider);
+  return repository.getAgendas();
+});
+
 // Gallery
 final galleryTypeFilterProvider = StateProvider<String>((ref) => 'photo');
 final galleryCategoryFilterProvider = StateProvider<int?>((ref) => null);
@@ -121,4 +128,26 @@ final paginatedGalleryProvider = FutureProvider.family<Map<String, dynamic>, int
   final type = ref.watch(galleryTypeFilterProvider);
   final categoryId = ref.watch(galleryCategoryFilterProvider);
   return repository.getGalleries(page: page, type: type, categoryId: categoryId);
+});
+
+// Live Streaming
+final liveStreamingProvider = FutureProvider.autoDispose<LiveStreamingData>((ref) async {
+  final repository = ref.read(repositoryProvider);
+  return repository.getLiveStreamingData();
+});
+
+final liveChatsProvider = StreamProvider.autoDispose<List<LiveChatModel>>((ref) async* {
+  final repository = ref.read(repositoryProvider);
+  
+  // Initial fetch
+  yield await repository.getLiveChats();
+  
+  // Poll every 5 seconds
+  final stream = Stream.periodic(const Duration(seconds: 5), (_) async {
+    return await repository.getLiveChats();
+  });
+  
+  await for (final chats in stream) {
+    yield await chats;
+  }
 });
