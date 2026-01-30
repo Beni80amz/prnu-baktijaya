@@ -10,7 +10,7 @@ class PrayerCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final prayerAsync = ref.watch(prayerTimeProvider);
+    final prayerAsync = ref.watch(prayerTimeProvider(null));
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -45,7 +45,7 @@ class PrayerCard extends ConsumerWidget {
               const Text('Gagal memuat jadwal sholat', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
               Text(err.toString(), style: const TextStyle(fontSize: 10, color: Colors.grey), textAlign: TextAlign.center, maxLines: 2),
               TextButton(
-                onPressed: () => ref.refresh(prayerTimeProvider),
+                onPressed: () => ref.refresh(prayerTimeProvider(null)),
                 child: const Text('Coba Lagi', style: TextStyle(fontSize: 11)),
               ),
             ],

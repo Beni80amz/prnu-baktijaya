@@ -9,7 +9,7 @@ import '../providers/providers.dart';
 // Provider for zakat config (gold price)
 final zakatConfigProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   final dioClient = ref.read(dioClientProvider);
-  final response = await dioClient.dio.get(ApiConstants.baseUrl + 'zakat/config');
+  final response = await dioClient.dio.get('zakat/config');
   return response.data;
 });
 
@@ -46,7 +46,7 @@ class _ZakatCalculatorScreenState extends ConsumerState<ZakatCalculatorScreen> {
   void _loadConfig() async {
     try {
       final dioClient = ref.read(dioClientProvider);
-      final response = await dioClient.dio.get(ApiConstants.baseUrl + 'zakat/config');
+      final response = await dioClient.dio.get('zakat/config');
       final data = response.data;
       if (data['data'] != null && data['data']['gold_price'] != null) {
         setState(() => _goldPrice = (data['data']['gold_price'] as num).toDouble());

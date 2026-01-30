@@ -8,7 +8,7 @@ import '../providers/providers.dart';
 // Provider for articles data
 final articlesProvider = FutureProvider<List<dynamic>>((ref) async {
   final dioClient = ref.read(dioClientProvider);
-  final response = await dioClient.dio.get(ApiConstants.baseUrl + 'articles');
+  final response = await dioClient.dio.get(ApiConstants.artikel);
   return response.data['data'] ?? [];
 });
 

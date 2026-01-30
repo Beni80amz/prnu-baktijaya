@@ -51,7 +51,7 @@ class _TanyaKiaiScreenState extends ConsumerState<TanyaKiaiScreen> {
     try {
       final dioClient = ref.read(dioClientProvider);
       final response = await dioClient.dio.post(
-        ApiConstants.baseUrl + 'tanya-kiai',
+        'tanya-kiai',
         data: {'message': message},
       );
 

@@ -103,12 +103,15 @@ class Repository {
     }
   }
 
-  Future<PrayerTimes> getPrayerTimes({String? cityId}) async {
+  Future<PrayerTimes> getPrayerTimes({String? cityId, String? date}) async {
     try {
-      final queryParams = cityId != null ? {'city_id': cityId} : null;
+      final queryParams = {
+        if (cityId != null) 'city_id': cityId,
+        if (date != null) 'date': date,
+      };
       final response = await _dioClient.dio.get(
         ApiConstants.jadwalSholat,
-        queryParameters: queryParams,
+        queryParameters: queryParams.isEmpty ? null : queryParams,
       );
       return PrayerTimes.fromJson(response.data);
     } catch (e) {
@@ -169,7 +172,7 @@ class Repository {
 
   Future<List<NewsComment>> getComments(int newsId) async {
     try {
-      final response = await _dioClient.dio.get('/news/$newsId/comments');
+      final response = await _dioClient.dio.get('news/$newsId/comments');
       final List data = response.data['data'] ?? [];
       return data.map((e) => NewsComment.fromJson(e)).toList();
     } catch (e) {
@@ -179,7 +182,7 @@ class Repository {
 
   Future<void> postComment(int newsId, String name, String comment) async {
     try {
-      await _dioClient.dio.post('/news/$newsId/comments', data: {
+      await _dioClient.dio.post('news/$newsId/comments', data: {
         'name': name,
         'comment': comment,
       });
@@ -192,7 +195,7 @@ class Repository {
   
   Future<LiveStreamingData> getLiveStreamingData() async {
     try {
-      final response = await _dioClient.dio.get('/live-streaming');
+      final response = await _dioClient.dio.get('live-streaming');
       return LiveStreamingData.fromJson(response.data['data']);
     } catch (e) {
       throw Exception('Failed to load live streaming data: $e');
@@ -201,7 +204,7 @@ class Repository {
 
   Future<List<LiveChatModel>> getLiveChats() async {
     try {
-      final response = await _dioClient.dio.get('/live-streaming/chats');
+      final response = await _dioClient.dio.get('live-streaming/chats');
       final List data = response.data['data'] ?? [];
       return data.map((e) => LiveChatModel.fromJson(e)).toList();
     } catch (e) {
@@ -212,7 +215,7 @@ class Repository {
 
   Future<void> postLiveChat(String name, String message) async {
     try {
-      await _dioClient.dio.post('/live-streaming/chat', data: {
+      await _dioClient.dio.post('live-streaming/chat', data: {
         'name': name,
         'message': message,
       });
@@ -223,7 +226,7 @@ class Repository {
 
   Future<void> postLiveAttendance(String name, String address, String? message) async {
     try {
-      await _dioClient.dio.post('/live-streaming/attendance', data: {
+      await _dioClient.dio.post('live-streaming/attendance', data: {
         'name': name,
         'address': address,
         'message': message,

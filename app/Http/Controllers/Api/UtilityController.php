@@ -13,10 +13,13 @@ class UtilityController extends Controller
     public function getJadwalSholat(Request $request)
     {
         $cityId = $request->input('city_id', 1225); // Default Depok
+        $dateStr = $request->input('date');
+        $date = $dateStr ? Carbon::parse($dateStr) : Carbon::now();
+
         $service = new PrayerTimesService();
 
         try {
-            $schedule = $service->getSchedule($cityId);
+            $schedule = $service->getSchedule($cityId, $date);
             return response()->json($schedule);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Gagal mengambil jadwal sholat'], 500);

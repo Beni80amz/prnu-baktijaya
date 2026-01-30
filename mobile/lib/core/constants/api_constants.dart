@@ -1,13 +1,13 @@
 class ApiConstants {
   // Replace with your local IP if testing on real device
-  static const String baseUrl = 'http://192.168.0.129:8000/api/';
+  static const String baseUrl = 'https://prnubaktijaya.org/api/';
   
   // Endpoints
   static const String login = 'login';
   static const String logout = 'logout';
   static const String user = 'user';
   static const String berita = 'news';
-  static const String artikel = 'artikel';
+  static const String artikel = 'articles';
   static const String galeri = 'galleries';
   static const String jadwalSholat = 'jadwal-sholat';
   static const String kota = 'kota';
@@ -19,4 +19,5 @@ class ApiConstants {
   static const String kas = 'kas';
   static const String kasHistory = 'kas/history';
   static const String kasReports = 'kas/reports';
+  static const String liveStreaming = 'live-streaming';
 }

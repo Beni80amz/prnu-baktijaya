@@ -113,7 +113,7 @@ class HomeScreen extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(newsProvider);
-          ref.invalidate(prayerTimeProvider);
+          ref.invalidate(prayerTimeProvider(null));
           ref.invalidate(kasSummaryProvider);
           ref.invalidate(dawuhProvider);
           ref.invalidate(settingsProvider);

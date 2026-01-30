@@ -8,7 +8,7 @@ import '../providers/providers.dart';
 // Provider for mosques data
 final mosquesProvider = FutureProvider<List<dynamic>>((ref) async {
   final dioClient = ref.read(dioClientProvider);
-  final response = await dioClient.dio.get(ApiConstants.baseUrl + 'mosques');
+  final response = await dioClient.dio.get('mosques');
   return response.data['data'] ?? response.data ?? [];
 });
 

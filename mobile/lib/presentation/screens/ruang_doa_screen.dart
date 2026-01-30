@@ -36,7 +36,7 @@ class _RuangDoaScreenState extends ConsumerState<RuangDoaScreen> {
     try {
       final dioClient = ref.read(dioClientProvider);
       await dioClient.dio.post(
-        ApiConstants.baseUrl + 'ruang-doa',
+        'ruang-doa',
         data: {
           'name': _nameController.text,
           'deceased_name': _deceasedNameController.text,

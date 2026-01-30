@@ -8,7 +8,7 @@ import '../providers/providers.dart';
 // Provider for UMKM data
 final umkmProvider = FutureProvider<List<dynamic>>((ref) async {
   final dioClient = ref.read(dioClientProvider);
-  final response = await dioClient.dio.get(ApiConstants.baseUrl + 'umkm');
+  final response = await dioClient.dio.get('umkm');
   
   // Handle paginated response: {success: true, data: {data: [...], ...}}
   final responseData = response.data;

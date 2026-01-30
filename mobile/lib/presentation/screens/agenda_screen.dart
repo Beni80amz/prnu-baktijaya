@@ -54,7 +54,10 @@ class _AgendaScreenState extends ConsumerState<AgendaScreen> {
     final textColor = isDark ? Colors.white : const Color(0xFF0F172A); // Slate 900
 
     final agendaAsync = ref.watch(agendaProvider);
-    final prayerAsync = ref.watch(prayerTimeProvider); // Fetch Hijri Date
+    final prayerAsync = ref.watch(prayerTimeProvider(
+      DateFormat('yyyy-MM-dd').format(_focusedMonth)
+    )); 
+    final settingsAsync = ref.watch(settingsProvider);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -63,6 +66,7 @@ class _AgendaScreenState extends ConsumerState<AgendaScreen> {
           onRefresh: () async {
             ref.invalidate(agendaProvider);
             ref.invalidate(prayerTimeProvider);
+            ref.invalidate(settingsProvider);
           },
           child: CustomScrollView(
           slivers: [
@@ -81,7 +85,18 @@ class _AgendaScreenState extends ConsumerState<AgendaScreen> {
                             color: primaryColor.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(Icons.mosque, color: primaryColor),
+                          child: settingsAsync.when(
+                            data: (settings) => settings.siteLogo != null 
+                              ? Image.network(
+                                  settings.siteLogo!, 
+                                  width: 24, 
+                                  height: 24,
+                                  errorBuilder: (_, __, ___) => Icon(Icons.mosque, color: primaryColor),
+                                )
+                              : Icon(Icons.mosque, color: primaryColor),
+                            loading: () => Icon(Icons.mosque, color: primaryColor),
+                            error: (_, __) => Icon(Icons.mosque, color: primaryColor),
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Column(
@@ -95,12 +110,23 @@ class _AgendaScreenState extends ConsumerState<AgendaScreen> {
                                 color: textColor,
                               ),
                             ),
-                            Text(
-                              'PRNU Baktijaya',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: primaryColor,
+                            settingsAsync.when(
+                              data: (settings) => Text(
+                                settings.siteName,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: primaryColor,
+                                ),
+                              ),
+                              loading: () => const SizedBox.shrink(),
+                              error: (_, __) => Text(
+                                'PRNU Baktijaya',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: primaryColor,
+                                ),
                               ),
                             ),
                           ],

@@ -57,10 +57,10 @@ final newsProvider = FutureProvider<List<News>>((ref) async {
   return repository.getNews();
 });
 
-final prayerTimeProvider = FutureProvider<PrayerTimes>((ref) async {
+final prayerTimeProvider = FutureProvider.family<PrayerTimes, String?>((ref, date) async {
   final repository = ref.read(repositoryProvider);
   final selectedCity = ref.watch(selectedCityProvider);
-  return repository.getPrayerTimes(cityId: selectedCity?.id);
+  return repository.getPrayerTimes(cityId: selectedCity?.id, date: date);
 });
 
 final citySearchProvider = FutureProvider.family<List<City>, String>((ref, query) async {
