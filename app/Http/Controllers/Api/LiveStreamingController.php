@@ -60,36 +60,24 @@ class LiveStreamingController extends Controller
         $upcomingSchedules = [];
 
         if ($apiKey && $channelId) {
-            // Automatic Mode
+            // Automatic Mode - Try YouTube Data API first
             $fetchedData = $this->fetchYoutubeData($apiKey, $channelId);
-            if ($fetchedData) {
+            if ($fetchedData && !empty($fetchedData['video_id'])) {
                 $youtubeData['is_live'] = $fetchedData['is_live'];
                 $youtubeData['youtube_id'] = $fetchedData['video_id'];
                 $youtubeData['youtube_url'] = 'https://www.youtube.com/watch?v=' . $fetchedData['video_id'];
                 $youtubeData['title'] = $fetchedData['title'];
                 $youtubeData['description'] = $fetchedData['description'];
                 $youtubeData['thumbnail'] = $fetchedData['thumbnail'] ?? null;
+            } else {
+                // Fallback to Manual Mode if API fails
+                $this->applyManualMode($youtubeData);
             }
 
             $upcomingSchedules = $this->fetchUpcomingSchedule($apiKey, $channelId);
         } else {
-            // Manual Mode - Match logic from home.blade.php
-            $isLive = !empty(Setting::getValue('youtube_live_status')) && filter_var(Setting::getValue('youtube_live_status'), FILTER_VALIDATE_BOOLEAN);
-
-            // Use youtube_live_url when live, youtube_video_url otherwise
-            $youtubeUrl = $isLive
-                ? Setting::getValue('youtube_live_url')
-                : Setting::getValue('youtube_video_url');
-
-            $youtubeData['youtube_url'] = $youtubeUrl;
-            $youtubeData['is_live'] = $isLive;
-
-            if ($youtubeUrl) {
-                $youtubeData['youtube_id'] = $this->extractYoutubeId($youtubeUrl);
-                $youtubeData['title'] = $isLive
-                    ? Setting::getValue('youtube_live_title', 'Live Streaming')
-                    : 'Video Terbaru';
-            }
+            // Manual Mode - No API credentials
+            $this->applyManualMode($youtubeData);
         }
 
         return response()->json([
@@ -276,5 +264,30 @@ class LiveStreamingController extends Controller
             return $matches[1];
         }
         return null;
+    }
+
+    /**
+     * Apply Manual Mode settings (fallback when API fails or no API credentials)
+     * Uses same logic as home.blade.php
+     */
+    private function applyManualMode(&$youtubeData)
+    {
+        $isLive = !empty(Setting::getValue('youtube_live_status')) &&
+            filter_var(Setting::getValue('youtube_live_status'), FILTER_VALIDATE_BOOLEAN);
+
+        // Use youtube_live_url when live, youtube_video_url otherwise
+        $youtubeUrl = $isLive
+            ? Setting::getValue('youtube_live_url')
+            : Setting::getValue('youtube_video_url');
+
+        $youtubeData['youtube_url'] = $youtubeUrl;
+        $youtubeData['is_live'] = $isLive;
+
+        if ($youtubeUrl) {
+            $youtubeData['youtube_id'] = $this->extractYoutubeId($youtubeUrl);
+            $youtubeData['title'] = $isLive
+                ? Setting::getValue('youtube_live_title', 'Live Streaming')
+                : 'Video Terbaru';
+        }
     }
 }
