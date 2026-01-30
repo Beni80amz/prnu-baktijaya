@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show debugPrint;
 import '../../core/network/dio_client.dart';
 import '../models/news_model.dart';
 import '../models/prayer_time_model.dart';
@@ -206,8 +207,19 @@ class Repository {
     try {
       final response = await _dioClient.dio.get('live-streaming/chats');
       final List data = response.data['data'] ?? [];
-      return data.map((e) => LiveChatModel.fromJson(e)).toList();
+      
+      final List<LiveChatModel> chats = [];
+      for (var i = 0; i < data.length; i++) {
+        try {
+          chats.add(LiveChatModel.fromJson(data[i]));
+        } catch (e) {
+          debugPrint('>>> Error parsing chat[$i]: $e');
+          debugPrint('>>> Raw data: ${data[i]}');
+        }
+      }
+      return chats;
     } catch (e) {
+      debugPrint('>>> getLiveChats error: $e');
       // Return empty list instead of throwing to prevent blocking the stream
       return []; 
     }
