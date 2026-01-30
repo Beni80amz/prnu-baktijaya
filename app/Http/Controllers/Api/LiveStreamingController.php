@@ -73,14 +73,22 @@ class LiveStreamingController extends Controller
 
             $upcomingSchedules = $this->fetchUpcomingSchedule($apiKey, $channelId);
         } else {
-            // Manual Mode
-            $youtubeUrl = Setting::getValue('youtube_live_url');
-            $isLive = Setting::getValue('youtube_is_live', false);
+            // Manual Mode - Match logic from home.blade.php
+            $isLive = !empty(Setting::getValue('youtube_live_status')) && filter_var(Setting::getValue('youtube_live_status'), FILTER_VALIDATE_BOOLEAN);
+
+            // Use youtube_live_url when live, youtube_video_url otherwise
+            $youtubeUrl = $isLive
+                ? Setting::getValue('youtube_live_url')
+                : Setting::getValue('youtube_video_url');
 
             $youtubeData['youtube_url'] = $youtubeUrl;
-            $youtubeData['is_live'] = filter_var($isLive, FILTER_VALIDATE_BOOLEAN);
+            $youtubeData['is_live'] = $isLive;
+
             if ($youtubeUrl) {
                 $youtubeData['youtube_id'] = $this->extractYoutubeId($youtubeUrl);
+                $youtubeData['title'] = $isLive
+                    ? Setting::getValue('youtube_live_title', 'Live Streaming')
+                    : 'Video Terbaru';
             }
         }
 
