@@ -457,10 +457,10 @@
                     x-transition:leave="ease-in duration-200"
                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-background-dark text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-xl border border-white/10 flex flex-col max-h-[90vh]">
+                    class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-background-dark text-left shadow-2xl transition-all w-full sm:my-8 sm:w-full sm:max-w-lg border border-white/10 flex flex-col max-h-[85vh] sm:max-h-[90vh]">
 
                     <!-- Header -->
-                    <div class="bg-primary/5 dark:bg-white/5 px-6 py-4 border-b border-primary/10 dark:border-white/10 flex justify-between items-center shrink-0">
+                    <div class="bg-primary/5 dark:bg-white/5 px-4 py-4 sm:px-6 border-b border-primary/10 dark:border-white/10 flex justify-between items-center shrink-0">
                         <h3 class="text-xl font-black text-primary dark:text-white uppercase tracking-tight">Formulir Donasi</h3>
                         <button type="button" @click="donationOpen = false"
                             class="rounded-md bg-transparent text-gray-400 hover:text-gray-500 focus:outline-none">
@@ -469,7 +469,7 @@
                     </div>
 
                     <!-- Body -->
-                    <div class="p-6 overflow-y-auto custom-scrollbar space-y-8">
+                    <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar space-y-6 sm:space-y-8">
                         
                         <!-- Pilihan Kampanye -->
                         <div>
@@ -589,7 +589,7 @@
                     </div>
 
                     <!-- Footer -->
-                    <div class="bg-gray-50 dark:bg-white/5 px-6 py-4 border-t border-gray-100 dark:border-white/5 shrink-0">
+                    <div class="bg-gray-50 dark:bg-white/5 px-4 py-4 sm:px-6 border-t border-gray-100 dark:border-white/5 shrink-0">
                         <div class="flex items-center justify-between mb-4">
                             <span class="text-sm font-medium text-gray-500">Total Donasi</span>
                             <span class="text-2xl font-black text-primary" x-text="totalAmount"></span>
