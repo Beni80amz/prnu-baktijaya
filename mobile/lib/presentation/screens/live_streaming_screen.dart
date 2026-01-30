@@ -36,32 +36,40 @@ class LiveStreamingPage extends StatefulWidget {
 }
 
 class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTickerProviderStateMixin {
-  late YoutubePlayerController _controller;
+  YoutubePlayerController? _controller;
   late TabController _tabController;
+  bool _hasValidVideo = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
-    _controller = YoutubePlayerController(
-      initialVideoId: widget.data.video.youtubeId!,
-      flags: YoutubePlayerFlags(
-        autoPlay: true,
-        mute: false,
-        isLive: widget.data.video.isLive, // Use actual live status from data
-        forceHD: false,
-        enableCaption: false,
-        hideControls: false,
-        controlsVisibleAtStart: true,
-      ),
-    );
+    _initializePlayer();
+  }
+
+  void _initializePlayer() {
+    final videoId = widget.data.video.youtubeId;
+    if (videoId != null && videoId.isNotEmpty) {
+      _hasValidVideo = true;
+      _controller = YoutubePlayerController(
+        initialVideoId: videoId,
+        flags: YoutubePlayerFlags(
+          autoPlay: true,
+          mute: false,
+          isLive: widget.data.video.isLive,
+          forceHD: false,
+          enableCaption: false,
+          hideControls: false,
+          controlsVisibleAtStart: true,
+        ),
+      );
+    }
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -70,13 +78,42 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = isDark ? const Color(0xFF102216) : const Color(0xFFF6F8F6);
 
+    // If no valid video, show fallback UI
+    if (!_hasValidVideo) {
+      return Scaffold(
+        backgroundColor: backgroundColor,
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(context, isDark, null),
+              _buildNoVideoPlaceholder(isDark),
+              _buildEventInfo(isDark, widget.data.info),
+              if (widget.data.upcoming.isNotEmpty)
+                _buildUpcomingSection(isDark, widget.data.upcoming),
+              _buildTabBar(isDark),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: const [
+                    LiveChatTab(),
+                    AttendanceTab(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return YoutubePlayerBuilder(
       player: YoutubePlayer(
-        controller: _controller,
+        controller: _controller!,
         showVideoProgressIndicator: true,
         progressIndicatorColor: AppTheme.teal,
         onReady: () {
-          // Player is ready
+          // Player is ready - optionally play
+          _controller!.play();
         },
       ),
       builder: (context, player) {
@@ -105,11 +142,11 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,
-                    children: [
+                    children: const [
                       // LIVE CHAT TAB (No more upcoming here)
-                      const LiveChatTab(),
+                      LiveChatTab(),
                       // ATTENDANCE TAB
-                      const AttendanceTab(),
+                      AttendanceTab(),
                     ],
                   ),
                 ),
@@ -118,6 +155,31 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
           ),
         );
       },
+    );
+  }
+
+  Widget _buildNoVideoPlaceholder(bool isDark) {
+    return Container(
+      height: 200,
+      color: Colors.black,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.videocam_off, color: Colors.white54, size: 48),
+            const SizedBox(height: 12),
+            Text(
+              'Video tidak tersedia',
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Tidak ada live streaming atau video terbaru',
+              style: TextStyle(color: Colors.white38, fontSize: 11),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
