@@ -9,17 +9,53 @@ import '../../data/models/live_streaming_model.dart';
 // ==========================================
 // 1. ENTRY POINT: Fetch Data First
 // ==========================================
-class LiveStreamingScreen extends ConsumerWidget {
+class LiveStreamingScreen extends ConsumerStatefulWidget {
   const LiveStreamingScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LiveStreamingScreen> createState() => _LiveStreamingScreenState();
+}
+
+class _LiveStreamingScreenState extends ConsumerState<LiveStreamingScreen> {
+  Future<void> _onRefresh() async {
+    // Invalidate the provider to refetch data
+    ref.invalidate(liveStreamingProvider);
+    // Wait for the new data to load
+    await ref.read(liveStreamingProvider.future);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final liveAsync = ref.watch(liveStreamingProvider);
 
     return liveAsync.when(
-      data: (data) => LiveStreamingPage(data: data),
+      data: (data) {
+        // Debug: Print video data
+        debugPrint('=== LIVE STREAMING DEBUG ===');
+        debugPrint('Video ID: ${data.video.youtubeId}');
+        debugPrint('Is Live: ${data.video.isLive}');
+        debugPrint('YouTube URL: ${data.video.youtubeUrl}');
+        debugPrint('Title: ${data.video.title}');
+        debugPrint('============================');
+        
+        return LiveStreamingPage(
+          data: data, 
+          onRefresh: _onRefresh,
+        );
+      },
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (err, _) => Scaffold(body: Center(child: Text('Gagal memuat data: $err'))),
+      error: (err, _) => Scaffold(
+        body: RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: Center(child: Text('Gagal memuat data: $err')),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -29,7 +65,13 @@ class LiveStreamingScreen extends ConsumerWidget {
 // ==========================================
 class LiveStreamingPage extends StatefulWidget {
   final LiveStreamingData data;
-  const LiveStreamingPage({super.key, required this.data});
+  final Future<void> Function() onRefresh;
+  
+  const LiveStreamingPage({
+    super.key, 
+    required this.data,
+    required this.onRefresh,
+  });
 
   @override
   State<LiveStreamingPage> createState() => _LiveStreamingPageState();
@@ -49,6 +91,12 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
 
   void _initializePlayer() {
     final videoId = widget.data.video.youtubeId;
+    final isLive = widget.data.video.isLive;
+    
+    debugPrint('>>> Initializing YouTube Player');
+    debugPrint('>>> Video ID: $videoId');
+    debugPrint('>>> Is Live: $isLive');
+    
     if (videoId != null && videoId.isNotEmpty) {
       _hasValidVideo = true;
       _controller = YoutubePlayerController(
@@ -56,13 +104,16 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
         flags: YoutubePlayerFlags(
           autoPlay: true,
           mute: false,
-          isLive: widget.data.video.isLive,
+          isLive: isLive, // Use actual live status
           forceHD: false,
           enableCaption: false,
           hideControls: false,
           controlsVisibleAtStart: true,
         ),
       );
+      debugPrint('>>> YouTube Player created successfully');
+    } else {
+      debugPrint('>>> No valid video ID, skipping player creation');
     }
   }
 
