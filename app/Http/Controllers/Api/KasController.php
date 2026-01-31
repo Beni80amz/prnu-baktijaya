@@ -15,13 +15,22 @@ class KasController extends Controller
             ->select(DB::raw("SUM(CASE WHEN type = 'income' THEN amount ELSE -amount END) as balance"))
             ->value('balance') ?? 0;
 
-        $infaqShodaqoh = Transaction::where('type', 'income')
-            ->where('income_type_id', 1)
-            ->sum('amount') ?? 0;
+        $infaqTypeId = \App\Models\IncomeType::where('name', 'Infaq/Shodaqoh')->value('id');
+        $koinNuTypeId = \App\Models\IncomeType::where('name', 'Penghimpunan KOIN NU')->value('id');
 
-        $koinNu = Transaction::where('type', 'income')
-            ->where('income_type_id', 2)
-            ->sum('amount') ?? 0;
+        $infaqShodaqoh = 0;
+        if ($infaqTypeId) {
+            $infaqShodaqoh = Transaction::where('type', 'income')
+                ->where('income_type_id', $infaqTypeId)
+                ->sum('amount') ?? 0;
+        }
+
+        $koinNu = 0;
+        if ($koinNuTypeId) {
+            $koinNu = Transaction::where('type', 'income')
+                ->where('income_type_id', $koinNuTypeId)
+                ->sum('amount') ?? 0;
+        }
 
         $totalExpense = Transaction::where('type', 'expense')
             ->sum('amount') ?? 0;

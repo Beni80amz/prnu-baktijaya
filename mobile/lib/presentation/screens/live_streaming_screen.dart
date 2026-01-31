@@ -96,19 +96,16 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
   }
 
   void _initializePlayer({bool autoPlay = false}) {
-    final videoId = widget.data.video.youtubeId?.trim(); // Trim to ensure no whitespace
+    final videoId = widget.data.video.youtubeId?.trim();
     
     if (videoId != null && videoId.isNotEmpty) {
       _hasValidVideo = true;
-      // Dispose previous if exists
-      _controller?.dispose();
-      
       _controller = YoutubePlayerController(
         initialVideoId: videoId,
         flags: YoutubePlayerFlags(
           autoPlay: autoPlay,
           mute: false,
-          isLive: false, // FORCE FALSE: Suspect backward compatibility issue with VODs
+          isLive: widget.data.video.isLive, 
           forceHD: false,
           enableCaption: false,
           controlsVisibleAtStart: true,
@@ -127,33 +124,38 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
   // ==========================================
   // FIXED LAYOUT & PLAY BUTTON
   // ==========================================
+  // ==========================================
+  // FIXED LAYOUT & PLAY BUTTON
+  // ==========================================
   bool _isPlaying = false;
+  bool _isPlayerReady = false;
 
   void _onManualPlay() {
     setState(() {
-      _isPlaying = true; // Hide button immediately
-      _playerKey = UniqueKey(); // Force widget rebuild
-      _initializePlayer(autoPlay: true); // Re-init with AutoPlay
+      _isPlaying = true;
     });
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-       const SnackBar(content: Text('Memutar video...'), duration: Duration(seconds: 1)),
-    );
+    if (_isPlayerReady) {
+      _controller?.play();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // ... (rest of build remains same, just update calling points if needed)
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? LiveStreamColors.backgroundDark : LiveStreamColors.backgroundLight;
-    final textColor = isDark ? Colors.white : Colors.black;
-
+    // ... (rest of build remains same)
+    // IMPORTANT: I am NOT returning the full build method here, just the modified sections.
+    // However, the tool requires contiguous blocks. 
+    // I will target the specific methods instead.
+    
+    // Note: Since I cannot replace multiple methods easily if they are far apart without including everything in between,
+    // I will focus on replacing the methods I see in the view.
+    
+    // ...
     return Scaffold(
-      backgroundColor: bgColor,
-      body: SafeArea(
+       // ... existing code ...
+       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context, isDark, widget.data.video.youtubeUrl),
+            _buildHeader(context, Theme.of(context).brightness == Brightness.dark, widget.data.video.youtubeUrl),
             Expanded(
               child: NestedScrollView(
                 headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -163,15 +165,15 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildVideoSection(),
-                          _buildEventInfo(isDark, textColor),
+                          _buildEventInfo(Theme.of(context).brightness == Brightness.dark, Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
                         ],
                       ),
                     ),
                     SliverPersistentHeader(
                       delegate: _SliverAppBarDelegate(
                         Container(
-                          color: bgColor,
-                          child: _buildTabBar(isDark, textColor),
+                          color: Theme.of(context).brightness == Brightness.dark ? LiveStreamColors.backgroundDark : LiveStreamColors.backgroundLight,
+                          child: _buildTabBar(Theme.of(context).brightness == Brightness.dark, Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
                         ),
                       ),
                       pinned: true,
@@ -192,50 +194,9 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
       ),
     );
   }
-  
-  Widget _buildHeader(BuildContext context, bool isDark, String? url) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: isDark ? LiveStreamColors.backgroundDark : LiveStreamColors.backgroundLight,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CircleAvatar(
-            backgroundColor: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
-            radius: 20,
-            child: IconButton(
-              icon: Icon(Icons.chevron_left, color: isDark ? Colors.white : Colors.black),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-          Text(
-            'Live Streaming',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white : Colors.black,
-            ),
-          ),
-          CircleAvatar(
-            backgroundColor: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
-            radius: 20,
-            child: IconButton(
-              icon: Icon(Icons.share, color: isDark ? Colors.white : Colors.black, size: 20),
-              onPressed: () {
-                if (url != null) {
-                  Share.share('Ayo tonton siaran langsung ini: $url');
-                }
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildVideoSection() {
     if (!_hasValidVideo) {
-       // ... error view ...
        return AspectRatio(
         aspectRatio: 16 / 9,
         child: Container(
@@ -260,57 +221,52 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
         alignment: Alignment.center,
         children: [
            YoutubePlayer(
-            key: _playerKey, // IMPORTANT: Key forces rebuild
             controller: _controller!,
             showVideoProgressIndicator: true,
             progressIndicatorColor: LiveStreamColors.primary,
             onReady: () {
-              // _controller!.play(); // Not needed if autoPlay: true
+              _isPlayerReady = true;
               _controller!.addListener(() {
                 if (mounted) {
-                   // Only update if playing state changes efficiently
                    if (_controller!.value.isPlaying != _isPlaying) {
                       setState(() => _isPlaying = _controller!.value.isPlaying);
-                   }
-
-                   // Check for errors
-                   if (_controller!.value.errorCode != 0) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error Code: ${_controller!.value.errorCode}'), 
-                          backgroundColor: Colors.red
-                        ),
-                      );
                    }
                 }
               });
             },
             onEnded: (meta) {
-               // Optional: _controller!.play();
+               setState(() => _isPlaying = false);
             },
           ),
           
           // MANUAL PLAY BUTTON OVERLAY
           if (!_isPlaying)
             GestureDetector(
-              onTap: _onManualPlay, // Use the proper handler
+              onTap: _onManualPlay,
               behavior: HitTestBehavior.opaque,
               child: Container(
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.6),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    )
-                  ]
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.black.withOpacity(0.4), // Darken background slightly to emphasize button
+                child: Center(
+                  child: Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.6),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 3),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                        )
+                      ]
+                    ),
+                    child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 48),
+                  ),
                 ),
-                child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 48),
               ),
             ),
           
