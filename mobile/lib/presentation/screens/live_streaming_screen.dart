@@ -8,6 +8,16 @@ import '../providers/providers.dart';
 import '../../data/models/live_streaming_model.dart';
 
 // ==========================================
+// CONSTANTS & THEME
+// ==========================================
+class LiveStreamColors {
+  static const Color primary = Color(0xFF11D452);
+  static const Color accentGold = Color(0xFFD4AF37);
+  static const Color backgroundLight = Color(0xFFF6F8F6);
+  static const Color backgroundDark = Color(0xFF102216);
+}
+
+// ==========================================
 // 1. ENTRY POINT: Fetch Data First
 // ==========================================
 class LiveStreamingScreen extends ConsumerStatefulWidget {
@@ -19,9 +29,7 @@ class LiveStreamingScreen extends ConsumerStatefulWidget {
 
 class _LiveStreamingScreenState extends ConsumerState<LiveStreamingScreen> {
   Future<void> _onRefresh() async {
-    // Invalidate the provider to refetch data
     ref.invalidate(liveStreamingProvider);
-    // Wait for the new data to load
     await ref.read(liveStreamingProvider.future);
   }
 
@@ -31,28 +39,24 @@ class _LiveStreamingScreenState extends ConsumerState<LiveStreamingScreen> {
 
     return liveAsync.when(
       data: (data) {
-        // Debug: Print video data
-        debugPrint('=== LIVE STREAMING DEBUG ===');
-        debugPrint('Video ID: ${data.video.youtubeId}');
-        debugPrint('Is Live: ${data.video.isLive}');
-        debugPrint('YouTube URL: ${data.video.youtubeUrl}');
-        debugPrint('Title: ${data.video.title}');
-        debugPrint('============================');
-        
         return LiveStreamingPage(
           data: data, 
           onRefresh: _onRefresh,
         );
       },
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () => const Scaffold(
+        backgroundColor: LiveStreamColors.backgroundDark,
+        body: Center(child: CircularProgressIndicator(color: LiveStreamColors.primary)),
+      ),
       error: (err, _) => Scaffold(
+        backgroundColor: LiveStreamColors.backgroundDark,
         body: RefreshIndicator(
           onRefresh: _onRefresh,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: SizedBox(
               height: MediaQuery.of(context).size.height,
-              child: Center(child: Text('Gagal memuat data: $err')),
+              child: Center(child: Text('Gagal memuat data: $err', style: const TextStyle(color: Colors.white))),
             ),
           ),
         ),
@@ -79,100 +83,108 @@ class LiveStreamingPage extends StatefulWidget {
 }
 
 class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTickerProviderStateMixin {
-  WebViewController? _controller;
+  YoutubePlayerController? _controller;
   late TabController _tabController;
   bool _hasValidVideo = false;
+  Key _playerKey = UniqueKey();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _initializePlayer();
+    _initializePlayer(autoPlay: false);
   }
 
-  void _initializePlayer() {
-    final videoId = widget.data.video.youtubeId;
+  void _initializePlayer({bool autoPlay = false}) {
+    final videoId = widget.data.video.youtubeId?.trim(); // Trim to ensure no whitespace
     
     if (videoId != null && videoId.isNotEmpty) {
       _hasValidVideo = true;
-      _controller = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setBackgroundColor(const Color(0xFF000000))
-        ..loadRequest(Uri.parse('https://www.youtube.com/embed/$videoId?autoplay=0&controls=1&playsinline=1'));
+      // Dispose previous if exists
+      _controller?.dispose();
+      
+      _controller = YoutubePlayerController(
+        initialVideoId: videoId,
+        flags: YoutubePlayerFlags(
+          autoPlay: autoPlay,
+          mute: false,
+          isLive: false, // FORCE FALSE: Suspect backward compatibility issue with VODs
+          forceHD: false,
+          enableCaption: false,
+          controlsVisibleAtStart: true,
+        ),
+      );
     }
   }
 
   @override
   void dispose() {
+    _controller?.dispose();
     _tabController.dispose();
     super.dispose();
   }
 
+  // ==========================================
+  // FIXED LAYOUT & PLAY BUTTON
+  // ==========================================
+  bool _isPlaying = false;
+
+  void _onManualPlay() {
+    setState(() {
+      _isPlaying = true; // Hide button immediately
+      _playerKey = UniqueKey(); // Force widget rebuild
+      _initializePlayer(autoPlay: true); // Re-init with AutoPlay
+    });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+       const SnackBar(content: Text('Memutar video...'), duration: Duration(seconds: 1)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // ... (rest of build remains same, just update calling points if needed)
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark ? const Color(0xFF102216) : const Color(0xFFF6F8F6);
-
-    // If no valid video, show fallback UI
-    if (!_hasValidVideo) {
-      return Scaffold(
-        backgroundColor: backgroundColor,
-        body: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(context, isDark, null),
-              _buildNoVideoPlaceholder(isDark),
-              _buildEventInfo(isDark, widget.data.info),
-              if (widget.data.upcoming.isNotEmpty)
-                _buildUpcomingSection(isDark, widget.data.upcoming),
-              _buildTabBar(isDark),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: const [
-                    LiveChatTab(),
-                    AttendanceTab(),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+    final bgColor = isDark ? LiveStreamColors.backgroundDark : LiveStreamColors.backgroundLight;
+    final textColor = isDark ? Colors.white : Colors.black;
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: bgColor,
       body: SafeArea(
         child: Column(
           children: [
-            // HEADER
             _buildHeader(context, isDark, widget.data.video.youtubeUrl),
-            
-            // VIDEO PLAYER
-            if (_hasValidVideo && _controller != null)
-               _buildVideoSection(widget.data.video, WebViewWidget(controller: _controller!))
-            else
-               _buildNoVideoPlaceholder(isDark),
-
-            // EVENT INFO
-            _buildEventInfo(isDark, widget.data.info),
-
-            // UPCOMING SCHEDULES
-            if (widget.data.upcoming.isNotEmpty)
-              _buildUpcomingSection(isDark, widget.data.upcoming),
-
-            // TABS
-            _buildTabBar(isDark),
-            
-            // TAB CONTENT
             Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: const [
-                  LiveChatTab(),
-                  AttendanceTab(),
-                ],
+              child: NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) {
+                  return [
+                    SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildVideoSection(),
+                          _buildEventInfo(isDark, textColor),
+                        ],
+                      ),
+                    ),
+                    SliverPersistentHeader(
+                      delegate: _SliverAppBarDelegate(
+                        Container(
+                          color: bgColor,
+                          child: _buildTabBar(isDark, textColor),
+                        ),
+                      ),
+                      pinned: true,
+                    ),
+                  ];
+                },
+                body: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    LiveChatTab(upcoming: widget.data.upcoming),
+                    const AttendanceTab(),
+                  ],
+                ),
               ),
             ),
           ],
@@ -180,58 +192,39 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
       ),
     );
   }
-
-  Widget _buildNoVideoPlaceholder(bool isDark) {
+  
+  Widget _buildHeader(BuildContext context, bool isDark, String? url) {
     return Container(
-      height: 200,
-      color: Colors.black,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.videocam_off, color: Colors.white54, size: 48),
-            const SizedBox(height: 12),
-            Text(
-              'Video tidak tersedia',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Tidak ada live streaming atau video terbaru',
-              style: TextStyle(color: Colors.white38, fontSize: 11),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildUpcomingSection(bool isDark, List<UpcomingSchedule> upcoming) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: isDark ? Colors.white10 : Colors.black12)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      color: isDark ? LiveStreamColors.backgroundDark : LiveStreamColors.backgroundLight,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'JADWAL MENDATANG',
-              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1),
+          CircleAvatar(
+            backgroundColor: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
+            radius: 20,
+            child: IconButton(
+              icon: Icon(Icons.chevron_left, color: isDark ? Colors.white : Colors.black),
+              onPressed: () => Navigator.pop(context),
             ),
           ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 70,
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              scrollDirection: Axis.horizontal,
-              itemCount: upcoming.length,
-              itemBuilder: (context, index) {
-                final schedule = upcoming[index];
-                return _buildCompactUpcomingCard(schedule, isDark);
+          Text(
+            'Live Streaming',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ),
+          CircleAvatar(
+            backgroundColor: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
+            radius: 20,
+            child: IconButton(
+              icon: Icon(Icons.share, color: isDark ? Colors.white : Colors.black, size: 20),
+              onPressed: () {
+                if (url != null) {
+                  Share.share('Ayo tonton siaran langsung ini: $url');
+                }
               },
             ),
           ),
@@ -240,45 +233,139 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
     );
   }
 
-  Widget _buildCompactUpcomingCard(UpcomingSchedule schedule, bool isDark) {
-    return Container(
-      width: 200,
-      margin: const EdgeInsets.only(right: 12),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.white10 : Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: Image.network(
-              schedule.thumbnail,
-              width: 50,
-              height: 50,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(width: 50, height: 50, color: Colors.grey),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
+  Widget _buildVideoSection() {
+    if (!_hasValidVideo) {
+       // ... error view ...
+       return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Container(
+          color: Colors.black,
+          child: const Center(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  schedule.scheduledStart,
-                  style: TextStyle(fontSize: 9, color: AppTheme.teal, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  schedule.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-                ),
+                Icon(Icons.videocam_off, color: Colors.white54, size: 48),
+                SizedBox(height: 12),
+                Text('Video tidak tersedia', style: TextStyle(color: Colors.white70)),
               ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+           YoutubePlayer(
+            key: _playerKey, // IMPORTANT: Key forces rebuild
+            controller: _controller!,
+            showVideoProgressIndicator: true,
+            progressIndicatorColor: LiveStreamColors.primary,
+            onReady: () {
+              // _controller!.play(); // Not needed if autoPlay: true
+              _controller!.addListener(() {
+                if (mounted) {
+                   // Only update if playing state changes efficiently
+                   if (_controller!.value.isPlaying != _isPlaying) {
+                      setState(() => _isPlaying = _controller!.value.isPlaying);
+                   }
+
+                   // Check for errors
+                   if (_controller!.value.errorCode != 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error Code: ${_controller!.value.errorCode}'), 
+                          backgroundColor: Colors.red
+                        ),
+                      );
+                   }
+                }
+              });
+            },
+            onEnded: (meta) {
+               // Optional: _controller!.play();
+            },
+          ),
+          
+          // MANUAL PLAY BUTTON OVERLAY
+          if (!_isPlaying)
+            GestureDetector(
+              onTap: _onManualPlay, // Use the proper handler
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    )
+                  ]
+                ),
+                child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 48),
+              ),
+            ),
+          
+          // LIVE BADGE
+          Positioned(
+            top: 12,
+            left: 12,
+            child: IgnorePointer( 
+              child: Row(
+                children: [
+                  if (widget.data.video.isLive)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.red[600],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        children: [
+                           Container(
+                             width: 6,
+                             height: 6,
+                             decoration: const BoxDecoration(
+                               color: Colors.white,
+                               shape: BoxShape.circle,
+                             ),
+                           ),
+                           const SizedBox(width: 6),
+                           const Text(
+                             'LIVE',
+                             style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                           ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.visibility, color: Colors.white, size: 12),
+                        SizedBox(width: 4),
+                        Text(
+                          '1.2k Menonton', // Mock data
+                          style: TextStyle(color: Colors.white, fontSize: 10),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -286,164 +373,90 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
     );
   }
 
-  Widget _buildHeader(BuildContext context, bool isDark, String? url) {
+  Widget _buildEventInfo(bool isDark, Color textColor) {
+    final info = widget.data.info;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          IconButton(
-            icon: Icon(Icons.chevron_left, color: isDark ? Colors.white : Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
           Text(
-            'Live Streaming',
+            info.title,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white : Colors.black,
+              height: 1.3,
+              color: textColor,
             ),
           ),
-          IconButton(
-            icon: Icon(Icons.share, color: isDark ? Colors.white : Colors.black),
-            onPressed: () {
-              if (url != null) {
-                Share.share('Ayo tonton siaran langsung ini: $url');
-              }
-            },
+          const SizedBox(height: 12),
+          Row(
+            children: [
+               Container(
+                 width: 40,
+                 height: 40,
+                 decoration: BoxDecoration(
+                   shape: BoxShape.circle,
+                   border: Border.all(color: LiveStreamColors.primary, width: 1.5),
+                   image: DecorationImage(
+                     image: NetworkImage(info.speakerAvatar ?? 'https://via.placeholder.com/150'),
+                     fit: BoxFit.cover,
+                     onError: (_, __) {},
+                   ),
+                 ),
+               ),
+               const SizedBox(width: 12),
+               Expanded(
+                 child: Column(
+                   crossAxisAlignment: CrossAxisAlignment.start,
+                   children: [
+                     Row(
+                       children: [
+                         Flexible(
+                           child: Text(
+                             info.channelName, // Or Speaker Name if available in future
+                               style: TextStyle(
+                               fontSize: 14,
+                               fontWeight: FontWeight.w600,
+                               color: textColor,
+                             ),
+                           ),
+                         ),
+                         const SizedBox(width: 4),
+                         const Icon(Icons.verified, color: LiveStreamColors.accentGold, size: 14),
+                       ],
+                     ),
+                     Text(
+                       'PRNU Baktijaya • Sukmajaya, Depok', // Hardcoded location as per plan
+                       style: TextStyle(
+                         fontSize: 11,
+                         color: isDark ? Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.6),
+                       ),
+                     ),
+                   ],
+                 ),
+               ),
+            ],
           ),
+          const SizedBox(height: 8),
+          Divider(color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1)),
         ],
       ),
     );
   }
 
-  Widget _buildVideoSection(LiveVideo video, Widget playerWidget) {
-    return Column(
-      children: [
-        Stack(
-          children: [
-            // The Player Widget passed from Builder
-            playerWidget,
-            
-            // STATUS BADGE OVERLAY
-            Positioned(
-              top: 10,
-              left: 10,
-              child: IgnorePointer(
-                child: Row(
-                  children: [
-                    if (video.isLive)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.circle, color: Colors.white, size: 8),
-                            SizedBox(width: 4),
-                            Text(
-                              'LIVE',
-                              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      )
-                    else 
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text('VIDEO TERBARU', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEventInfo(bool isDark, LiveInfo info) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: isDark ? Colors.white10 : Colors.black12)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppTheme.teal),
-              image: DecorationImage(
-                image: (info.speakerAvatar != null && info.speakerAvatar!.isNotEmpty)
-                    ? NetworkImage(info.speakerAvatar!)
-                    : NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuAg4azJBetkBkyD_LODwbpE-dzqvivEZBdLutvyb6bkMonZ6wvg0BUrhv6RBMCSfUoyA6tjNAtkGRvhgb9TkTdieSCIcoJ_Ihgx9RWUzko6Ke__ZOUks0_H-Nh5-343MIbwtWs-SKJl3Hqbveun2mDit_qRzklFDlZ0DnNPfiODkCkItUZmoyCaKqoJxToX1ojbUdGlsR7JO85DImoHTY7FjXTN9eXprsfb-J9oXGa0FNbhdaeDdZ9fQQsIStOJ81JcTe5UkOVaYHk'),
-                fit: BoxFit.cover,
-                onError: (e, s) {}, 
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  info.title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        info.channelName,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: isDark ? Colors.grey[300] : Colors.grey[800],
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.verified, color: AppTheme.gold, size: 14),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabBar(bool isDark) {
+  Widget _buildTabBar(bool isDark, Color textColor) {
     return Container(
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: isDark ? Colors.white10 : Colors.black12)),
+        border: Border(bottom: BorderSide(color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05))),
       ),
       child: TabBar(
         controller: _tabController,
-        labelColor: AppTheme.teal,
-        unselectedLabelColor: Colors.grey,
-        indicatorColor: AppTheme.teal,
+        labelColor: LiveStreamColors.primary,
+        unselectedLabelColor: isDark ? Colors.grey[500] : Colors.grey[600],
+        indicatorColor: LiveStreamColors.primary,
+        indicatorSize: TabBarIndicatorSize.tab,
+        labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
         tabs: const [
           Tab(text: 'Live Chat'),
           Tab(text: 'Daftar Hadir'),
@@ -453,11 +466,30 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
   }
 }
 
+// Delegate for Sticky Header
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget _child;
+  _SliverAppBarDelegate(this._child);
+
+  @override
+  double get minExtent => 48.0;
+  @override
+  double get maxExtent => 48.0;
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return _child;
+  }
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => true;
+}
+
+
 // ==========================================
-// 3. LIVE CHAT TAB (Isolated Consumer)
+// 3. LIVE CHAT TAB
 // ==========================================
 class LiveChatTab extends ConsumerStatefulWidget {
-  const LiveChatTab({super.key});
+  final List<UpcomingSchedule> upcoming;
+  const LiveChatTab({super.key, required this.upcoming});
 
   @override
   ConsumerState<LiveChatTab> createState() => _LiveChatTabState();
@@ -479,19 +511,12 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
     try {
       final repository = ref.read(repositoryProvider);
       await repository.postLiveChat(name, message);
-      // Refresh chat list after sending
       ref.invalidate(liveChatsProvider);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal mengirim pesan: $e')));
       }
     }
-  }
-
-  @override
-  void dispose() {
-    _chatController.dispose();
-    super.dispose();
   }
 
   @override
@@ -505,55 +530,69 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
         Expanded(
           child: RefreshIndicator(
             onRefresh: _onRefresh,
-            child: chatsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Center(child: Text('Gagal memuat chat', style: TextStyle(color: Colors.grey))),
-              data: (chats) {
-                if (chats.isEmpty) {
-                   return ListView(
-                     physics: const AlwaysScrollableScrollPhysics(),
-                     children: const [
-                       SizedBox(height: 100),
-                       Center(child: Text('Belum ada pesan. Jadilah yang pertama!', style: TextStyle(color: Colors.grey))),
-                     ],
-                   );
-                }
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: chats.length,
-                  itemBuilder: (context, index) {
-                    final chat = chats[index];
-                    Color avatarColor = Colors.grey; 
-                    if (chat.avatarColor.contains('red')) avatarColor = Colors.red;
-                    else if (chat.avatarColor.contains('blue')) avatarColor = Colors.blue;
-                    else if (chat.avatarColor.contains('green')) avatarColor = Colors.green;
-                    else if (chat.avatarColor.contains('yellow')) avatarColor = Colors.orange;
-                    else if (chat.avatarColor.contains('purple')) avatarColor = Colors.purple;
-                    
-                    final initialsLength = chat.name.length < 2 ? chat.name.length : 2;
-                    return _buildChatMessage(
-                      chat.name.substring(0, initialsLength).toUpperCase(), 
-                      chat.name, 
-                      chat.message, 
-                      chat.createdAt, 
-                      isDark, 
-                      avatarColor
+            child: CustomScrollView(
+              slivers: [
+                chatsAsync.when(
+                  loading: () => const SliverFillRemaining(
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (err, _) => const SliverFillRemaining(
+                    child: Center(child: Text('Gagal memuat chat', style: TextStyle(color: Colors.grey))),
+                  ),
+                  data: (chats) {
+                    if (chats.isEmpty) {
+                      return const SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 200,
+                          child: Center(child: Text('Belum ada pesan.', style: TextStyle(color: Colors.grey))),
+                        ),
+                      );
+                    }
+                    return SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final chat = chats[index];
+                           // Determine avatar color roughly based on name hash or stored color
+                          Color avatarColor = Colors.grey; 
+                          if (chat.avatarColor.contains('red')) avatarColor = Colors.red;
+                          else if (chat.avatarColor.contains('blue')) avatarColor = Colors.blue;
+                          else if (chat.avatarColor.contains('green')) avatarColor = Colors.green;
+                          else if (chat.avatarColor.contains('yellow')) avatarColor = Colors.orange;
+                          else if (chat.avatarColor.contains('purple')) avatarColor = Colors.purple;
+                          
+                          final isAdmin = chat.name.toLowerCase().contains('admin');
+                          final startName = chat.name.length > 0 ? chat.name[0] : '?';
+
+                          return isAdmin 
+                          ? _buildAdminMessage(chat, isDark)
+                          : _buildUserMessage(chat, isDark, avatarColor, startName);
+                        },
+                        childCount: chats.length,
+                      ),
                     );
                   },
-                );
-              },
+                ),
+                
+                // UPCOMING SECTION
+                if (widget.upcoming.isNotEmpty) 
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 24, bottom: 80),
+                      child: _buildUpcomingSection(isDark),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
-        // CHAT INPUT
+        
+        // INPUT AREA
         _buildChatInput(isDark),
       ],
     );
   }
 
-  Widget _buildChatMessage(String initials, String name, String message, String time, bool isDark, Color color,
-      {bool isSpecial = false, bool isQuote = false}) {
+  Widget _buildUserMessage(LiveChatModel chat, bool isDark, Color color, String initials) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -561,13 +600,13 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
         children: [
           CircleAvatar(
             radius: 16,
-            backgroundColor: isSpecial ? color.withOpacity(0.2) : (isDark ? Colors.white10 : Colors.grey[200]),
+            backgroundColor: isDark ? Colors.white10 : Colors.grey[200],
             child: Text(
-              initials,
+              initials.toUpperCase(),
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: isSpecial ? color : (isDark ? Colors.white : Colors.black),
+                color: isDark ? Colors.white : Colors.black87,
               ),
             ),
           ),
@@ -579,39 +618,111 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
                 Row(
                   children: [
                     Text(
-                      name,
-                      style: TextStyle(
+                      chat.name,
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: isSpecial ? color : AppTheme.teal,
+                        color: LiveStreamColors.primary,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      time,
+                      chat.createdAt,
                       style: TextStyle(
                         fontSize: 10,
                         color: Colors.grey[500],
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: isSpecial ? color.withOpacity(0.1) : (isDark ? Colors.white.withOpacity(0.05) : Colors.grey[100]),
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(12),
-                      bottomLeft: Radius.circular(12),
-                      bottomRight: Radius.circular(12),
-                    ),
+                    color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    message,
+                    chat.message,
                     style: TextStyle(
                       fontSize: 13,
                       height: 1.4,
+                      color: isDark ? Colors.grey[300] : Colors.grey[800],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdminMessage(LiveChatModel chat, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: LiveStreamColors.accentGold.withOpacity(0.2),
+              border: Border.all(color: LiveStreamColors.accentGold.withOpacity(0.3)),
+            ),
+            child: const Center(
+              child: Text(
+                'M',
+                style: TextStyle(color: LiveStreamColors.accentGold, fontWeight: FontWeight.bold, fontSize: 12),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Text(
+                      'Admin Baktijaya',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: LiveStreamColors.accentGold,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.stars, color: LiveStreamColors.accentGold, size: 12),
+                     const SizedBox(width: 8),
+                    Text(
+                      chat.createdAt,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[500],
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: LiveStreamColors.accentGold.withOpacity(0.1),
+                    border: Border.all(color: LiveStreamColors.accentGold.withOpacity(0.2)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    chat.message,
+                    style: TextStyle(
+                      fontSize: 13,
+                      height: 1.4,
+                      fontStyle: FontStyle.italic,
                       color: isDark ? Colors.grey[300] : Colors.grey[800],
                     ),
                   ),
@@ -628,89 +739,218 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF102216) : Colors.white,
+        color: isDark ? LiveStreamColors.backgroundDark : LiveStreamColors.backgroundLight,
         border: Border(top: BorderSide(color: isDark ? Colors.white10 : Colors.black12)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
       ),
       child: Column(
         children: [
-          // QUICK ACTIONS
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _buildQuickAction('Masha Allah ❤️', isDark),
-                _buildQuickAction('Alhamdulillah ✨', isDark),
-                _buildQuickAction('Barakallah 🙏', isDark),
-                _buildQuickAction('Subhanallah 🤲', isDark),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
                 child: TextField(
                   controller: _chatController,
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
                   decoration: InputDecoration(
-                    hintText: 'Tulis pesan...',
-                    hintStyle: TextStyle(color: isDark ? Colors.grey[600] : Colors.grey[400]),
-                    fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey[100],
+                    hintText: 'Tulis komentar atau doa...',
+                    hintStyle: TextStyle(color: isDark ? Colors.grey[600] : Colors.grey[400], fontSize: 13),
+                    fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
                     filled: true,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(30),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   ),
                 ),
               ),
               const SizedBox(width: 8),
-              Container(
-                decoration: const BoxDecoration(
-                  color: AppTheme.teal,
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.send, color: Colors.white, size: 20),
-                  onPressed: _sendChat,
+              GestureDetector(
+                onTap: _sendChat,
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: LiveStreamColors.primary,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: LiveStreamColors.primary.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.send, color: Colors.white, size: 20),
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 28,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                _buildChip('🤲 Kirim Doa', isDark),
+                _buildChip('✨ Sholawat', isDark),
+                _buildChip('👏 Amin', isDark),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildQuickAction(String label, bool isDark) {
+  Widget _buildChip(String label, bool isDark) {
     return GestureDetector(
       onTap: () {
         _chatController.text = label;
-        _sendChat();
       },
       child: Container(
         margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey[100],
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
+          color: LiveStreamColors.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: LiveStreamColors.primary.withOpacity(0.2)),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: isDark ? Colors.grey[400] : Colors.grey[600],
+        child: Center(
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: LiveStreamColors.primary,
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildUpcomingSection(bool isDark) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'JADWAL LIVE MENDATANG',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const Text(
+                'Lihat Semua',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: LiveStreamColors.primary,
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 280,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: widget.upcoming.length,
+            itemBuilder: (context, index) {
+              final schedule = widget.upcoming[index];
+              return Container(
+                width: 240,
+                margin: const EdgeInsets.only(right: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: AspectRatio(
+                            aspectRatio: 16/9,
+                            child: Image.network(
+                              schedule.thumbnail,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_,__,___) => Container(color: Colors.grey[800]),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.7),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              schedule.scheduledStart,
+                              style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      schedule.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Bersama Ustadz ...', // Placeholder as per design or data
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: isDark ? Colors.white.withOpacity(0.5) : Colors.black.withOpacity(0.5),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      decoration: BoxDecoration(
+                        color: LiveStreamColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.notifications_active, size: 12, color: LiveStreamColors.primary),
+                          SizedBox(width: 4),
+                          Text(
+                            'Ingatkan Saya',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: LiveStreamColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -718,14 +958,14 @@ class _LiveChatTabState extends ConsumerState<LiveChatTab> {
 // ==========================================
 // 4. ATTENDANCE TAB
 // ==========================================
-class AttendanceTab extends ConsumerStatefulWidget {
+class AttendanceTab extends StatefulWidget {
   const AttendanceTab({super.key});
 
   @override
-  ConsumerState<AttendanceTab> createState() => _AttendanceTabState();
+  State<AttendanceTab> createState() => _AttendanceTabState();
 }
 
-class _AttendanceTabState extends ConsumerState<AttendanceTab> {
+class _AttendanceTabState extends State<AttendanceTab> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _regionController = TextEditingController();
@@ -734,7 +974,6 @@ class _AttendanceTabState extends ConsumerState<AttendanceTab> {
   void _submitAttendance() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isSubmitting = true);
-      // Simulate API call
       await Future.delayed(const Duration(seconds: 1));
       if (mounted) {
         setState(() => _isSubmitting = false);
@@ -748,15 +987,9 @@ class _AttendanceTabState extends ConsumerState<AttendanceTab> {
   }
 
   @override
-  void dispose() {
-    _nameController.dispose();
-    _regionController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -765,31 +998,33 @@ class _AttendanceTabState extends ConsumerState<AttendanceTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Daftar Hadir Jamaah',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
             ),
             const SizedBox(height: 8),
             Text(
-              'Silakan isi form di bawah ini untuk mendata kehadiran Anda dalam kajian live ini.',
-              style: TextStyle(color: Colors.grey[500], height: 1.5),
+              'Silakan isi form di bawah ini untuk mendata kehadiran Anda.',
+              style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], fontSize: 13, height: 1.5),
             ),
-            const SizedBox(height: 32),
-            _buildTextField('Nama Lengkap', 'Masukkan nama Anda', _nameController, isDark),
-            const SizedBox(height: 20),
-            _buildTextField('Asal Wilayah / Ranting', 'Contoh: Baktijaya, Sukmajaya', _regionController, isDark),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
+            _buildTextField('Nama Lengkap', _nameController, isDark),
+            const SizedBox(height: 16),
+            _buildTextField('Asal Wilayah', _regionController, isDark),
+            const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 48,
               child: ElevatedButton(
                 onPressed: _isSubmitting ? null : _submitAttendance,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.teal,
+                  backgroundColor: LiveStreamColors.primary,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 4,
+                  shadowColor: LiveStreamColors.primary.withOpacity(0.4),
                 ),
                 child: _isSubmitting
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                     : const Text('Kirim Kehadiran', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
               ),
             ),
@@ -799,29 +1034,32 @@ class _AttendanceTabState extends ConsumerState<AttendanceTab> {
     );
   }
 
-  Widget _buildTextField(String label, String hint, TextEditingController controller, bool isDark) {
+  Widget _buildTextField(String label, TextEditingController controller, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.grey[300] : Colors.grey[700],
+          ),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
+          style: TextStyle(color: isDark ? Colors.white : Colors.black),
           decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(color: isDark ? Colors.grey[600] : Colors.grey[400]),
-            fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey[100],
             filled: true,
+            fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           ),
-          validator: (val) => val == null || val.isEmpty ? 'Field ini wajib diisi' : null,
+          validator: (value) => value!.isEmpty ? 'Wajib diisi' : null,
         ),
       ],
     );
