@@ -15,9 +15,10 @@ class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+    protected static ?string $navigationIcon = 'heroicon-o-wallet';
 
     protected static ?string $navigationGroup = 'Keuangan';
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $label = 'Transaksi Keuangan';
 

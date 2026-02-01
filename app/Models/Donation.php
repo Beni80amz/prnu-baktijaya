@@ -11,9 +11,11 @@ class Donation extends Model
         'campaign_name',
         'donor_name',
         'donor_phone',
+        'region_id',
         'donor_purpose',
         'amount',
         'payment_method',
+        'bank_name',
         'is_anonymous',
         'payment_proof',
         'status',
@@ -25,4 +27,9 @@ class Donation extends Model
         'is_anonymous' => 'boolean',
         'verified_at' => 'datetime',
     ];
+
+    public function region()
+    {
+        return $this->belongsTo(Region::class);
+    }
 }

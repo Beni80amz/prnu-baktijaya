@@ -13,6 +13,8 @@ use App\Models\Gallery;
 use App\Models\Mosque;
 use App\Models\Agenda;
 use App\Models\Setting;
+use App\Models\Region;
+use App\Models\Donation;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -131,9 +133,35 @@ class Home extends Component
                 'button_text' => $s->button_text
             ])->values()->toArray();
 
+            // Fetch Campaigns
+            $campaigns = \App\Models\Campaign::where('is_active', true)
+                ->orderBy('order')
+                ->get()
+                ->map(fn($c) => [
+                    'id' => $c->id,
+                    'title' => $c->title,
+                    'image' => asset('storage/' . $c->image),
+                    'subtitle' => $c->description,
+                    'target_amount' => $c->target_amount,
+                ]);
+
+            // Fallback if no campaigns in DB
+            if ($campaigns->isEmpty()) {
+                $campaigns = collect([
+                    [
+                        'id' => 0,
+                        'title' => 'Donasi Umum',
+                        'image' => 'https://placehold.co/800x400/166534/FFFFFF?text=Donasi+Umum',
+                        'subtitle' => 'Bantu kami dalam berbagai program kebaikan',
+                        'target_amount' => 0,
+                    ],
+                ]);
+            }
+
             return view('livewire.home', [
                 'settings' => Setting::pluck('value', 'key')->toArray(),
                 'sliders' => $sliders,
+                'donationCampaigns' => $campaigns->toArray(), // Pass campaigns to view
                 'news' => News::with('category')->where('status', 'published')->latest()->take(2)->get(),
                 'dawuh' => Dawuh::where('is_active', true)->latest()->first(),
                 'galleries' => Gallery::where('is_active', true)->latest()->take(6)->get(),
@@ -143,6 +171,7 @@ class Home extends Component
                     ->orderBy('time', 'asc')
                     ->take(3)
                     ->get(),
+                'regions' => Region::orderBy('name')->get(),
                 'totalInfaq' => Transaction::where('type', 'income')
                     ->whereMonth('transaction_date', Carbon::now()->month)
                     ->whereYear('transaction_date', Carbon::now()->year)
@@ -164,6 +193,34 @@ class Home extends Component
                 'totalInfaq' => 0,
                 'totalZakat' => 0,
             ]);
+        }
+    }
+    public function saveDonation($data)
+    {
+        try {
+            // Basic cleaning/validation manually since data comes from JS object
+            $amount = (int) preg_replace('/[^0-9]/', '', $data['amount']);
+
+            // Generate ID if not provided or just generate new one to be safe
+            $transactionId = 'DON-' . Carbon::now()->format('dmY') . '-' . mt_rand(1000, 9999);
+
+            \App\Models\Donation::create([
+                'transaction_id' => $transactionId,
+                'campaign_name' => $data['campaign_name'] ?? 'Donasi Umum',
+                'donor_name' => $data['donor_name'] ?? 'Hamba Allah',
+                'donor_phone' => $data['donor_phone'] ?? null,
+                'region_id' => !empty($data['region_id']) ? $data['region_id'] : null,
+                'amount' => $amount,
+                'payment_method' => $data['payment_method'] ?? 'Transfer',
+                'bank_name' => $data['bank_name'] ?? null,
+                'is_anonymous' => $data['is_anonymous'] ?? false,
+                'status' => 'pending',
+            ]);
+
+            return $transactionId;
+        } catch (\Exception $e) {
+            Log::error('Donation save error: ' . $e->getMessage());
+            return null;
         }
     }
 }

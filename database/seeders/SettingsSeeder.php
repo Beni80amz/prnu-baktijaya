@@ -58,7 +58,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'contact_phone',
-                'value' => '0894-0967-7894',
+                'value' => '6289409677894',
                 'type' => 'text',
                 'group' => 'contact',
                 'label' => 'Nomor Telepon',
@@ -191,7 +191,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'donation_bank_owner',
-                'value' => 'PRNU Baktijaya',
+                'value' => 'Asep Saepudin',
                 'type' => 'text',
                 'group' => 'donation',
                 'label' => 'Nama Pemilik Rekening',
@@ -225,23 +225,55 @@ class SettingsSeeder extends Seeder
             // E-Wallets
             [
                 'key' => 'donation_ewallet_ovo',
-                'value' => '-',
+                'value' => '6289663095866',
                 'type' => 'text',
                 'group' => 'donation',
                 'label' => 'Nomor OVO',
                 'description' => 'Nomor OVO untuk transfer (Kosongkan jika tidak ada).',
             ],
             [
+                'key' => 'donation_ewallet_ovo_qr',
+                'value' => null,
+                'type' => 'image',
+                'group' => 'donation',
+                'label' => 'QR Code OVO',
+                'description' => 'Upload gambar QR Code OVO (Screenshot dari aplikasi OVO).',
+            ],
+            [
                 'key' => 'donation_ewallet_gopay',
-                'value' => '-',
+                'value' => '6289663095866',
                 'type' => 'text',
                 'group' => 'donation',
                 'label' => 'Nomor Gopay',
                 'description' => 'Nomor Gopay untuk transfer (Kosongkan jika tidak ada).',
             ],
             [
+                'key' => 'donation_ewallet_gopay_qr',
+                'value' => null,
+                'type' => 'image',
+                'group' => 'donation',
+                'label' => 'QR Code GoPay',
+                'description' => 'Upload gambar QR Code GoPay (Screenshot dari aplikasi Gojek).',
+            ],
+            [
+                'key' => 'donation_ewallet_dana',
+                'value' => '6289663095866',
+                'type' => 'text',
+                'group' => 'donation',
+                'label' => 'Nomor DANA',
+                'description' => 'Nomor DANA untuk transfer (Kosongkan jika tidak ada).',
+            ],
+            [
+                'key' => 'donation_ewallet_dana_qr',
+                'value' => null,
+                'type' => 'image',
+                'group' => 'donation',
+                'label' => 'QR Code DANA',
+                'description' => 'Upload gambar QR Code DANA (Screenshot dari aplikasi DANA).',
+            ],
+            [
                 'key' => 'donation_contact_person',
-                'value' => '6281234567890', // Default placeholder
+                'value' => '6289663095866', // Default placeholder
                 'type' => 'text',
                 'group' => 'donation',
                 'label' => 'WhatsApp Bendahara',
@@ -250,10 +282,24 @@ class SettingsSeeder extends Seeder
         ];
 
         foreach ($settings as $setting) {
-            Setting::updateOrCreate(
-                ['key' => $setting['key']],
-                $setting
-            );
+            $existing = Setting::where('key', $setting['key'])->first();
+
+            if ($existing) {
+                // Only update metadata, keep the value if it's already set (don't overwrite user uploads)
+                $existing->update([
+                    'type' => $setting['type'],
+                    'group' => $setting['group'],
+                    'label' => $setting['label'],
+                    'description' => $setting['description'],
+                ]);
+
+                // If existing value is empty or default placeholder, update it with the seeder value
+                if (empty($existing->value) || $existing->value === '-' || $existing->value === '1234 5678 90') {
+                    $existing->update(['value' => $setting['value']]);
+                }
+            } else {
+                Setting::create($setting);
+            }
         }
     }
 }
