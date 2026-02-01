@@ -25,64 +25,80 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                    Forms\Components\TextInput::make('name')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('email')
-                        ->email()
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\Select::make('roles')
-                        ->relationship('roles', 'name')
-                        ->multiple()
-                        ->preload()
-                        ->searchable(),
-                    Forms\Components\TextInput::make('password')
-                        ->password()
-                        ->dehydrateStateUsing(fn($state) => filled($state) ? bcrypt($state) : null)
-                        ->dehydrated(fn($state) => filled($state))
-                        ->required(fn(string $context): bool => $context === 'create')
-                        ->maxLength(255),
-                ]);
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('email')
+                    ->email()
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Select::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'active' => 'Aktif',
+                        'pending' => 'Tertunda (Pending)',
+                        'inactive' => 'Non-Aktif',
+                    ])
+                    ->required()
+                    ->default('active'),
+                Forms\Components\TextInput::make('password')
+                    ->password()
+                    ->dehydrateStateUsing(fn($state) => filled($state) ? bcrypt($state) : null)
+                    ->dehydrated(fn($state) => filled($state))
+                    ->required(fn(string $context): bool => $context === 'create')
+                    ->maxLength(255),
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                    Tables\Columns\TextColumn::make('name')
-                        ->searchable(),
-                    Tables\Columns\TextColumn::make('email')
-                        ->searchable(),
-                    Tables\Columns\TextColumn::make('roles.name')
-                        ->badge()
-                        ->color(fn(string $state): string => match ($state) {
-                            'super_admin' => 'danger',
-                            'admin_konten' => 'success',
-                            'admin_bendahara' => 'warning',
-                            'admin_layanan' => 'info',
-                            default => 'gray',
-                        }),
-                    Tables\Columns\TextColumn::make('created_at')
-                        ->dateTime()
-                        ->sortable()
-                        ->toggleable(isToggledHiddenByDefault: true),
-                    Tables\Columns\TextColumn::make('updated_at')
-                        ->dateTime()
-                        ->sortable()
-                        ->toggleable(isToggledHiddenByDefault: true),
-                ])
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'super_admin' => 'danger',
+                        'admin_konten' => 'success',
+                        'admin_bendahara' => 'warning',
+                        'admin_layanan' => 'info',
+                        'kontributor' => 'gray',
+                        default => 'gray',
+                    }),
+                Tables\Columns\SelectColumn::make('status')
+                    ->options([
+                        'active' => 'Aktif',
+                        'pending' => 'Pending',
+                        'inactive' => 'Non-Aktif',
+                    ])
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
             ->filters([
-                    //
-                ])
+                //
+            ])
             ->actions([
-                    Tables\Actions\EditAction::make(),
-                ])
+                Tables\Actions\EditAction::make(),
+            ])
             ->bulkActions([
-                    Tables\Actions\BulkActionGroup::make([
-                        Tables\Actions\DeleteBulkAction::make(),
-                    ]),
-                ]);
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getRelations(): array

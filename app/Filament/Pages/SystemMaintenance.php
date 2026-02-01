@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Process;
 
 class SystemMaintenance extends Page
 {
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasRole('super_admin');
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
     protected static string $view = 'filament.pages.system-maintenance';

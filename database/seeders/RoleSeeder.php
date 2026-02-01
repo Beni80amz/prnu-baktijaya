@@ -80,14 +80,69 @@ class RoleSeeder extends Seeder
             'manage_mosques',
         ]);
 
+        // Create Kontributor role
+        $kontributor = Role::firstOrCreate(['name' => 'kontributor']);
+        $kontributor->givePermissionTo([
+            'manage_news',
+            'manage_articles',
+            'manage_gallery',
+        ]);
+
         // Create Super Admin user
-        $superAdminUser = User::firstOrCreate(
-            ['email' => 'admin@prnubaktijaya.or.id'],
+        $password = bcrypt('@#adminprnubaktijaya@#');
+
+        $superAdminUser = User::updateOrCreate(
+            ['email' => 'admin@prnubaktijaya.org'],
             [
                 'name' => 'Super Admin',
-                'password' => bcrypt('password'),
+                'password' => $password,
+                'status' => 'active',
             ]
         );
         $superAdminUser->assignRole('super_admin');
+
+        // Admin Konten
+        $adminKontenUser = User::updateOrCreate(
+            ['email' => 'editor@prnubaktijaya.org'],
+            [
+                'name' => 'Admin Konten',
+                'password' => $password,
+                'status' => 'active',
+            ]
+        );
+        $adminKontenUser->assignRole('admin_konten');
+
+        // Admin Bendahara
+        $adminBendaharaUser = User::updateOrCreate(
+            ['email' => 'bendahara@prnubaktijaya.org'],
+            [
+                'name' => 'Admin Bendahara',
+                'password' => $password,
+                'status' => 'active',
+            ]
+        );
+        $adminBendaharaUser->assignRole('admin_bendahara');
+
+        // Admin Layanan
+        $adminLayananUser = User::updateOrCreate(
+            ['email' => 'layanan@prnubaktijaya.org'],
+            [
+                'name' => 'Admin Layanan',
+                'password' => $password,
+                'status' => 'active',
+            ]
+        );
+        $adminLayananUser->assignRole('admin_layanan');
+
+        // Kontributor
+        $kontributorUser = User::updateOrCreate(
+            ['email' => 'kontributor@prnubaktijaya.org'],
+            [
+                'name' => 'Kontributor Jamaah',
+                'password' => $password,
+                'status' => 'active',
+            ]
+        );
+        $kontributorUser->assignRole('kontributor');
     }
 }
