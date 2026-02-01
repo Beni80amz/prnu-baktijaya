@@ -124,9 +124,6 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
   // ==========================================
   // FIXED LAYOUT & PLAY BUTTON
   // ==========================================
-  // ==========================================
-  // FIXED LAYOUT & PLAY BUTTON
-  // ==========================================
   bool _isPlaying = false;
   bool _isPlayerReady = false;
 
@@ -141,21 +138,16 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    // ... (rest of build remains same)
-    // IMPORTANT: I am NOT returning the full build method here, just the modified sections.
-    // However, the tool requires contiguous blocks. 
-    // I will target the specific methods instead.
-    
-    // Note: Since I cannot replace multiple methods easily if they are far apart without including everything in between,
-    // I will focus on replacing the methods I see in the view.
-    
-    // ...
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? LiveStreamColors.backgroundDark : LiveStreamColors.backgroundLight;
+    final textColor = isDark ? Colors.white : Colors.black;
+
     return Scaffold(
-       // ... existing code ...
-       body: SafeArea(
+      backgroundColor: bgColor,
+      body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context, Theme.of(context).brightness == Brightness.dark, widget.data.video.youtubeUrl),
+            _buildHeader(context, isDark, widget.data.video.youtubeUrl),
             Expanded(
               child: NestedScrollView(
                 headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -165,15 +157,15 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildVideoSection(),
-                          _buildEventInfo(Theme.of(context).brightness == Brightness.dark, Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
+                          _buildEventInfo(isDark, textColor),
                         ],
                       ),
                     ),
                     SliverPersistentHeader(
                       delegate: _SliverAppBarDelegate(
                         Container(
-                          color: Theme.of(context).brightness == Brightness.dark ? LiveStreamColors.backgroundDark : LiveStreamColors.backgroundLight,
-                          child: _buildTabBar(Theme.of(context).brightness == Brightness.dark, Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
+                          color: bgColor,
+                          child: _buildTabBar(isDark, textColor),
                         ),
                       ),
                       pinned: true,
@@ -191,6 +183,46 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, bool isDark, String? url) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      color: isDark ? LiveStreamColors.backgroundDark : LiveStreamColors.backgroundLight,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CircleAvatar(
+            backgroundColor: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
+            radius: 20,
+            child: IconButton(
+              icon: Icon(Icons.chevron_left, color: isDark ? Colors.white : Colors.black),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+          Text(
+            'Live Streaming',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ),
+          CircleAvatar(
+            backgroundColor: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
+            radius: 20,
+            child: IconButton(
+              icon: Icon(Icons.share, color: isDark ? Colors.white : Colors.black, size: 20),
+              onPressed: () {
+                if (url != null) {
+                  Share.share('Ayo tonton siaran langsung ini: $url');
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -239,7 +271,6 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
             },
           ),
           
-          // MANUAL PLAY BUTTON OVERLAY
           if (!_isPlaying)
             GestureDetector(
               onTap: _onManualPlay,
@@ -247,7 +278,7 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
               child: Container(
                 width: double.infinity,
                 height: double.infinity,
-                color: Colors.black.withOpacity(0.4), // Darken background slightly to emphasize button
+                color: Colors.black.withOpacity(0.4),
                 child: Center(
                   child: Container(
                     width: 72,
@@ -270,7 +301,6 @@ class _LiveStreamingPageState extends State<LiveStreamingPage> with SingleTicker
               ),
             ),
           
-          // LIVE BADGE
           Positioned(
             top: 12,
             left: 12,
