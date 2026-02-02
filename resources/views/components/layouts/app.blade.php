@@ -236,8 +236,8 @@
     <!-- Footer -->
     <footer class="bg-background-dark text-gray-400 pt-24 pb-12 border-t border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
-                <div class="col-span-1 md:col-span-1">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-20">
+                <div class="col-span-1 md:col-span-3">
                     <div class="flex items-center gap-3 text-white mb-8">
                         <div
                             class="size-10 rounded-full flex items-center justify-center overflow-hidden shadow-lg shadow-primary/20 {{ empty($settings['site_logo']) ? 'bg-primary' : '' }}">
@@ -255,31 +255,31 @@
                         {{ $settings['site_description'] ?? 'Mewujudkan masyarakat Baktijaya yang religius, toleran, dan sejahtera melalui pengamalan nilai-nilai Ahlussunnah wal Jamaah an-Nahdliyah.' }}
                     </p>
                     <div class="flex gap-4">
-                        @if(!empty($settings['social_facebook']))
-                            <a class="size-10 bg-white/5 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"
-                                href="{{ $settings['social_facebook'] }}" target="_blank" rel="noopener noreferrer"><span
-                                    class="material-symbols-outlined">public</span></a>
-                        @endif
-                        @if(!empty($settings['social_instagram']))
-                            <a class="size-10 bg-white/5 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"
-                                href="{{ $settings['social_instagram'] }}" target="_blank" rel="noopener noreferrer"><span
-                                    class="material-symbols-outlined">share</span></a>
-                        @endif
-                        @if(!empty($settings['social_youtube']))
-                            <a class="size-10 bg-white/5 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"
-                                href="{{ $settings['social_youtube'] }}" target="_blank" rel="noopener noreferrer"><span
-                                    class="material-symbols-outlined">smart_display</span></a>
-                        @endif
-                        @if(!empty($settings['contact_email']))
-                            <a class="size-10 bg-white/5 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"
-                                href="mailto:{{ $settings['contact_email'] }}"><span
-                                    class="material-symbols-outlined">mail</span></a>
-                        @endif
+                        @php
+                            $socials = [
+                                ['icon' => 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg', 'link' => $settings['social_facebook'] ?? '#'],
+                                ['icon' => 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png', 'link' => $settings['social_instagram'] ?? '#'],
+                                ['icon' => 'https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg', 'link' => 'https://wa.me/' . ($settings['contact_phone'] ?? '')],
+                                ['icon' => 'https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png', 'link' => $settings['social_youtube'] ?? '#'],
+                            ];
+                        @endphp
+                        @foreach($socials as $social)
+                            @if(!empty($social['link']) && $social['link'] !== '#')
+                                <a href="{{ $social['link'] }}" target="_blank"
+                                    class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center hover:bg-primary/10 transition-colors group">
+                                    <img src="{{ $social['icon'] }}"
+                                        class="w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity" alt="Social">
+                                </a>
+                            @endif
+                        @endforeach
                     </div>
                 </div>
-                <div>
+                <div class="col-span-1 md:col-span-2">
                     <h4 class="text-white font-black text-sm uppercase tracking-widest mb-8">Tautan Cepat</h4>
                     <ul class="space-y-4 text-sm font-semibold">
+                        <li><button @click="$dispatch('open-donation')" 
+                                class="hover:text-accent transition-colors flex items-center gap-2 text-left">
+                                <span class="w-1.5 h-1.5 bg-primary rounded-full"></span> Donasi Online</button></li>
                         <li><a class="hover:text-accent transition-colors flex items-center gap-2"
                                 href="{{ route('profil') }}" wire:navigate><span
                                     class="w-1.5 h-1.5 bg-primary rounded-full"></span> Tentang Kami</a></li>
@@ -291,13 +291,10 @@
                                 href="{{ route('artikel.index') }}" wire:navigate><span
                                     class="w-1.5 h-1.5 bg-primary rounded-full"></span> Program Kerja</a></li>
                         <li><a class="hover:text-accent transition-colors flex items-center gap-2" href="#"
-                                wire:navigate><span class="w-1.5 h-1.5 bg-primary rounded-full"></span> Layanan
-                                Ambulans</a></li>
-                        <li><a class="hover:text-accent transition-colors flex items-center gap-2" href="#"
                                 wire:navigate><span class="w-1.5 h-1.5 bg-primary rounded-full"></span> Kontak</a></li>
                     </ul>
                 </div>
-                <div>
+                <div class="col-span-1 md:col-span-3">
                     <h4 class="text-white font-black text-sm uppercase tracking-widest mb-8">Hubungi Kami</h4>
                     <ul class="space-y-6 text-sm font-medium">
                         <li class="flex items-start gap-4">
@@ -315,35 +312,54 @@
                         </li>
                     </ul>
                 </div>
-                <div>
-                    <h4 class="text-white font-black text-sm uppercase tracking-widest mb-8">Lokasi Kami</h4>
-                    <div
-                        class="rounded-xl overflow-hidden h-44 bg-white/5 border border-white/10 group shadow-2xl relative">
-                        @if(!empty($settings['contact_map_link']))
-                            @if(Str::contains($settings['contact_map_link'], '<iframe'))
-                                <div
-                                    class="w-full h-full [&_iframe]:w-full! [&_iframe]:h-full! [&_iframe]:border-0 [&_iframe]:absolute [&_iframe]:inset-0">
-                                    {!! $settings['contact_map_link'] !!}
-                                </div>
-                            @else
-                                <a href="{{ $settings['contact_map_link'] }}" target="_blank"
-                                    class="block w-full h-full relative">
-                                    <img alt="Klik Lihat Peta"
-                                        class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500"
-                                        src="https://placehold.co/600x400/png?text=Klik+Lihat+Peta" />
-                                    <div
-                                        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/30">
-                                        <span
-                                            class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg text-white font-bold text-xs border border-white/20">Buka
-                                            di Maps</span>
+                <div class="col-span-1 md:col-span-4">
+                    <h4 class="text-white font-black text-sm uppercase tracking-widest mb-8">Lokasi & Website</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Maps -->
+                        <div class="rounded-xl overflow-hidden h-44 bg-white/5 border border-white/10 group shadow-2xl relative">
+                            @if(!empty($settings['contact_map_link']))
+                                @if(Str::contains($settings['contact_map_link'], '<iframe'))
+                                    <div class="w-full h-full [&_iframe]:w-full! [&_iframe]:h-full! [&_iframe]:border-0 [&_iframe]:absolute [&_iframe]:inset-0">
+                                        {!! $settings['contact_map_link'] !!}
                                     </div>
-                                </a>
+                                @else
+                                    <a href="{{ $settings['contact_map_link'] }}" target="_blank" class="block w-full h-full relative">
+                                        <img alt="Klik Lihat Peta" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" src="https://placehold.co/600x400/png?text=Klik+Lihat+Peta" />
+                                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/30">
+                                            <span class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg text-white font-bold text-xs border border-white/20">Buka di Maps</span>
+                                        </div>
+                                    </a>
+                                @endif
+                            @else
+                                <div class="w-full h-full bg-white/5 flex items-center justify-center text-gray-500 text-xs text-center p-4">
+                                    Map belum tersedia
+                                </div>
                             @endif
-                        @else
-                            <div class="w-full h-full bg-white/5 flex items-center justify-center text-gray-500 text-xs">
-                                Map belum tersedia
+                        </div>
+
+                        <!-- QR Code -->
+                        <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center text-center group hover:bg-white/10 transition-colors">
+                            @php
+                                $url = 'https://prnubaktijaya.org/';
+                                $logoPath = !empty($settings['site_logo']) ? storage_path('app/public/' . $settings['site_logo']) : null;
+                                $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(120)
+                                    ->format('svg')
+                                    ->errorCorrection('H')
+                                    ->margin(0);
+
+                                if ($logoPath && file_exists($logoPath)) {
+                                    try {
+                                        $qrCodeString = $qrCode->merge($logoPath, 0.3, true)->generate($url);
+                                    } catch (\Exception $e) { $qrCodeString = $qrCode->generate($url); }
+                                } else { $qrCodeString = $qrCode->generate($url); }
+                            @endphp
+                            <div class="bg-white p-1.5 rounded-lg mb-2 shadow-lg">
+                                <div class="size-24 flex items-center justify-center overflow-hidden">
+                                    {!! $qrCodeString !!}
+                                </div>
                             </div>
-                        @endif
+                            <span class="text-[8px] font-black text-gray-400 uppercase tracking-tighter leading-tight">WEBSITE QR CODE</span>
+                        </div>
                     </div>
                 </div>
             </div>
