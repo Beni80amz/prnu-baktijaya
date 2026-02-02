@@ -236,8 +236,8 @@
     <!-- Footer -->
     <footer class="bg-background-dark text-gray-400 pt-24 pb-12 border-t border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-20">
-                <div class="col-span-1 md:col-span-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 mb-20">
+                <div class="col-span-1 md:col-span-1 lg:col-span-4">
                     <div class="flex items-center gap-3 text-white mb-8">
                         <div
                             class="size-10 rounded-full flex items-center justify-center overflow-hidden shadow-lg shadow-primary/20 {{ empty($settings['site_logo']) ? 'bg-primary' : '' }}">
@@ -274,7 +274,7 @@
                         @endforeach
                     </div>
                 </div>
-                <div class="col-span-1 md:col-span-2">
+                <div class="col-span-1 md:col-span-1 lg:col-span-2">
                     <h4 class="text-white font-black text-sm uppercase tracking-widest mb-8">Tautan Cepat</h4>
                     <ul class="space-y-4 text-sm font-semibold">
                         <li><button @click="$dispatch('open-donation')" 
@@ -294,7 +294,7 @@
                                 wire:navigate><span class="w-1.5 h-1.5 bg-primary rounded-full"></span> Kontak</a></li>
                     </ul>
                 </div>
-                <div class="col-span-1 md:col-span-3">
+                <div class="col-span-1 md:col-span-1 lg:col-span-3">
                     <h4 class="text-white font-black text-sm uppercase tracking-widest mb-8">Hubungi Kami</h4>
                     <ul class="space-y-6 text-sm font-medium">
                         <li class="flex items-start gap-4">
@@ -312,11 +312,11 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-span-1 md:col-span-4">
+                <div class="col-span-1 md:col-span-1 lg:col-span-3">
                     <h4 class="text-white font-black text-sm uppercase tracking-widest mb-8">Lokasi & Website</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-4">
                         <!-- Maps -->
-                        <div class="rounded-xl overflow-hidden h-44 bg-white/5 border border-white/10 group shadow-2xl relative">
+                        <div class="rounded-xl overflow-hidden h-32 bg-white/5 border border-white/10 group shadow-2xl relative">
                             @if(!empty($settings['contact_map_link']))
                                 @if(Str::contains($settings['contact_map_link'], '<iframe'))
                                     <div class="w-full h-full [&_iframe]:w-full! [&_iframe]:h-full! [&_iframe]:border-0 [&_iframe]:absolute [&_iframe]:inset-0">
@@ -338,27 +338,16 @@
                         </div>
 
                         <!-- QR Code -->
-                        <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center text-center group hover:bg-white/10 transition-colors">
-                            @php
-                                $url = 'https://prnubaktijaya.org/';
-                                $logoPath = !empty($settings['site_logo']) ? storage_path('app/public/' . $settings['site_logo']) : null;
-                                $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(120)
-                                    ->format('svg')
-                                    ->errorCorrection('H')
-                                    ->margin(0);
-
-                                if ($logoPath && file_exists($logoPath)) {
-                                    try {
-                                        $qrCodeString = $qrCode->merge($logoPath, 0.3, true)->generate($url);
-                                    } catch (\Exception $e) { $qrCodeString = $qrCode->generate($url); }
-                                } else { $qrCodeString = $qrCode->generate($url); }
-                            @endphp
-                            <div class="bg-white p-1.5 rounded-lg mb-2 shadow-lg">
-                                <div class="size-24 flex items-center justify-center overflow-hidden">
+                        <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-4 group hover:bg-white/10 transition-colors">
+                            <div class="bg-white p-1 rounded-lg shadow-lg shrink-0">
+                                <div class="size-16 flex items-center justify-center overflow-hidden">
                                     {!! $qrCodeString !!}
                                 </div>
                             </div>
-                            <span class="text-[8px] font-black text-gray-400 uppercase tracking-tighter leading-tight">WEBSITE QR CODE</span>
+                            <div class="text-left">
+                                <span class="text-[10px] font-black text-white uppercase tracking-widest leading-none block">Website</span>
+                                <span class="text-[8px] font-bold text-gray-500 uppercase tracking-tighter leading-tight block mt-1">Scan for Info</span>
+                            </div>
                         </div>
                     </div>
                 </div>
