@@ -1588,7 +1588,7 @@
     @push('scripts')
         <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
         <script>
-            window.downloadDonationProof = fun                           ction(data) {
+            window.downloadDonationProof = function (data) {
                 // 1. Prepare Data
                 const amount = new Intl.NumberFormat('id-ID').format(data.totalAmount);
                 const name = data.userInfo.anonymous ? 'Hamba Allah' : data.userInfo.name;
@@ -1615,47 +1615,47 @@
 
                 // 3. Construct HTML with safe Inline Styles (HEX colors only)
                 container.innerHTML = `
-                                                                                                                <div style="width: 100%; height: 8px; background-color: #064e3b; position: absolute; top: 0; left: 0;"></div>
+                                                                                                                    <div style="width: 100%; height: 8px; background-color: #064e3b; position: absolute; top: 0; left: 0;"></div>
 
-                                                                                                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
-                                                                                                                    <div>
-                                                                                                                        <h4 style="font-weight: 900; font-size: 18px; color: #064e3b; margin: 0;">BUKTI DONASI</h4>
-                                                                                                                        <p style="font-size: 10px; color: #6b7280; margin: 0;">PRNU Baktijaya</p>
+                                                                                                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+                                                                                                                        <div>
+                                                                                                                            <h4 style="font-weight: 900; font-size: 18px; color: #064e3b; margin: 0;">BUKTI DONASI</h4>
+                                                                                                                            <p style="font-size: 10px; color: #6b7280; margin: 0;">PRNU Baktijaya</p>
+                                                                                                                        </div>
+                                                                                                                        <div style="text-align: right;">
+                                                                                                                            <p style="font-size: 10px; color: #9ca3af; margin: 0;">${date}</p>
+                                                                                                                            <p style="font-size: 12px; font-family: monospace; font-weight: bold; color: #4b5563; margin: 0;">${id}</p>
+                                                                                                                        </div>
                                                                                                                     </div>
-                                                                                                                    <div style="text-align: right;">
-                                                                                                                        <p style="font-size: 10px; color: #9ca3af; margin: 0;">${date}</p>
-                                                                                                                        <p style="font-size: 12px; font-family: monospace; font-weight: bold; color: #4b5563; margin: 0;">${id}</p>
-                                                                                                                    </div>
-                                                                                                                </div>
 
-                                                                                                                <div style="text-align: center; padding: 24px 0; border-top: 1px dashed #e5e7eb; border-bottom: 1px dashed #e5e7eb; margin: 16px 0;">
-                                                                                                                    <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">Nominal Donasi</p>
-                                                                                                                    <h2 style="font-size: 30px; font-weight: 900; color: #1f2937; margin: 0;">Rp ${amount}</h2>
-                                                                                                                </div>
+                                                                                                                    <div style="text-align: center; padding: 24px 0; border-top: 1px dashed #e5e7eb; border-bottom: 1px dashed #e5e7eb; margin: 16px 0;">
+                                                                                                                        <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">Nominal Donasi</p>
+                                                                                                                        <h2 style="font-size: 30px; font-weight: 900; color: #1f2937; margin: 0;">Rp ${amount}</h2>
+                                                                                                                    </div>
 
-                                                                                                                <div style="font-size: 14px; color: #374151;">
-                                                                                                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                                                                                                        <span style="color: #6b7280;">Tujuan</span>
-                                                                                                                        <span style="font-weight: bold; text-align: right; max-width: 60%;">${campaign}</span>
+                                                                                                                    <div style="font-size: 14px; color: #374151;">
+                                                                                                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                                                                                            <span style="color: #6b7280;">Tujuan</span>
+                                                                                                                            <span style="font-weight: bold; text-align: right; max-width: 60%;">${campaign}</span>
+                                                                                                                        </div>
+                                                                                                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                                                                                            <span style="color: #6b7280;">Nama</span>
+                                                                                                                            <span style="font-weight: bold;">${name}</span>
+                                                                                                                        </div>
+                                                                                                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                                                                                            <span style="color: #6b7280;">Metode</span>
+                                                                                                                            <span style="font-weight: bold; text-transform: uppercase;">${method}</span>
+                                                                                                                        </div>
+                                                                                                                        <div style="display: flex; justify-content: space-between;">
+                                                                                                                            <span style="color: #6b7280;">Status</span>
+                                                                                                                            <span style="font-weight: bold; color: #f97316;">Menunggu Verifikasi</span>
+                                                                                                                        </div>
                                                                                                                     </div>
-                                                                                                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                                                                                                        <span style="color: #6b7280;">Nama</span>
-                                                                                                                        <span style="font-weight: bold;">${name}</span>
-                                                                                                                    </div>
-                                                                                                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                                                                                                        <span style="color: #6b7280;">Metode</span>
-                                                                                                                        <span style="font-weight: bold; text-transform: uppercase;">${method}</span>
-                                                                                                                    </div>
-                                                                                                                    <div style="display: flex; justify-content: space-between;">
-                                                                                                                        <span style="color: #6b7280;">Status</span>
-                                                                                                                        <span style="font-weight: bold; color: #f97316;">Menunggu Verifikasi</span>
-                                                                                                                    </div>
-                                                                                                                </div>
 
-                                                                                                                <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #f3f4f6; text-align: center;">
-                                                                                                                    <p style="font-size: 10px; color: #9ca3af; margin: 0;">Jazakumullah Khairan Katsiran</p>
-                                                                                                                </div>
-                                                                                                            `;
+                                                                                                                    <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #f3f4f6; text-align: center;">
+                                                                                                                        <p style="font-size: 10px; color: #9ca3af; margin: 0;">Jazakumullah Khairan Katsiran</p>
+                                                                                                                    </div>
+                                                                                                                `;
 
                 document.body.appendChild(container);
 
@@ -1846,26 +1846,26 @@
                             var item = document.createElement('div');
                             item.className = 'bg-gray-50 dark:bg-white/5 p-4 rounded-xl border border-primary/5 dark:border-white/5 hover:border-primary/30 transition-colors group animate-fade-in';
                             item.innerHTML = `
-                                                                                                                                                                            <div class="flex items-start gap-4">
-                                                                                                                                                                                <div class="w-10 h-10 bg-white dark:bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm text-gray-500">
-                                                                                                                                                                                    <span class="material-symbols-outlined text-xl">location_on</span>
-                                                                                                                                                                                </div>
-                                                                                                                                                                                <div class="flex-1 min-w-0">
-                                                                                                                                                                                    <div class="flex justify-between items-start">
-                                                                                                                                                                                        <h4 class="font-bold text-sm text-background-dark dark:text-white line-clamp-1 group-hover:text-primary transition-colors">${name}</h4>
-                                                                                                                                                                                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">Otomatis</span>
+                                                                                                                                                                                <div class="flex items-start gap-4">
+                                                                                                                                                                                    <div class="w-10 h-10 bg-white dark:bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm text-gray-500">
+                                                                                                                                                                                        <span class="material-symbols-outlined text-xl">location_on</span>
                                                                                                                                                                                     </div>
-                                                                                                                                                                                    <p class="text-xs text-gray-500 dark:text-white/50 mt-0.5 line-clamp-2">${address || 'Alamat sekitar area ini'}</p>
+                                                                                                                                                                                    <div class="flex-1 min-w-0">
+                                                                                                                                                                                        <div class="flex justify-between items-start">
+                                                                                                                                                                                            <h4 class="font-bold text-sm text-background-dark dark:text-white line-clamp-1 group-hover:text-primary transition-colors">${name}</h4>
+                                                                                                                                                                                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">Otomatis</span>
+                                                                                                                                                                                        </div>
+                                                                                                                                                                                        <p class="text-xs text-gray-500 dark:text-white/50 mt-0.5 line-clamp-2">${address || 'Alamat sekitar area ini'}</p>
 
-                                                                                                                                                                                    <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" 
-                                                                                                                                                                                        target="_blank"
-                                                                                                                                                                                        class="inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:text-accent mt-2 uppercase tracking-wide">
-                                                                                                                                                                                        <span class="material-symbols-outlined text-[14px]">directions</span>
-                                                                                                                                                                                        Petunjuk Arah
-                                                                                                                                                                                    </a>
+                                                                                                                                                                                        <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" 
+                                                                                                                                                                                            target="_blank"
+                                                                                                                                                                                            class="inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:text-accent mt-2 uppercase tracking-wide">
+                                                                                                                                                                                            <span class="material-symbols-outlined text-[14px]">directions</span>
+                                                                                                                                                                                            Petunjuk Arah
+                                                                                                                                                                                        </a>
+                                                                                                                                                                                    </div>
                                                                                                                                                                                 </div>
-                                                                                                                                                                            </div>
-                                                                                                                                                                        `;
+                                                                                                                                                                            `;
                             listContainer.appendChild(item);
 
                             // Update Count
@@ -1889,13 +1889,13 @@
 
                         var radius = 1000;
                         var query = `
-                                                                                                                                                                        [out:json][timeout:25];
-                                                                                                                                                                        (
-                                                                                                                                                                          node["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
-                                                                                                                                                                          way["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
-                                                                                                                                                                        );
-                                                                                                                                                                        out center; 
-                                                                                                                                                                    `;
+                                                                                                                                                                            [out:json][timeout:25];
+                                                                                                                                                                            (
+                                                                                                                                                                              node["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
+                                                                                                                                                                              way["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
+                                                                                                                                                                            );
+                                                                                                                                                                            out center; 
+                                                                                                                                                                        `;
 
                         fetch('https://overpass-api.de/api/interpreter', {
                             method: 'POST',
