@@ -1452,380 +1452,513 @@
         </div>
     </div>
 
+    <!-- Footer / Website Info -->
+    <footer class="bg-white dark:bg-[#161615] py-16 border-t border-gray-100 dark:border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
+                <!-- Organization Info -->
+                <div class="space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-12 rounded-full overflow-hidden bg-primary/10 dark:bg-white/10 flex items-center justify-center p-2">
+                            @if(!empty($settings['site_logo']))
+                                <img src="{{ asset('storage/' . $settings['site_logo']) }}" alt="Logo"
+                                    class="w-full h-full object-contain">
+                            @else
+                                <span class="material-symbols-outlined text-primary text-3xl">mosque</span>
+                            @endif
+                        </div>
+                        <div>
+                            <h3 class="font-black text-xl text-background-dark dark:text-white leading-tight">PRNU
+                                BAKTIJAYA</h3>
+                            <p class="text-[10px] text-accent font-bold uppercase tracking-widest">Ranting Baktijaya -
+                                Sukmajaya</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 dark:text-white/60 leading-relaxed">
+                        {{ $settings['site_description'] ?? 'Mewujudkan masyarakat Baktijaya yang religius, toleran, dan sejahtera melalui pengamalan nilai-nilai Ahlussunnah wal Jamaah an-Nahdliyah.' }}
+                    </p>
+                    <div class="flex gap-4">
+                        @php
+                            $socials = [
+                                ['icon' => 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg', 'link' => $settings['social_facebook'] ?? '#'],
+                                ['icon' => 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png', 'link' => $settings['social_instagram'] ?? '#'],
+                                ['icon' => 'https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg', 'link' => 'https://wa.me/' . ($settings['contact_phone'] ?? '')],
+                                ['icon' => 'https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png', 'link' => $settings['social_youtube'] ?? '#'],
+                            ];
+                        @endphp
+                        @foreach($socials as $social)
+                            @if($social['link'] !== '#')
+                                <a href="{{ $social['link'] }}" target="_blank"
+                                    class="w-10 h-10 bg-gray-100 dark:bg-white/5 rounded-xl flex items-center justify-center hover:bg-primary/10 transition-colors group">
+                                    <img src="{{ $social['icon'] }}"
+                                        class="w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity" alt="Social">
+                                </a>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <h4 class="font-black text-xs uppercase tracking-widest text-gray-400">Layanan</h4>
+                        <ul class="space-y-3">
+                            <li><a href="{{ route('donasi') }}"
+                                    class="text-sm text-gray-600 dark:text-white/60 hover:text-primary font-bold transition-colors">Donasi
+                                    Online</a></li>
+                            <li><a href="{{ route('kas-digital') }}"
+                                    class="text-sm text-gray-600 dark:text-white/60 hover:text-primary font-bold transition-colors">Kas
+                                    Digital</a></li>
+                            <li><a href="{{ route('tanya-kiai') }}"
+                                    class="text-sm text-gray-600 dark:text-white/60 hover:text-primary font-bold transition-colors">Tanya
+                                    Kiai</a></li>
+                        </ul>
+                    </div>
+                    <div class="space-y-4">
+                        <h4 class="font-black text-xs uppercase tracking-widest text-gray-400">Tentang</h4>
+                        <ul class="space-y-3">
+                            <li><a href="#"
+                                    class="text-sm text-gray-600 dark:text-white/60 hover:text-primary font-bold transition-colors">Profil
+                                    PRNU</a></li>
+                            <li><a href="#"
+                                    class="text-sm text-gray-600 dark:text-white/60 hover:text-primary font-bold transition-colors">Struktur
+                                    Organisasi</a></li>
+                            <li><a href="#"
+                                    class="text-sm text-gray-600 dark:text-white/60 hover:text-primary font-bold transition-colors">Kontak</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Dynamic QR Code Section -->
+                <div
+                    class="bg-gray-50 dark:bg-white/5 rounded-3xl p-8 border border-primary/5 dark:border-white/5 text-center flex flex-col items-center justify-center">
+                    <h4 class="font-black text-xs uppercase tracking-widest text-gray-400 mb-4">Website QR Code</h4>
+
+                    <div class="bg-white p-3 rounded-2xl shadow-xl shadow-primary/5 inline-block mb-4">
+                        @php
+                            $url = 'https://prnubaktijaya.org/';
+                            $logoPath = !empty($settings['site_logo']) ? storage_path('app/public/' . $settings['site_logo']) : null;
+
+                            $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(160)
+                                ->format('svg')
+                                ->errorCorrection('H')
+                                ->margin(0);
+
+                            if ($logoPath && file_exists($logoPath)) {
+                                try {
+                                    $qrCodeString = $qrCode->merge($logoPath, 0.3, true)->generate($url);
+                                } catch (\Exception $e) {
+                                    $qrCodeString = $qrCode->generate($url);
+                                }
+                            } else {
+                                $qrCodeString = $qrCode->generate($url);
+                            }
+                        @endphp
+                        <div class="w-40 h-40 flex items-center justify-center overflow-hidden">
+                            {!! $qrCodeString !!}
+                        </div>
+                    </div>
+
+                    <p
+                        class="text-[10px] font-black text-gray-400 uppercase tracking-tighter max-w-[150px] mx-auto leading-tight">
+                        Scan untuk mengunjungi website resmi PRNU Baktijaya
+                    </p>
+                </div>
+            </div>
+
+            <div
+                class="mt-16 pt-8 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+                <p class="text-xs text-gray-500 font-bold uppercase tracking-widest">
+                    &copy; {{ date('Y') }} PRNU BAKTIJAYA. ALL RIGHTS RESERVED.
+                </p>
+                <div class="flex gap-6">
+                    <a href="#"
+                        class="text-[10px] font-black text-gray-400 hover:text-primary uppercase tracking-widest transition-colors">Privacy
+                        Policy</a>
+                    <a href="#"
+                        class="text-[10px] font-black text-gray-400 hover:text-primary uppercase tracking-widest transition-colors">Terms
+                        of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     @push('scripts')
         <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
         <script>
-            window.downloadDonationProof = function (data) {
-                // 1. Prepare Data
-                const amount = new Intl.NumberFormat('id-ID').format(data.totalAmount);
-                const name = data.userInfo.anonymous ? 'Hamba Allah' : data.userInfo.name;
-                const method = data.paymentType === 'qris' ? 'QRIS' : ('Transfer ' + data.selectedBank);
-                const date = data.todayDate;
-                const id = data.donationId;
-                const campaign = data.campaignName;
+                window.downloadDonationProof = fun                           ction (data) {
+                    // 1. Prepare Data
+                    const amount = new Intl.NumberFormat('id-ID').format(data.totalAmount);
+                    const name = data.userInfo.anonymous ? 'Hamba Allah' : data.userInfo.name;
+                    const method = data.paymentType === 'qris' ? 'QRIS' : ('Transfer ' + data.selectedBank);
+                    const date = data.todayDate;
+                    const id = data.donationId;
+                    const campaign = data.campaignName;
 
-                // 2. Create Clean Container for Capture
-                const container = document.createElement('div');
-                Object.assign(container.style, {
-                    position: 'fixed',
-                    top: '-9999px',
-                    left: '-9999px',
-                    width: '400px',
-                    padding: '30px',
-                    backgroundColor: '#ffffff',
-                    fontFamily: 'sans-serif',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '16px',
-                    color: '#1f2937',
-                    zIndex: '-9999'
-                });
-
-                // 3. Construct HTML with safe Inline Styles (HEX colors only)
-                container.innerHTML = `
-                                                                                                        <div style="width: 100%; height: 8px; background-color: #064e3b; position: absolute; top: 0; left: 0;"></div>
-
-                                                                                                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
-                                                                                                            <div>
-                                                                                                                <h4 style="font-weight: 900; font-size: 18px; color: #064e3b; margin: 0;">BUKTI DONASI</h4>
-                                                                                                                <p style="font-size: 10px; color: #6b7280; margin: 0;">PRNU Baktijaya</p>
-                                                                                                            </div>
-                                                                                                            <div style="text-align: right;">
-                                                                                                                <p style="font-size: 10px; color: #9ca3af; margin: 0;">${date}</p>
-                                                                                                                <p style="font-size: 12px; font-family: monospace; font-weight: bold; color: #4b5563; margin: 0;">${id}</p>
-                                                                                                            </div>
-                                                                                                        </div>
-
-                                                                                                        <div style="text-align: center; padding: 24px 0; border-top: 1px dashed #e5e7eb; border-bottom: 1px dashed #e5e7eb; margin: 16px 0;">
-                                                                                                            <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">Nominal Donasi</p>
-                                                                                                            <h2 style="font-size: 30px; font-weight: 900; color: #1f2937; margin: 0;">Rp ${amount}</h2>
-                                                                                                        </div>
-
-                                                                                                        <div style="font-size: 14px; color: #374151;">
-                                                                                                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                                                                                                <span style="color: #6b7280;">Tujuan</span>
-                                                                                                                <span style="font-weight: bold; text-align: right; max-width: 60%;">${campaign}</span>
-                                                                                                            </div>
-                                                                                                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                                                                                                <span style="color: #6b7280;">Nama</span>
-                                                                                                                <span style="font-weight: bold;">${name}</span>
-                                                                                                            </div>
-                                                                                                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                                                                                                <span style="color: #6b7280;">Metode</span>
-                                                                                                                <span style="font-weight: bold; text-transform: uppercase;">${method}</span>
-                                                                                                            </div>
-                                                                                                            <div style="display: flex; justify-content: space-between;">
-                                                                                                                <span style="color: #6b7280;">Status</span>
-                                                                                                                <span style="font-weight: bold; color: #f97316;">Menunggu Verifikasi</span>
-                                                                                                            </div>
-                                                                                                        </div>
-
-                                                                                                        <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #f3f4f6; text-align: center;">
-                                                                                                            <p style="font-size: 10px; color: #9ca3af; margin: 0;">Jazakumullah Khairan Katsiran</p>
-                                                                                                        </div>
-                                                                                                    `;
-
-                document.body.appendChild(container);
-
-                // 4. Capture
-                html2canvas(container, {
-                    scale: 2,
-                    backgroundColor: '#ffffff',
-                    useCORS: true
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = 'Bukti-Donasi-' + data.donationId + '.png';
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                    document.body.removeChild(container);
-                }).catch(err => {
-                    console.error('Download Error:', err);
-                    document.body.removeChild(container);
-                    alert('Gagal: ' + err.message);
-                });
-            };
-
-            document.addEventListener('livewire:navigated', function () {
-                initMap();
-            });
-            document.addEventListener('DOMContentLoaded', function () {
-                initMap();
-            });
-
-            // Promo Section Slider (1 static + dynamic campaigns)
-            function promoSlider() {
-                return {
-                    activeSlide: 0,
-                    campaigns: window.donationCampaignsData || [],
-                    timer: null,
-                    get totalSlides() {
-                        return 1 + this.campaigns.length; // 1 static slide + dynamic campaigns
-                    },
-                    init() {
-                        this.startTimer();
-                    },
-                    nextSlide() {
-                        this.activeSlide = (this.activeSlide + 1) % this.totalSlides;
-                    },
-                    prevSlide() {
-                        this.activeSlide = (this.activeSlide - 1 + this.totalSlides) % this.totalSlides;
-                    },
-                    goToSlide(index) {
-                        this.activeSlide = index;
-                    },
-                    startTimer() {
-                        if (this.totalSlides > 1) {
-                            this.timer = setInterval(() => this.nextSlide(), 6000);
-                        }
-                    }
-                };
-            }
-
-            // Campaign Slider for Donation Modal
-            function campaignSlider() {
-                return {
-                    activeSlide: 0,
-                    donationSlides: window.donationCampaignsData || [],
-                    timer: null,
-                    autoPlay: true,
-                    isSliderLocked: false,
-                    init() {
-                        this.startTimer();
-                        this.updateCampaign();
-                    },
-                    nextSlide(manual = false) {
-                        if (manual) this.lockSlider();
-                        if (this.donationSlides.length > 0) {
-                            this.activeSlide = (this.activeSlide + 1) % this.donationSlides.length;
-                            this.updateCampaign();
-                        }
-                    },
-                    prevSlide() {
-                        this.lockSlider();
-                        if (this.donationSlides.length > 0) {
-                            this.activeSlide = (this.activeSlide - 1 + this.donationSlides.length) % this.donationSlides.length;
-                            this.updateCampaign();
-                        }
-                    },
-                    goToSlide(index) {
-                        this.lockSlider();
-                        this.activeSlide = index;
-                        this.updateCampaign();
-                    },
-                    lockSlider() {
-                        this.autoPlay = false;
-                        this.stopTimer();
-                    },
-                    forceLock() {
-                        this.lockSlider();
-                        this.isSliderLocked = true;
-                    },
-                    unlock() {
-                        this.isSliderLocked = false;
-                        this.autoPlay = true;
-                        this.startTimer();
-                    },
-                    updateCampaign() {
-                        if (this.donationSlides.length > 0 && this.donationSlides[this.activeSlide]) {
-                            this.$dispatch('campaign-changed', this.donationSlides[this.activeSlide].title);
-                        }
-                    },
-                    startTimer() {
-                        if (this.autoPlay && this.donationSlides.length > 1) {
-                            this.stopTimer();
-                            this.timer = setInterval(() => this.nextSlide(), 5000);
-                        }
-                    },
-                    stopTimer() {
-                        clearInterval(this.timer);
-                    }
-                };
-            }
-
-            function initMap() {
-                var container = document.getElementById('home-map');
-                if (container) {
-                    if (container._leaflet_id) {
-                        container._leaflet_id = null;
-                    }
-                    if (container.hasChildNodes()) {
-                        container.innerHTML = '';
-                    }
-
-                    // 1. Initial Setup
-                    var defaultCenter = [-6.3827433, 106.8525385]; // Baktijaya
-                    var map = L.map('home-map').setView(defaultCenter, 14);
-
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    }).addTo(map);
-
-                    var bounds = [];
-                    var addedCoords = new Set();
-                    var detectedCount = 0;
-
-                    // 2. Add Database Mosques (Verified)
-                    var verifiedMosques = @json($mosques);
-                    var settingsAddress = @json($settings['contact_address'] ?? 'Kelurahan Baktijaya, Depok');
-
-                    verifiedMosques.forEach(function (mosque) {
-                        if (mosque.latitude && mosque.longitude) {
-                            var lat = parseFloat(mosque.latitude);
-                            var lng = parseFloat(mosque.longitude);
-
-                            addMarker(lat, lng, mosque.name, mosque.address, mosque.type, true);
-                            bounds.push([lat, lng]);
-                            addedCoords.add(lat.toFixed(5) + ',' + lng.toFixed(5));
-                        }
+                    // 2. Create Clean Container for Capture
+                    const container = document.createElement('div');
+                    Object.assign(container.style, {
+                        position: 'fixed',
+                        top: '-9999px',
+                        left: '-9999px',
+                        width: '400px',
+                        padding: '30px',
+                        backgroundColor: '#ffffff',
+                        fontFamily: 'sans-serif',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '16px',
+                        color: '#1f2937',
+                        zIndex: '-9999'
                     });
 
-                    // 3. Helper to Add Marker
-                    function addMarker(lat, lng, name, address, type, isVerified) {
-                        var marker = L.marker([lat, lng]).addTo(map);
+                    // 3. Construct HTML with safe Inline Styles (HEX colors only)
+                    container.innerHTML = `
+                                                                                                            <div style="width: 100%; height: 8px; background-color: #064e3b; position: absolute; top: 0; left: 0;"></div>
 
-                        var badgeClass = isVerified
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-700 border border-gray-300';
+                                                                                                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+                                                                                                                <div>
+                                                                                                                    <h4 style="font-weight: 900; font-size: 18px; color: #064e3b; margin: 0;">BUKTI DONASI</h4>
+                                                                                                                    <p style="font-size: 10px; color: #6b7280; margin: 0;">PRNU Baktijaya</p>
+                                                                                                                </div>
+                                                                                                                <div style="text-align: right;">
+                                                                                                                    <p style="font-size: 10px; color: #9ca3af; margin: 0;">${date}</p>
+                                                                                                                    <p style="font-size: 12px; font-family: monospace; font-weight: bold; color: #4b5563; margin: 0;">${id}</p>
+                                                                                                                </div>
+                                                                                                            </div>
 
-                        var badgeText = isVerified
-                            ? type
-                            : 'Terdeteksi Otomatis';
+                                                                                                            <div style="text-align: center; padding: 24px 0; border-top: 1px dashed #e5e7eb; border-bottom: 1px dashed #e5e7eb; margin: 16px 0;">
+                                                                                                                <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">Nominal Donasi</p>
+                                                                                                                <h2 style="font-size: 30px; font-weight: 900; color: #1f2937; margin: 0;">Rp ${amount}</h2>
+                                                                                                            </div>
 
-                        var popupContent = '<div class="p-2 min-w-[200px]">' +
-                            '<h4 class="font-bold text-gray-900 mb-1">' + name + '</h4>' +
-                            '<p class="text-xs text-gray-600 mb-2">' + (address || 'Alamat tidak tersedia') + '</p>' +
-                            '<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded ' + badgeClass + '">' + badgeText + '</span>' +
-                            '<a href="https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng + '" target="_blank" class="block mt-2 text-xs text-blue-600 font-bold hover:underline">Petunjuk Arah</a>' +
-                            '</div>';
+                                                                                                            <div style="font-size: 14px; color: #374151;">
+                                                                                                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                                                                                    <span style="color: #6b7280;">Tujuan</span>
+                                                                                                                    <span style="font-weight: bold; text-align: right; max-width: 60%;">${campaign}</span>
+                                                                                                                </div>
+                                                                                                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                                                                                    <span style="color: #6b7280;">Nama</span>
+                                                                                                                    <span style="font-weight: bold;">${name}</span>
+                                                                                                                </div>
+                                                                                                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                                                                                    <span style="color: #6b7280;">Metode</span>
+                                                                                                                    <span style="font-weight: bold; text-transform: uppercase;">${method}</span>
+                                                                                                                </div>
+                                                                                                                <div style="display: flex; justify-content: space-between;">
+                                                                                                                    <span style="color: #6b7280;">Status</span>
+                                                                                                                    <span style="font-weight: bold; color: #f97316;">Menunggu Verifikasi</span>
+                                                                                                                </div>
+                                                                                                            </div>
 
-                        marker.bindPopup(popupContent);
-                    }
+                                                                                                            <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #f3f4f6; text-align: center;">
+                                                                                                                <p style="font-size: 10px; color: #9ca3af; margin: 0;">Jazakumullah Khairan Katsiran</p>
+                                                                                                            </div>
+                                                                                                        `;
 
-                    // 4. Helper to Add List Item
-                    function addListItem(lat, lng, name, address) {
-                        var listContainer = document.getElementById('mosque-list');
-                        var countSpan = document.getElementById('mosque-count');
+                    document.body.appendChild(container);
 
-                        if (listContainer) {
-                            // Remove "No Data" placeholder if it exists
-                            var emptyState = listContainer.querySelector('.text-center.py-12');
-                            if (emptyState) emptyState.remove();
+                    // 4. Capture
+                    html2canvas(container, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        useCORS: true
+                    }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = 'Bukti-Donasi-' + data.donationId + '.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                        document.body.removeChild(container);
+                    }).catch(err => {
+                        console.error('Download Error:', err);
+                        document.body.removeChild(container);
+                        alert('Gagal: ' + err.message);
+                    });
+                };
 
-                            var item = document.createElement('div');
-                            item.className = 'bg-gray-50 dark:bg-white/5 p-4 rounded-xl border border-primary/5 dark:border-white/5 hover:border-primary/30 transition-colors group animate-fade-in';
-                            item.innerHTML = `
-                                                                                                                                                                    <div class="flex items-start gap-4">
-                                                                                                                                                                        <div class="w-10 h-10 bg-white dark:bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm text-gray-500">
-                                                                                                                                                                            <span class="material-symbols-outlined text-xl">location_on</span>
-                                                                                                                                                                        </div>
-                                                                                                                                                                        <div class="flex-1 min-w-0">
-                                                                                                                                                                            <div class="flex justify-between items-start">
-                                                                                                                                                                                <h4 class="font-bold text-sm text-background-dark dark:text-white line-clamp-1 group-hover:text-primary transition-colors">${name}</h4>
-                                                                                                                                                                                <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">Otomatis</span>
-                                                                                                                                                                            </div>
-                                                                                                                                                                            <p class="text-xs text-gray-500 dark:text-white/50 mt-0.5 line-clamp-2">${address || 'Alamat sekitar area ini'}</p>
+                document.addEventListener('livewire:navigated', function () {
+                    initMap();
+                });
+                document.addEventListener('DOMContentLoaded', function () {
+                    initMap();
+                });
 
-                                                                                                                                                                            <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" 
-                                                                                                                                                                                target="_blank"
-                                                                                                                                                                                class="inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:text-accent mt-2 uppercase tracking-wide">
-                                                                                                                                                                                <span class="material-symbols-outlined text-[14px]">directions</span>
-                                                                                                                                                                                Petunjuk Arah
-                                                                                                                                                                            </a>
-                                                                                                                                                                        </div>
-                                                                                                                                                                    </div>
-                                                                                                                                                                `;
-                            listContainer.appendChild(item);
-
-                            // Update Count
-                            if (countSpan) {
-                                var current = parseInt(countSpan.innerText.replace(/[^0-9]/g, '')) || 0;
-                                countSpan.innerText = current + 1;
+                // Promo Section Slider (1 static + dynamic campaigns)
+                function promoSlider() {
+                    return {
+                        activeSlide: 0,
+                        campaigns: window.donationCampaignsData || [],
+                        timer: null,
+                        get totalSlides() {
+                            return 1 + this.campaigns.length; // 1 static slide + dynamic campaigns
+                        },
+                        init() {
+                            this.startTimer();
+                        },
+                        nextSlide() {
+                            this.activeSlide = (this.activeSlide + 1) % this.totalSlides;
+                        },
+                        prevSlide() {
+                            this.activeSlide = (this.activeSlide - 1 + this.totalSlides) % this.totalSlides;
+                        },
+                        goToSlide(index) {
+                            this.activeSlide = index;
+                        },
+                        startTimer() {
+                            if (this.totalSlides > 1) {
+                                this.timer = setInterval(() => this.nextSlide(), 6000);
                             }
                         }
-                    }
+                    };
+                }
 
-                    // 5. Auto-Discovery Logic
-                    var searchCenter = defaultCenter;
+                // Campaign Slider for Donation Modal
+                function campaignSlider() {
+                    return {
+                        activeSlide: 0,
+                        donationSlides: window.donationCampaignsData || [],
+                        timer: null,
+                        autoPlay: true,
+                        isSliderLocked: false,
+                        init() {
+                            this.startTimer();
+                            this.updateCampaign();
+                        },
+                        nextSlide(manual = false) {
+                            if (manual) this.lockSlider();
+                            if (this.donationSlides.length > 0) {
+                                this.activeSlide = (this.activeSlide + 1) % this.donationSlides.length;
+                                this.updateCampaign();
+                            }
+                        },
+                        prevSlide() {
+                            this.lockSlider();
+                            if (this.donationSlides.length > 0) {
+                                this.activeSlide = (this.activeSlide - 1 + this.donationSlides.length) % this.donationSlides.length;
+                                this.updateCampaign();
+                            }
+                        },
+                        goToSlide(index) {
+                            this.lockSlider();
+                            this.activeSlide = index;
+                            this.updateCampaign();
+                        },
+                        lockSlider() {
+                            this.autoPlay = false;
+                            this.stopTimer();
+                        },
+                        forceLock() {
+                            this.lockSlider();
+                            this.isSliderLocked = true;
+                        },
+                        unlock() {
+                            this.isSliderLocked = false;
+                            this.autoPlay = true;
+                            this.startTimer();
+                        },
+                        updateCampaign() {
+                            if (this.donationSlides.length > 0 && this.donationSlides[this.activeSlide]) {
+                                this.$dispatch('campaign-changed', this.donationSlides[this.activeSlide].title);
+                            }
+                        },
+                        startTimer() {
+                            if (this.autoPlay && this.donationSlides.length > 1) {
+                                this.stopTimer();
+                                this.timer = setInterval(() => this.nextSlide(), 5000);
+                            }
+                        },
+                        stopTimer() {
+                            clearInterval(this.timer);
+                        }
+                    };
+                }
 
-                    function runOverpass(lat, lng) {
-                        L.circle([lat, lng], {
-                            color: 'var(--color-primary)',
-                            fillColor: 'var(--color-primary)',
-                            fillOpacity: 0.1,
-                            radius: 1000
+                function initMap() {
+                    var container = document.getElementById('home-map');
+                    if (container) {
+                        if (container._leaflet_id) {
+                            container._leaflet_id = null;
+                        }
+                        if (container.hasChildNodes()) {
+                            container.innerHTML = '';
+                        }
+
+                        // 1. Initial Setup
+                        var defaultCenter = [-6.3827433, 106.8525385]; // Baktijaya
+                        var map = L.map('home-map').setView(defaultCenter, 14);
+
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         }).addTo(map);
 
-                        var radius = 1000;
-                        var query = `
-                                                                                                                                                                [out:json][timeout:25];
-                                                                                                                                                                (
-                                                                                                                                                                  node["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
-                                                                                                                                                                  way["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
-                                                                                                                                                                );
-                                                                                                                                                                out center; 
-                                                                                                                                                            `;
+                        var bounds = [];
+                        var addedCoords = new Set();
+                        var detectedCount = 0;
 
-                        fetch('https://overpass-api.de/api/interpreter', {
-                            method: 'POST',
-                            body: query
-                        })
-                            .then(response => response.json())
-                            .then(osmData => {
-                                if (osmData.elements) {
-                                    osmData.elements.forEach(el => {
-                                        var lat = el.lat || el.center.lat;
-                                        var lon = el.lon || el.center.lon;
-                                        var name = el.tags.name || 'Masjid/Musholla (Tanpa Nama)';
+                        // 2. Add Database Mosques (Verified)
+                        var verifiedMosques = @json($mosques);
+                        var settingsAddress = @json($settings['contact_address'] ?? 'Kelurahan Baktijaya, Depok');
 
-                                        var key = lat.toFixed(5) + ',' + lon.toFixed(5);
-                                        var isDuplicate = false;
+                        verifiedMosques.forEach(function (mosque) {
+                            if (mosque.latitude && mosque.longitude) {
+                                var lat = parseFloat(mosque.latitude);
+                                var lng = parseFloat(mosque.longitude);
 
-                                        addedCoords.forEach(coord => {
-                                            var parts = coord.split(',');
-                                            var cLat = parseFloat(parts[0]);
-                                            var cLon = parseFloat(parts[1]);
-                                            var dLat = Math.abs(cLat - lat);
-                                            var dLon = Math.abs(cLon - lon);
-                                            if (dLat < 0.0002 && dLon < 0.0002) isDuplicate = true;
+                                addMarker(lat, lng, mosque.name, mosque.address, mosque.type, true);
+                                bounds.push([lat, lng]);
+                                addedCoords.add(lat.toFixed(5) + ',' + lng.toFixed(5));
+                            }
+                        });
+
+                        // 3. Helper to Add Marker
+                        function addMarker(lat, lng, name, address, type, isVerified) {
+                            var marker = L.marker([lat, lng]).addTo(map);
+
+                            var badgeClass = isVerified
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-gray-100 text-gray-700 border border-gray-300';
+
+                            var badgeText = isVerified
+                                ? type
+                                : 'Terdeteksi Otomatis';
+
+                            var popupContent = '<div class="p-2 min-w-[200px]">' +
+                                '<h4 class="font-bold text-gray-900 mb-1">' + name + '</h4>' +
+                                '<p class="text-xs text-gray-600 mb-2">' + (address || 'Alamat tidak tersedia') + '</p>' +
+                                '<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded ' + badgeClass + '">' + badgeText + '</span>' +
+                                '<a href="https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng + '" target="_blank" class="block mt-2 text-xs text-blue-600 font-bold hover:underline">Petunjuk Arah</a>' +
+                                '</div>';
+
+                            marker.bindPopup(popupContent);
+                        }
+
+                        // 4. Helper to Add List Item
+                        function addListItem(lat, lng, name, address) {
+                            var listContainer = document.getElementById('mosque-list');
+                            var countSpan = document.getElementById('mosque-count');
+
+                            if (listContainer) {
+                                // Remove "No Data" placeholder if it exists
+                                var emptyState = listContainer.querySelector('.text-center.py-12');
+                                if (emptyState) emptyState.remove();
+
+                                var item = document.createElement('div');
+                                item.className = 'bg-gray-50 dark:bg-white/5 p-4 rounded-xl border border-primary/5 dark:border-white/5 hover:border-primary/30 transition-colors group animate-fade-in';
+                                item.innerHTML = `
+                                                                                                                                                                        <div class="flex items-start gap-4">
+                                                                                                                                                                            <div class="w-10 h-10 bg-white dark:bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm text-gray-500">
+                                                                                                                                                                                <span class="material-symbols-outlined text-xl">location_on</span>
+                                                                                                                                                                            </div>
+                                                                                                                                                                            <div class="flex-1 min-w-0">
+                                                                                                                                                                                <div class="flex justify-between items-start">
+                                                                                                                                                                                    <h4 class="font-bold text-sm text-background-dark dark:text-white line-clamp-1 group-hover:text-primary transition-colors">${name}</h4>
+                                                                                                                                                                                    <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">Otomatis</span>
+                                                                                                                                                                                </div>
+                                                                                                                                                                                <p class="text-xs text-gray-500 dark:text-white/50 mt-0.5 line-clamp-2">${address || 'Alamat sekitar area ini'}</p>
+
+                                                                                                                                                                                <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" 
+                                                                                                                                                                                    target="_blank"
+                                                                                                                                                                                    class="inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:text-accent mt-2 uppercase tracking-wide">
+                                                                                                                                                                                    <span class="material-symbols-outlined text-[14px]">directions</span>
+                                                                                                                                                                                    Petunjuk Arah
+                                                                                                                                                                                </a>
+                                                                                                                                                                            </div>
+                                                                                                                                                                        </div>
+                                                                                                                                                                    `;
+                                listContainer.appendChild(item);
+
+                                // Update Count
+                                if (countSpan) {
+                                    var current = parseInt(countSpan.innerText.replace(/[^0-9]/g, '')) || 0;
+                                    countSpan.innerText = current + 1;
+                                }
+                            }
+                        }
+
+                        // 5. Auto-Discovery Logic
+                        var searchCenter = defaultCenter;
+
+                        function runOverpass(lat, lng) {
+                            L.circle([lat, lng], {
+                                color: 'var(--color-primary)',
+                                fillColor: 'var(--color-primary)',
+                                fillOpacity: 0.1,
+                                radius: 1000
+                            }).addTo(map);
+
+                            var radius = 1000;
+                            var query = `
+                                                                                                                                                                    [out:json][timeout:25];
+                                                                                                                                                                    (
+                                                                                                                                                                      node["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
+                                                                                                                                                                      way["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
+                                                                                                                                                                    );
+                                                                                                                                                                    out center; 
+                                                                                                                                                                `;
+
+                            fetch('https://overpass-api.de/api/interpreter', {
+                                method: 'POST',
+                                body: query
+                            })
+                                .then(response => response.json())
+                                .then(osmData => {
+                                    if (osmData.elements) {
+                                        osmData.elements.forEach(el => {
+                                            var lat = el.lat || el.center.lat;
+                                            var lon = el.lon || el.center.lon;
+                                            var name = el.tags.name || 'Masjid/Musholla (Tanpa Nama)';
+
+                                            var key = lat.toFixed(5) + ',' + lon.toFixed(5);
+                                            var isDuplicate = false;
+
+                                            addedCoords.forEach(coord => {
+                                                var parts = coord.split(',');
+                                                var cLat = parseFloat(parts[0]);
+                                                var cLon = parseFloat(parts[1]);
+                                                var dLat = Math.abs(cLat - lat);
+                                                var dLon = Math.abs(cLon - lon);
+                                                if (dLat < 0.0002 && dLon < 0.0002) isDuplicate = true;
+                                            });
+
+                                            if (!isDuplicate) {
+                                                addMarker(lat, lon, name, '', 'Masjid', false);
+                                                addListItem(lat, lon, name, ''); // Add to List
+                                                addedCoords.add(key);
+                                                bounds.push([lat, lon]);
+                                            }
                                         });
 
-                                        if (!isDuplicate) {
-                                            addMarker(lat, lon, name, '', 'Masjid', false);
-                                            addListItem(lat, lon, name, ''); // Add to List
-                                            addedCoords.add(key);
-                                            bounds.push([lat, lon]);
+                                        if (bounds.length > 0) {
+                                            map.fitBounds(bounds, { padding: [50, 50] });
                                         }
-                                    });
-
-                                    if (bounds.length > 0) {
-                                        map.fitBounds(bounds, { padding: [50, 50] });
                                     }
-                                }
-                            })
-                            .catch(e => console.error("Overpass Error:", e));
-                    }
+                                })
+                                .catch(e => console.error("Overpass Error:", e));
+                        }
 
-                    if (settingsAddress) {
-                        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(settingsAddress)}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data && data.length > 0) {
-                                    var centerLat = parseFloat(data[0].lat);
-                                    var centerLng = parseFloat(data[0].lon);
+                        if (settingsAddress) {
+                            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(settingsAddress)}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data && data.length > 0) {
+                                        var centerLat = parseFloat(data[0].lat);
+                                        var centerLng = parseFloat(data[0].lon);
 
-                                    map.setView([centerLat, centerLng], 15);
-                                    runOverpass(centerLat, centerLng);
-                                } else {
+                                        map.setView([centerLat, centerLng], 15);
+                                        runOverpass(centerLat, centerLng);
+                                    } else {
+                                        runOverpass(searchCenter[0], searchCenter[1]);
+                                    }
+                                })
+                                .catch(e => {
                                     runOverpass(searchCenter[0], searchCenter[1]);
-                                }
-                            })
-                            .catch(e => {
-                                runOverpass(searchCenter[0], searchCenter[1]);
-                            });
-                    } else {
-                        runOverpass(searchCenter[0], searchCenter[1]);
+                                });
+                        } else {
+                            runOverpass(searchCenter[0], searchCenter[1]);
+                        }
                     }
                 }
-            }
-        </script>
+            </script>
     @endpush
 </div>
