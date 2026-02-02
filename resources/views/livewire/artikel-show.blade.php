@@ -60,7 +60,8 @@
 
                 <!-- Instagram -->
                 <a href="https://www.instagram.com/" target="_blank"
-                    class="w-10 h-10 flex items-center justify-center rounded-full bg-[#E4405F] text-white hover:opacity-90 transition-opacity shadow-sm"
+                    class="w-10 h-10 flex items-center justify-center rounded-full text-white hover:opacity-90 transition-opacity shadow-sm"
+                    style="background-color: #E4405F;"
                     title="Bagikan ke Instagram">
                     <svg class="w-5 h-5" fill="white" viewBox="0 0 24 24">
                         <path
