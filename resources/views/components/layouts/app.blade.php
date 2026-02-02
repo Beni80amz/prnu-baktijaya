@@ -236,7 +236,7 @@
     <!-- Footer -->
     <footer class="bg-background-dark text-gray-400 pt-24 pb-12 border-t border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-8 mb-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-20">
                 <!-- Column 1: Organization Info -->
                 <div class="space-y-6">
                     <div class="flex items-center gap-3 text-white mb-8">
