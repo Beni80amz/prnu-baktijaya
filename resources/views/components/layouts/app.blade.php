@@ -338,6 +338,20 @@
                         </div>
 
                         <!-- QR Code -->
+                        @php
+                            $url = 'https://prnubaktijaya.org/';
+                            $logoPath = !empty($settings['site_logo']) ? storage_path('app/public/' . $settings['site_logo']) : null;
+                            $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(120)
+                                ->format('svg')
+                                ->errorCorrection('H')
+                                ->margin(0);
+
+                            if ($logoPath && file_exists($logoPath)) {
+                                try {
+                                    $qrCodeString = $qrCode->merge($logoPath, 0.3, true)->generate($url);
+                                } catch (\Exception $e) { $qrCodeString = $qrCode->generate($url); }
+                            } else { $qrCodeString = $qrCode->generate($url); }
+                        @endphp
                         <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-4 group hover:bg-white/10 transition-colors">
                             <div class="bg-white p-1 rounded-lg shadow-lg shrink-0">
                                 <div class="size-16 flex items-center justify-center overflow-hidden">
