@@ -78,6 +78,8 @@ class TransactionResource extends Resource
                             ->label('Nominal')
                             ->required()
                             ->numeric()
+                            ->inputMode('decimal')
+                            ->step(0.01)
                             ->prefix('Rp'),
                         Forms\Components\Textarea::make('description')
                             ->label('Keterangan')

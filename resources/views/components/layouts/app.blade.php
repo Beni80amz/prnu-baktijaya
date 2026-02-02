@@ -156,9 +156,9 @@
                         </a>
                     @else
                         <a href="{{ url('/admin/login') }}"
-                            class="hidden sm:flex items-center gap-2 bg-transparent border border-primary hover:bg-primary text-primary hover:text-white dark:border-white/30 dark:text-white dark:hover:bg-white dark:hover:text-background-dark text-sm font-bold py-2.5 px-5 rounded-lg transition-all">
+                            class="hidden sm:flex items-center justify-center bg-transparent border border-primary hover:bg-primary text-primary hover:text-white dark:border-white/30 dark:text-white dark:hover:bg-white dark:hover:text-background-dark size-10 rounded-lg transition-all"
+                            title="Login">
                             <span class="material-symbols-outlined text-[20px]">login</span>
-                            <span>Login</span>
                         </a>
                     @endauth
 
