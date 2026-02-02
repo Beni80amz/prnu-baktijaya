@@ -983,7 +983,9 @@
                     nominal: 50000, 
                     customNominal: '', 
                     paymentType: 'qris',
-                    selectedBank: null,userInfo: { name: '', phone: '', region: '', anonymous: false },
+                    selectedBank: null,
+                    selectedEwallet: window.availableEwallets[0] || 'OVO',
+                    userInfo: { name: '', phone: '', region: '', anonymous: false },
                     todayDate: new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
                     donationId: 'DNS-' + Math.floor(Math.random() * 1000000),
                     
@@ -1046,7 +1048,7 @@
                     confirmWA() {
                         let amount = new Intl.NumberFormat('id-ID').format(this.totalAmount);
                         let name = this.userInfo.anonymous ? 'Hamba Allah' : this.userInfo.name;
-                        let method = this.paymentType === 'qris' ? 'QRIS' : this.selectedBank;
+                        let method = this.paymentType === 'qris' ? ('QRIS ' + this.selectedEwallet) : this.selectedBank;
                         let message = `*Konfirmasi Donasi Baru*%0A%0ATujuan: ${this.campaignName}%0AID Donasi:
                         ${this.donationId}%0ATanggal: ${this.todayDate}%0ANama: ${name}%0ANominal: Rp ${amount}%0AMetode:
                         ${method}%0A%0AMohon dicek. Terima kasih.`;
@@ -1179,48 +1181,51 @@
                                 </button>
                             </div>
 
-                            <!-- QRIS Content -->
                             <div x-show="paymentType === 'qris'"
-                                class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-4"x-data="{ activeWallet: window.availableEwallets[0] || 'OVO' }">
-                                
+                                class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-4">
+
                                 <!-- E-Wallet Tab Buttons -->
                                 <div class="flex items-center justify-center gap-2 mb-4">
                                     <template x-for="wallet in window.availableEwallets" :key="wallet">
-                                        <button @click="activeWallet = wallet"
+                                        <button @click="selectedEwallet = wallet"
                                             class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
-                                            :class="activeWallet === wallet ? 'bg-primary text-white shadow-md' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200'">
+                                            :class="selectedEwallet === wallet ? 'bg-primary text-white shadow-md' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200'">
                                             <span x-text="wallet"></span>
                                         </button>
                                     </template>
                                 </div>
-                                
+
                                 <!-- QR Code Display -->
                                 <div class="text-center mb-4">
-                                    <template x-if="window.donationEwalletData[activeWallet]?.qr">
+                                    <template x-if="window.donationEwalletData[selectedEwallet]?.qr">
                                         <div>
-                                            <img :src="window.donationEwalletData[activeWallet].qr" 
-                                                :alt="'QR Code ' + activeWallet"
+                                            <img :src="window.donationEwalletData[selectedEwallet].qr"
+                                                :alt="'QR Code ' + selectedEwallet"
                                                 class="w-48 h-48 mx-auto rounded-xl border-2 border-gray-200 dark:border-white/20 object-contain bg-white p-2">
-                                            <p class="text-xs text-gray-500 mt-2">Scan QR Code <span x-text="activeWallet" class="font-bold"></span></p>
+                                            <p class="text-xs text-gray-500 mt-2">Scan QR Code <span
+                                                    x-text="selectedEwallet" class="font-bold"></span></p>
                                         </div>
                                     </template>
-                                    <template x-if="!window.donationEwalletData[activeWallet]?.qr">
-                                        <div class="py-8 text-center">
-                                            <span class="material-symbols-outlined text-4xl text-gray-300">qr_code_2</span>
-                                            <p class="text-xs text-gray-400 mt-2">QR Code <span x-text="activeWallet"></span> belum tersedia</p>
+                                    <template x-if="!window.donationEwalletData[selectedEwallet]?.qr">
+                                        <div class="py-8 text-center text-gray-400">
+                                            <span class="material-symbols-outlined text-4xl">qr_code_2</span>
+                                            <p class="text-xs mt-2">QR Code <span x-text="selectedEwallet"></span> belum
+                                                tersedia</p>
                                         </div>
                                     </template>
                                 </div>
-                                
+
                                 <!-- E-Wallet Number -->
-                                <div class="flex items-center justify-between bg-gray-50 dark:bg-white/5 p-3 rounded-lg">
+                                <div
+                                    class="flex items-center justify-between bg-gray-50 dark:bg-white/5 p-3 rounded-lg">
                                     <div>
-                                        <p class="text-[10px] text-gray-400 uppercase">Nomor <span x-text="activeWallet"></span></p>
+                                        <p class="text-[10px] text-gray-400 uppercase">Nomor <span
+                                                x-text="selectedEwallet"></span></p>
                                         <p class="text-sm font-mono font-bold text-gray-700 dark:text-gray-300"
-                                            x-text="window.donationEwalletData[activeWallet]?.number || '-'"></p>
+                                            x-text="window.donationEwalletData[selectedEwallet]?.number || '-'"></p>
                                     </div>
                                     <button
-                                        @click="window.copyToClipboard(window.donationEwalletData[activeWallet]?.number || '', $el)"
+                                        @click="window.copyToClipboard(window.donationEwalletData[selectedEwallet]?.number || '', $el)"
                                         class="text-primary text-xs font-bold hover:underline px-3 py-1 rounded bg-primary/10">SALIN</button>
                                 </div>
                             </div>
@@ -1283,10 +1288,24 @@
                                 x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(totalAmount)"></h2>
 
                             <!-- QRIS Display -->
-                            <div x-show="paymentType === 'qris'" class="bg-white p-4 rounded-xl inline-block shadow-sm">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg"
-                                    alt="QRIS Code" class="w-48 h-48 object-contain mix-blend-multiply"
-                                    crossOrigin="anonymous">
+                            <div x-show="paymentType === 'qris'" class="mb-4">
+                                <template x-if="window.donationEwalletData[selectedEwallet]?.qr">
+                                    <div class="bg-white p-4 rounded-xl inline-block shadow-sm">
+                                        <img :src="window.donationEwalletData[selectedEwallet].qr"
+                                            :alt="'QRIS ' + selectedEwallet"
+                                            class="w-48 h-48 object-contain mix-blend-multiply" crossOrigin="anonymous">
+                                        <p class="text-[10px] text-gray-400 mt-2 uppercase font-bold"
+                                            x-text="'QRIS ' + selectedEwallet"></p>
+                                    </div>
+                                </template>
+                                <template x-if="!window.donationEwalletData[selectedEwallet]?.qr">
+                                    <div class="py-12 bg-white/5 rounded-xl border border-dashed border-white/10">
+                                        <span
+                                            class="material-symbols-outlined text-4xl text-gray-500 mb-2">qr_code_2</span>
+                                        <p class="text-xs text-gray-500"
+                                            x-text="'QR Code ' + selectedEwallet + ' tidak tersedia'"></p>
+                                    </div>
+                                </template>
                             </div>
 
                             <!-- Bank Display -->
@@ -1463,47 +1482,47 @@
 
                 // 3. Construct HTML with safe Inline Styles (HEX colors only)
                 container.innerHTML = `
-                                                                                                    <div style="width: 100%; height: 8px; background-color: #064e3b; position: absolute; top: 0; left: 0;"></div>
+                                                                                                        <div style="width: 100%; height: 8px; background-color: #064e3b; position: absolute; top: 0; left: 0;"></div>
 
-                                                                                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
-                                                                                                        <div>
-                                                                                                            <h4 style="font-weight: 900; font-size: 18px; color: #064e3b; margin: 0;">BUKTI DONASI</h4>
-                                                                                                            <p style="font-size: 10px; color: #6b7280; margin: 0;">PRNU Baktijaya</p>
+                                                                                                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+                                                                                                            <div>
+                                                                                                                <h4 style="font-weight: 900; font-size: 18px; color: #064e3b; margin: 0;">BUKTI DONASI</h4>
+                                                                                                                <p style="font-size: 10px; color: #6b7280; margin: 0;">PRNU Baktijaya</p>
+                                                                                                            </div>
+                                                                                                            <div style="text-align: right;">
+                                                                                                                <p style="font-size: 10px; color: #9ca3af; margin: 0;">${date}</p>
+                                                                                                                <p style="font-size: 12px; font-family: monospace; font-weight: bold; color: #4b5563; margin: 0;">${id}</p>
+                                                                                                            </div>
                                                                                                         </div>
-                                                                                                        <div style="text-align: right;">
-                                                                                                            <p style="font-size: 10px; color: #9ca3af; margin: 0;">${date}</p>
-                                                                                                            <p style="font-size: 12px; font-family: monospace; font-weight: bold; color: #4b5563; margin: 0;">${id}</p>
-                                                                                                        </div>
-                                                                                                    </div>
 
-                                                                                                    <div style="text-align: center; padding: 24px 0; border-top: 1px dashed #e5e7eb; border-bottom: 1px dashed #e5e7eb; margin: 16px 0;">
-                                                                                                        <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">Nominal Donasi</p>
-                                                                                                        <h2 style="font-size: 30px; font-weight: 900; color: #1f2937; margin: 0;">Rp ${amount}</h2>
-                                                                                                    </div>
+                                                                                                        <div style="text-align: center; padding: 24px 0; border-top: 1px dashed #e5e7eb; border-bottom: 1px dashed #e5e7eb; margin: 16px 0;">
+                                                                                                            <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">Nominal Donasi</p>
+                                                                                                            <h2 style="font-size: 30px; font-weight: 900; color: #1f2937; margin: 0;">Rp ${amount}</h2>
+                                                                                                        </div>
 
-                                                                                                    <div style="font-size: 14px; color: #374151;">
-                                                                                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                                                                                            <span style="color: #6b7280;">Tujuan</span>
-                                                                                                            <span style="font-weight: bold; text-align: right; max-width: 60%;">${campaign}</span>
+                                                                                                        <div style="font-size: 14px; color: #374151;">
+                                                                                                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                                                                                <span style="color: #6b7280;">Tujuan</span>
+                                                                                                                <span style="font-weight: bold; text-align: right; max-width: 60%;">${campaign}</span>
+                                                                                                            </div>
+                                                                                                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                                                                                <span style="color: #6b7280;">Nama</span>
+                                                                                                                <span style="font-weight: bold;">${name}</span>
+                                                                                                            </div>
+                                                                                                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                                                                                <span style="color: #6b7280;">Metode</span>
+                                                                                                                <span style="font-weight: bold; text-transform: uppercase;">${method}</span>
+                                                                                                            </div>
+                                                                                                            <div style="display: flex; justify-content: space-between;">
+                                                                                                                <span style="color: #6b7280;">Status</span>
+                                                                                                                <span style="font-weight: bold; color: #f97316;">Menunggu Verifikasi</span>
+                                                                                                            </div>
                                                                                                         </div>
-                                                                                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                                                                                            <span style="color: #6b7280;">Nama</span>
-                                                                                                            <span style="font-weight: bold;">${name}</span>
-                                                                                                        </div>
-                                                                                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                                                                                            <span style="color: #6b7280;">Metode</span>
-                                                                                                            <span style="font-weight: bold; text-transform: uppercase;">${method}</span>
-                                                                                                        </div>
-                                                                                                        <div style="display: flex; justify-content: space-between;">
-                                                                                                            <span style="color: #6b7280;">Status</span>
-                                                                                                            <span style="font-weight: bold; color: #f97316;">Menunggu Verifikasi</span>
-                                                                                                        </div>
-                                                                                                    </div>
 
-                                                                                                    <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #f3f4f6; text-align: center;">
-                                                                                                        <p style="font-size: 10px; color: #9ca3af; margin: 0;">Jazakumullah Khairan Katsiran</p>
-                                                                                                    </div>
-                                                                                                `;
+                                                                                                        <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #f3f4f6; text-align: center;">
+                                                                                                            <p style="font-size: 10px; color: #9ca3af; margin: 0;">Jazakumullah Khairan Katsiran</p>
+                                                                                                        </div>
+                                                                                                    `;
 
                 document.body.appendChild(container);
 
@@ -1694,26 +1713,26 @@
                             var item = document.createElement('div');
                             item.className = 'bg-gray-50 dark:bg-white/5 p-4 rounded-xl border border-primary/5 dark:border-white/5 hover:border-primary/30 transition-colors group animate-fade-in';
                             item.innerHTML = `
-                                                                                                                                                                <div class="flex items-start gap-4">
-                                                                                                                                                                    <div class="w-10 h-10 bg-white dark:bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm text-gray-500">
-                                                                                                                                                                        <span class="material-symbols-outlined text-xl">location_on</span>
-                                                                                                                                                                    </div>
-                                                                                                                                                                    <div class="flex-1 min-w-0">
-                                                                                                                                                                        <div class="flex justify-between items-start">
-                                                                                                                                                                            <h4 class="font-bold text-sm text-background-dark dark:text-white line-clamp-1 group-hover:text-primary transition-colors">${name}</h4>
-                                                                                                                                                                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">Otomatis</span>
+                                                                                                                                                                    <div class="flex items-start gap-4">
+                                                                                                                                                                        <div class="w-10 h-10 bg-white dark:bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm text-gray-500">
+                                                                                                                                                                            <span class="material-symbols-outlined text-xl">location_on</span>
                                                                                                                                                                         </div>
-                                                                                                                                                                        <p class="text-xs text-gray-500 dark:text-white/50 mt-0.5 line-clamp-2">${address || 'Alamat sekitar area ini'}</p>
+                                                                                                                                                                        <div class="flex-1 min-w-0">
+                                                                                                                                                                            <div class="flex justify-between items-start">
+                                                                                                                                                                                <h4 class="font-bold text-sm text-background-dark dark:text-white line-clamp-1 group-hover:text-primary transition-colors">${name}</h4>
+                                                                                                                                                                                <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">Otomatis</span>
+                                                                                                                                                                            </div>
+                                                                                                                                                                            <p class="text-xs text-gray-500 dark:text-white/50 mt-0.5 line-clamp-2">${address || 'Alamat sekitar area ini'}</p>
 
-                                                                                                                                                                        <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" 
-                                                                                                                                                                            target="_blank"
-                                                                                                                                                                            class="inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:text-accent mt-2 uppercase tracking-wide">
-                                                                                                                                                                            <span class="material-symbols-outlined text-[14px]">directions</span>
-                                                                                                                                                                            Petunjuk Arah
-                                                                                                                                                                        </a>
+                                                                                                                                                                            <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" 
+                                                                                                                                                                                target="_blank"
+                                                                                                                                                                                class="inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:text-accent mt-2 uppercase tracking-wide">
+                                                                                                                                                                                <span class="material-symbols-outlined text-[14px]">directions</span>
+                                                                                                                                                                                Petunjuk Arah
+                                                                                                                                                                            </a>
+                                                                                                                                                                        </div>
                                                                                                                                                                     </div>
-                                                                                                                                                                </div>
-                                                                                                                                                            `;
+                                                                                                                                                                `;
                             listContainer.appendChild(item);
 
                             // Update Count
@@ -1737,13 +1756,13 @@
 
                         var radius = 1000;
                         var query = `
-                                                                                                                                                            [out:json][timeout:25];
-                                                                                                                                                            (
-                                                                                                                                                              node["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
-                                                                                                                                                              way["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
-                                                                                                                                                            );
-                                                                                                                                                            out center; 
-                                                                                                                                                        `;
+                                                                                                                                                                [out:json][timeout:25];
+                                                                                                                                                                (
+                                                                                                                                                                  node["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
+                                                                                                                                                                  way["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
+                                                                                                                                                                );
+                                                                                                                                                                out center; 
+                                                                                                                                                            `;
 
                         fetch('https://overpass-api.de/api/interpreter', {
                             method: 'POST',
