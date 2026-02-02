@@ -44,60 +44,51 @@
             </div>
 
             <!-- Share Buttons -->
-            <div
-                class="mt-16 p-8 rounded-3xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/10 shadow-sm relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+            <div class="mt-16 p-8 rounded-3xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/10 shadow-sm relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -mr-24 -mt-24 blur-3xl"></div>
                 <div class="relative flex flex-col md:flex-row items-center justify-between gap-8">
                     <div class="text-center md:text-left">
-                        <h3 class="text-lg font-bold text-background-dark dark:text-white mb-1 tracking-tight">Bantu
-                            sebarkan kebaikan?</h3>
-                        <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium tracking-tight">
-                            Bagikan artikel ini agar lebih banyak yang mendapatkan manfaatnya.</p>
+                        <h3 class="text-lg font-bold text-background-dark dark:text-white mb-1 tracking-tight">Bantu sebarkan kebaikan?</h3>
+                        <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium tracking-tight">Bagikan artikel ini agar lebih banyak yang mendapatkan manfaatnya.</p>
                     </div>
-
-                    <div class="flex items-center gap-4">
+                    
+                    <div class="flex items-center gap-4 flex-wrap justify-center md:justify-end">
                         @php
                             $shareUrl = urlencode(request()->fullUrl());
                             $shareTitle = urlencode($article->title);
                         @endphp
-
+                        
                         <!-- WhatsApp -->
-                        <a href="https://api.whatsapp.com/send?text={{ $shareTitle }}%20{{ $shareUrl }}" target="_blank"
-                            rel="noopener noreferrer"
-                            class="group relative flex items-center justify-center size-11 sm:size-12 bg-white dark:bg-white/5 rounded-full text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all duration-300 shadow-sm border border-gray-100 dark:border-white/10"
-                            title="Bagikan ke WhatsApp">
-                            <svg class="size-6 fill-current transition-transform duration-300 group-hover:scale-110"
-                                viewBox="0 1 24 24">
-                                <path
-                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                            </svg>
-                            <span class="absolute -top-10 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all bg-gray-900 text-white text-[10px] font-bold py-1 px-2 rounded-md pointer-events-none shadow-xl border border-white/10 z-20 whitespace-nowrap tracking-wider">WHATSAPP</span>
+                        <a href="https://api.whatsapp.com/send?text={{ $shareTitle }}%20{{ $shareUrl }}" 
+                           target="_blank" rel="noopener noreferrer"
+                           class="group relative flex items-center justify-center size-12 bg-green-50 dark:bg-green-500/10 rounded-full text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all duration-300 border border-green-100 dark:border-green-500/20 shadow-sm"
+                           title="Bagikan ke WhatsApp">
+                           <svg class="size-6 fill-current" viewBox="0 0 24 24">
+                               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                           </svg>
+                           <span class="absolute -top-10 scale-0 group-hover:scale-100 transition-all bg-gray-900 text-white text-[10px] font-bold py-1 px-2 rounded-md z-20">WhatsApp</span>
                         </a>
 
-                        <!-- Facebook -->
-                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ $shareUrl }}" target="_blank"
-                            rel="noopener noreferrer"
-                            class="group relative flex items-center justify-center size-11 sm:size-12 bg-white dark:bg-white/5 rounded-full text-[#1877F2] hover:bg-[#1877F2] hover:text-white transition-all duration-300 shadow-sm border border-gray-100 dark:border-white/10"
-                            title="Bagikan ke Facebook">
-                            <svg class="size-6 fill-current transition-transform duration-300 group-hover:scale-110"
-                                viewBox="0 0 24 24">
-                                <path
-                                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                            </svg>
-                            <span class="absolute -top-10 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all bg-gray-900 text-white text-[10px] font-bold py-1 px-2 rounded-md pointer-events-none shadow-xl border border-white/10 z-20 whitespace-nowrap tracking-wider">FACEBOOK</span>
+                        <!-- Instagram -->
+                        <a href="https://www.instagram.com/" 
+                           target="_blank" rel="noopener noreferrer"
+                           class="group relative flex items-center justify-center size-12 bg-pink-50 dark:bg-pink-500/10 rounded-full text-[#E4405F] hover:bg-[#E4405F] hover:text-white transition-all duration-300 border border-pink-100 dark:border-pink-500/20 shadow-sm"
+                           title="Instagram">
+                           <svg class="size-6 fill-current" viewBox="0 0 24 24">
+                               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.247 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.332 2.633-1.308 3.608-.975.975-2.242 1.247-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.332-3.608-1.308-.975-.975-1.247-2.242-1.308-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.247 3.608-1.308 1.266-.058 1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-1.303.06-2.193.264-2.97.567-.803.312-1.484.73-2.163 1.41-.68.679-1.097 1.36-1.41 2.163-.303.777-.507 1.667-.567 2.97-.058 1.279-.071 1.687-.071 4.947s.013 3.668.071 4.948c.06 1.303.264 2.193.567 2.97.312.802.73 1.483 1.41 2.162.679.68 1.36 1.097 2.163 1.41.777.303 1.667.507 2.97.567 1.279.058 1.688.072 4.947.072s3.668-.014 4.948-.072c1.303-.06 2.193-.264 2.97-.567.802-.312 1.483-.73 2.162-1.41.68-.679 1.097-1.36 1.41-2.163.303-.777.507-1.667.567-2.97.058-1.279.072-1.688.072-4.947s-.014-3.668-.072-4.947c-.06-1.303-.264-2.193-.567-2.97-.312-.802-.73 1.483 1.41 2.162.679.68 1.36 1.097 2.163 1.41.777.303 1.667.507 2.97-.567 1.28-.058-1.688-.072-4.948-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                           </svg>
+                           <span class="absolute -top-10 scale-0 group-hover:scale-100 transition-all bg-gray-900 text-white text-[10px] font-bold py-1 px-2 rounded-md z-20">Instagram</span>
                         </a>
 
                         <!-- Twitter/X -->
-                        <a href="https://twitter.com/intent/tweet?text={{ $shareTitle }}&url={{ $shareUrl }}"
-                            target="_blank" rel="noopener noreferrer"
-                            class="group relative flex items-center justify-center size-11 sm:size-12 bg-white dark:bg-white/5 rounded-full text-gray-900 dark:text-white hover:bg-gray-900 hover:text-white transition-all duration-300 shadow-sm border border-gray-100 dark:border-white/10"
-                            title="Bagikan ke X (Twitter)">
-                            <svg class="size-5 fill-current transition-transform duration-300 group-hover:scale-110"
-                                viewBox="0 0 24 24">
-                                <path
-                                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                            </svg>
-                            <span class="absolute -top-10 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all bg-gray-900 text-white text-[10px] font-bold py-1 px-2 rounded-md pointer-events-none shadow-xl border border-white/10 z-20 whitespace-nowrap tracking-wider">TWITTER / X</span>
+                        <a href="https://twitter.com/intent/tweet?text={{ $shareTitle }}&url={{ $shareUrl }}" 
+                           target="_blank" rel="noopener noreferrer"
+                           class="group relative flex items-center justify-center size-12 bg-gray-900/10 dark:bg-white/10 rounded-full text-gray-900 dark:text-white hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-300 border border-gray-900/10 dark:border-white/20 shadow-sm"
+                           title="X (Twitter)">
+                           <svg class="size-5 fill-current" viewBox="0 0 24 24">
+                               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                           </svg>
+                           <span class="absolute -top-10 scale-0 group-hover:scale-100 transition-all bg-gray-900 text-white text-[10px] font-bold py-1 px-2 rounded-md z-20">X (Twitter)</span>
                         </a>
                     </div>
                 </div>
