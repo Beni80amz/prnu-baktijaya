@@ -374,8 +374,8 @@
                                 {!! $qrCodeString !!}
                             </div>
                         </div>
-                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-tighter leading-tight">
-                            Scan untuk info lengkap
+                        <p class="text-[7px] font-bold text-gray-500 uppercase tracking-widest leading-none">
+                            www.prnubaktijaya.org
                         </p>
                     </div>
                 </div>
