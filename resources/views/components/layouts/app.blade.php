@@ -374,7 +374,7 @@
                                 {!! $qrCodeString !!}
                             </div>
                         </div>
-                        <p class="text-[7px] font-bold text-gray-500 uppercase tracking-tight leading-none break-all">
+                        <p class="text-[6px] font-bold text-gray-500 uppercase tracking-tight leading-none whitespace-nowrap">
                             www.prnubaktijaya.org
                         </p>
                     </div>
