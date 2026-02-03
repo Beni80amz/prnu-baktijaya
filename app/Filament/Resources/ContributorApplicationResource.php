@@ -101,7 +101,8 @@ class ContributorApplicationResource extends Resource
                         \Filament\Notifications\Notification::make()
                             ->success()
                             ->title('Pendaftaran Disetujui')
-                            ->body("{$record->name} sekarang menjadi Kontributor.")
+                            ->body("Akun **{$record->name}** kini aktif sebagai Kontributor.\n\n**Email Login:** {$record->email}\n**Password:** (Gunakan password akun saat mendaftar)")
+                            ->persistent()
                             ->send();
                     })
                     ->requiresConfirmation(),
