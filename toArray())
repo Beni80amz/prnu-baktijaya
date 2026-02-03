@@ -15,8 +15,8 @@
     1032▕     /**
 
   1   vendor\psy\psysh\src\Shell.php:1562
-      Psy\Shell::setCode("print_r(App\Models\Setting::pluck('key')-")
+      Psy\Shell::setCode("print_r(App\Models\Gallery::select('type')-")
 
   2   vendor\laravel\tinker\src\Console\TinkerCommand.php:76
-      Psy\Shell::execute("print_r(App\Models\Setting::pluck('key')-")
+      Psy\Shell::execute("print_r(App\Models\Gallery::select('type')-")
 

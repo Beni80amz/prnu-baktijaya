@@ -22,7 +22,7 @@ class StatsOverview extends BaseWidget
 
         $articleCount = Article::count();
         $newsCount = News::count();
-        $imageCount = Gallery::where('type', 'image')->count();
+        $imageCount = Gallery::where('type', 'photo')->count();
         $videoCount = Gallery::where('type', 'video')->count();
         $totalDonation = \App\Models\Donation::where('status', 'verified')->sum('amount');
 
