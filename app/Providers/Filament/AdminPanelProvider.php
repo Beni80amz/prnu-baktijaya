@@ -30,36 +30,39 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('PRNU Baktijaya')
             ->favicon(asset('favicon.ico'))
             ->colors([
-                    'primary' => Color::Green,
-                    'danger' => Color::Rose,
-                    'info' => Color::Sky,
-                    'success' => Color::Emerald,
-                    'warning' => Color::Orange,
-                ])
+                'primary' => Color::Green,
+                'danger' => Color::Rose,
+                'info' => Color::Sky,
+                'success' => Color::Emerald,
+                'warning' => Color::Orange,
+            ])
             ->font('Inter')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                    Pages\Dashboard::class,
-                ])
+                Pages\Dashboard::class,
+            ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                    Widgets\AccountWidget::class,
-                ])
+                Widgets\AccountWidget::class,
+                \App\Filament\Widgets\StatsOverview::class,
+                \App\Filament\Widgets\IncomeExpenseChart::class,
+                \App\Filament\Widgets\RecentIncomeTable::class,
+            ])
             ->middleware([
-                    EncryptCookies::class,
-                    AddQueuedCookiesToResponse::class,
-                    StartSession::class,
-                    AuthenticateSession::class,
-                    ShareErrorsFromSession::class,
-                    VerifyCsrfToken::class,
-                    SubstituteBindings::class,
-                    DisableBladeIconComponents::class,
-                    DispatchServingFilamentEvent::class,
-                ])
+                EncryptCookies::class,
+                AddQueuedCookiesToResponse::class,
+                StartSession::class,
+                AuthenticateSession::class,
+                ShareErrorsFromSession::class,
+                VerifyCsrfToken::class,
+                SubstituteBindings::class,
+                DisableBladeIconComponents::class,
+                DispatchServingFilamentEvent::class,
+            ])
             ->authMiddleware([
-                    Authenticate::class,
-                ])
+                Authenticate::class,
+            ])
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications();
     }
