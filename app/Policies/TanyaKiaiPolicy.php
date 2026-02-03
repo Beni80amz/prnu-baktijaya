@@ -13,12 +13,12 @@ class TanyaKiaiPolicy
 
     public function viewAny(User $user): Response
     {
-        return $this->allowRoles($user, ['super_admin', 'admin_layanan']);
+        return $this->allowRoles($user, ['super_admin', 'admin_layanan', 'kiai']);
     }
 
     public function view(User $user, TanyaKiai $tanyaKiai): Response
     {
-        return $this->allowRoles($user, ['super_admin', 'admin_layanan']);
+        return $this->allowRoles($user, ['super_admin', 'admin_layanan', 'kiai']);
     }
 
     public function create(User $user): Response
@@ -28,7 +28,7 @@ class TanyaKiaiPolicy
 
     public function update(User $user, TanyaKiai $tanyaKiai): Response
     {
-        return $this->allowRoles($user, ['super_admin', 'admin_layanan']);
+        return $this->allowRoles($user, ['super_admin', 'admin_layanan', 'kiai']);
     }
 
     public function delete(User $user, TanyaKiai $tanyaKiai): Response

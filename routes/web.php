@@ -14,6 +14,8 @@ use App\Livewire\PetaMasjid;
 use App\Livewire\TanyaKiai;
 use App\Livewire\ZakatCalculator;
 use App\Livewire\RuangDoa;
+use App\Livewire\DaftarKontributor;
+use App\Livewire\StatusVerifikasi;
 
 // Home
 Route::get('/', Home::class)->name('home');
@@ -52,6 +54,10 @@ Route::get('/zakat', ZakatCalculator::class)->name('zakat');
 
 // Ruang Doa
 Route::get('/ruang-doa', RuangDoa::class)->name('ruang-doa');
+
+// Contributor flow
+Route::get('/daftar-kontributor', DaftarKontributor::class)->name('daftar.kontributor');
+Route::get('/status-verifikasi', StatusVerifikasi::class)->name('status.verifikasi');
 
 // Admin Transaction Print (for PDF export)
 Route::get('/admin/transactions/print', [App\Http\Controllers\TransactionPrintController::class, 'print'])

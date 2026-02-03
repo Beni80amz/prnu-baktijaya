@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Log;
 
 class GeminiApiService
 {
-    protected string $apiKey;
-    protected string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+    protected ?string $apiKey;
+    protected string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent';
 
     public function __construct()
     {
-        $this->apiKey = config('services.gemini.key', env('GEMINI_API_KEY'));
+        $this->apiKey = config('services.gemini.key');
     }
 
     public function askQuestion(string $question): ?string
@@ -22,10 +22,12 @@ class GeminiApiService
             return 'Mohon maaf, layanan tanya kiai sedang tidak tersedia (API Key missing).';
         }
 
-        $systemInstruction = "Anda adalah 'KH. Baktijaya', seorang kiai virtual dari Pengurus Ranting Nahdlatul Ulama (PRNU) Baktijaya. 
+        $systemInstruction = "Anda adalah 'Kiai AI Baktijaya', seorang kiai virtual dari Pengurus Ranting Nahdlatul Ulama (PRNU) Baktijaya. 
         Tugas Anda adalah memberikan jawaban atas pertanyaan masalah agama, sosial, dan NU berdasarkan tradisi Ahlussunnah wal Jamaah (Aswaja) An-Nahdliyah. 
         Gunakan gaya bahasa yang santun, sejuk, dan merangkul. 
-        Ringkas jawaban Anda agar mudah dibaca di mobile. 
+        Jawablah seperti manusia biasa yang sedang mengobrol lewat chat WhatsApp, JANGAN menggunakan format markdown seperti tanda bintang (**) atau (*) untuk menebalkan atau memiringkan kata. 
+        Pastikan setiap kalimat selesai dengan sempurna.
+        Ringkas jawaban Anda agar mudah dibaca di mobile namun tetap tuntas. 
         Jika pertanyaan di luar masalah agama atau NU, arahkan dengan sopan agar bertanya seputar keislaman.";
 
         try {
@@ -42,7 +44,7 @@ class GeminiApiService
                         ],
                         'generationConfig' => [
                             'temperature' => 0.7,
-                            'maxOutputTokens' => 800,
+                            'maxOutputTokens' => 1500,
                         ]
                     ]);
 
@@ -51,15 +53,15 @@ class GeminiApiService
                 return $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Maaf, saya tidak bisa menemukan jawaban untuk itu.';
             }
 
-            // IF 429 (Quota Exceeded), Return Friendly Message
-            if ($response->status() === 429) {
-                return "Untuk hari ini kami tidak bisa melayani!. Mohon maaf atas ketidaknyamanan ini!. Terima Kasih";
-            }
-
             // Expose the actual error message for debugging purposes
             $errorBody = json_decode($response->body(), true);
             $errorMessage = $errorBody['error']['message'] ?? $response->body();
-            Log::error('Gemini API Error: ' . $response->body());
+            Log::error('Gemini API Error (' . $response->status() . '): ' . $response->body());
+
+            // IF 429 (Quota Exceeded), Return Friendly Message
+            if ($response->status() === 429) {
+                return "Mohon maaf, untuk saat ini Saya tidak bisa melayani. Mohon maaf atas ketidaknyamanan ini. Terima kasih atas pengertiannya.";
+            }
 
             // IF 404, Try to list available models to help user debug
             if ($response->status() === 404) {

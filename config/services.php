@@ -39,4 +39,8 @@ return [
         'token' => env('GITHUB_TOKEN'),
     ],
 
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+    ],
+
 ];

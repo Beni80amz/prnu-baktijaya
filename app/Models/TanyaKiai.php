@@ -12,6 +12,7 @@ class TanyaKiai extends Model
 
     protected $fillable = [
         'answered_by',
+        'kiai_id',
         'name',
         'email',
         'phone',
@@ -31,5 +32,10 @@ class TanyaKiai extends Model
     public function answerer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'answered_by');
+    }
+
+    public function kiai(): BelongsTo
+    {
+        return $this->belongsTo(Kiai::class);
     }
 }

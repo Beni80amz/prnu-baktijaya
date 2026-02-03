@@ -127,6 +127,20 @@
                                 </div>
 
                                 <div class="space-y-2">
+                                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Tanyakan Ke
+                                        Kiai</label>
+                                    <select wire:model="kiai_id"
+                                        class="w-full px-5 py-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-primary/50 outline-none text-gray-800 dark:text-white transition-all">
+                                        <option value="">Pilih Kiai</option>
+                                        @foreach($kiais as $kiai)
+                                            <option value="{{ $kiai->id }}">{{ $kiai->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('kiai_id') <span
+                                    class="text-xs text-rose-500 font-bold mt-1">{{ $message }}</span> @enderror
+                                </div>
+
+                                <div class="space-y-2">
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Kategori
                                         Pertanyaan</label>
                                     <select wire:model="category"
@@ -159,6 +173,68 @@
                         </div>
                     @endif
                 </div>
+                <!-- Public Questions List -->
+                @if(count($publicQuestions) > 0)
+                    <div style="margin-top: 100px !important;"
+                        class="pt-16 border-t border-gray-100 dark:border-white/5 space-y-12 animate-fade-in">
+                        <div class="text-center mb-12">
+                            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-800 dark:text-white mb-4">Jawaban Kiai
+                            </h2>
+                            <p class="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">Pertanyaan-pertanyaan yang
+                                telah dijawab oleh para Kiai secara mendalam.</p>
+                        </div>
+
+                        <div class="grid gap-10">
+                            @foreach($publicQuestions as $item)
+                                <div
+                                    class="bg-white dark:bg-white/5 rounded-[2.5rem] p-8 md:p-14 border border-gray-100 dark:border-white/10 shadow-2xl hover:shadow-primary/5 transition-all duration-500">
+                                    <div class="flex flex-wrap items-center justify-between gap-6 mb-12">
+                                        <div class="flex items-center gap-12">
+                                            <div
+                                                class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center shadow-inner">
+                                                <span class="material-symbols-outlined text-4xl">person</span>
+                                            </div>
+                                            <div>
+                                                <div class="font-black text-2xl text-gray-800 dark:text-white">{{ $item->name }}
+                                                </div>
+                                                <div class="text-base font-medium text-gray-500 dark:text-gray-400 opacity-75">
+                                                    {{ $item->created_at->format('d M Y') }} •
+                                                    {{ $item->created_at->diffForHumans() }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="px-6 py-2.5 rounded-2xl bg-primary text-white text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+                                            {{ $item->category }}
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-14">
+                                        <h3
+                                            class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-6 leading-tight italic">
+                                            "{{ $item->question }}"
+                                        </h3>
+                                    </div>
+
+                                    <div class="relative pl-6">
+                                        <div class="flex items-center gap-6 mb-6">
+                                            <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center shadow-lg ring-8 ring-primary/10">
+                                                <span class="material-symbols-outlined text-xl">school</span>
+                                            </div>
+                                            <div class="text-2xl font-black text-primary tracking-tight">Jawaban dari
+                                                {{ $item->kiai ? $item->kiai->name : 'Kiai' }}</div>
+                                        </div>
+                                        <div class="pl-16 border-l-4 border-primary/10 ml-6">
+                                            <div class="text-gray-600 dark:text-gray-300 leading-relaxed prose dark:prose-invert max-w-none text-xl font-medium">
+                                                {!! $item->answer !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </section>

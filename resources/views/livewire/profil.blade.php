@@ -214,11 +214,11 @@
             <p class="text-white/80 max-w-2xl mx-auto mb-10 text-lg">Pintu kami selalu terbuka untuk Anda yang ingin
                 berkhidmat dan berkolaborasi dalam membangun Baktijaya yang lebih baik.</p>
             <div class="flex flex-wrap justify-center gap-4">
-                <button
+                <a href="{{ route('daftar.kontributor') }}"
                     class="bg-accent hover:bg-yellow-600 text-white font-black py-4 px-10 rounded-2xl shadow-xl transition-all flex items-center gap-3">
                     <span class="material-symbols-outlined">group_add</span>
-                    Gabung Relawan
-                </button>
+                    Gabung Kontributor Berita & Artikel
+                </a>
                 <button
                     class="bg-white/10 hover:bg-white/20 text-white border-2 border-white/20 font-black py-4 px-10 rounded-2xl backdrop-blur-sm transition-all">
                     Hubungi Kami
