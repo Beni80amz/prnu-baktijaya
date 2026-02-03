@@ -21,6 +21,11 @@ class ContributorApplicationResource extends Resource
     protected static ?string $label = 'Pendaftaran Kontributor';
     protected static ?string $pluralLabel = 'Pendaftaran Kontributor';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->hasAnyRole(['super_admin', 'admin_konten']);
+    }
+
     public static function form(Form $form): Form
     {
         return $form

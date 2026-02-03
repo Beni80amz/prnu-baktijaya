@@ -22,6 +22,11 @@ class KiaiResource extends Resource
     protected static ?string $label = 'Daftar Kiai';
     protected static ?string $pluralLabel = 'Daftar Kiai';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->hasAnyRole(['super_admin', 'admin_layanan']);
+    }
+
     public static function form(Form $form): Form
     {
         return $form
