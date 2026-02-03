@@ -78,7 +78,9 @@ class NewsResource extends Resource
                                     ->default(fn() => auth()->id())
                                     ->searchable()
                                     ->required()
-                                    ->label('Penulis'),
+                                    ->label('Penulis')
+                                    ->disabled(fn() => auth()->user()->hasRole('kontributor'))
+                                    ->dehydrated(),
                                 Forms\Components\Select::make('status')
                                     ->options([
                                         'draft' => 'Draft',
@@ -153,6 +155,17 @@ class NewsResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->hasRole('kontributor')) {
+            $query->where('user_id', auth()->id());
+        }
+
+        return $query;
     }
 
     public static function getPages(): array

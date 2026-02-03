@@ -18,7 +18,13 @@ class ArticlePolicy
 
     public function view(User $user, Article $article): Response
     {
-        return $this->allowRoles($user, ['super_admin', 'admin_konten', 'kontributor']);
+        if ($user->hasRole('kontributor')) {
+            return $article->user_id === $user->id
+                ? Response::allow()
+                : $this->denyResponse();
+        }
+
+        return $this->allowRoles($user, ['super_admin', 'admin_konten']);
     }
 
     public function create(User $user): Response
@@ -28,7 +34,13 @@ class ArticlePolicy
 
     public function update(User $user, Article $article): Response
     {
-        return $this->allowRoles($user, ['super_admin', 'admin_konten', 'kontributor']);
+        if ($user->hasRole('kontributor')) {
+            return $article->user_id === $user->id
+                ? Response::allow()
+                : $this->denyResponse();
+        }
+
+        return $this->allowRoles($user, ['super_admin', 'admin_konten']);
     }
 
     public function delete(User $user, Article $article): Response

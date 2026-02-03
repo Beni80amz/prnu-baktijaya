@@ -163,6 +163,17 @@ class ArticleResource extends Resource
         ];
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->hasRole('kontributor')) {
+            $query->where('user_id', auth()->id());
+        }
+
+        return $query;
+    }
+
     public static function getPages(): array
     {
         return [

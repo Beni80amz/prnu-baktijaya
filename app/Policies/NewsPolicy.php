@@ -28,7 +28,13 @@ class NewsPolicy
      */
     public function view(User $user, News $news): Response
     {
-        return $user->hasAnyRole(['super_admin', 'admin_konten', 'kontributor'])
+        if ($user->hasRole('kontributor')) {
+            return $news->user_id === $user->id
+                ? Response::allow()
+                : $this->denyResponse();
+        }
+
+        return $user->hasAnyRole(['super_admin', 'admin_konten'])
             ? Response::allow()
             : $this->denyResponse();
     }
@@ -48,7 +54,13 @@ class NewsPolicy
      */
     public function update(User $user, News $news): Response
     {
-        return $user->hasAnyRole(['super_admin', 'admin_konten', 'kontributor'])
+        if ($user->hasRole('kontributor')) {
+            return $news->user_id === $user->id
+                ? Response::allow()
+                : $this->denyResponse();
+        }
+
+        return $user->hasAnyRole(['super_admin', 'admin_konten'])
             ? Response::allow()
             : $this->denyResponse();
     }
