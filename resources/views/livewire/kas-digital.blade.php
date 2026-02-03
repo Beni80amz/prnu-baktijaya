@@ -95,8 +95,7 @@
                     <div class="flex items-center justify-between mb-8">
                         <div>
                             <h4 class="text-lg font-bold text-[#0c1d1d] dark:text-white transition-colors">Statistik Arus Kas</h4>
-                            <!-- Fix label to 3 months -->
-                            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Perbandingan Infaq vs Penyaluran 3 Bulan Terakhir</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Perbandingan Infaq vs Penyaluran 6 Bulan Terakhir</p>
                         </div>
                         <div class="flex gap-4">
                             <div class="flex items-center gap-2">
