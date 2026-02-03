@@ -27,7 +27,8 @@ class User extends Authenticatable implements FilamentUser
             'admin_konten',
             'admin_bendahara',
             'admin_layanan',
-            'kontributor'
+            'kontributor',
+            'kiai'
         ]);
     }
 

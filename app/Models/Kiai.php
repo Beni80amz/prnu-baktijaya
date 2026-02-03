@@ -46,6 +46,15 @@ class Kiai extends Model
                 $user->assignRole('kiai');
 
                 $kiai->update(['user_id' => $user->id]);
+
+                // Send notification to Admins with credentials
+                $admins = \App\Models\User::role(['super_admin', 'admin_konten'])->get();
+                \Filament\Notifications\Notification::make()
+                    ->success()
+                    ->title('Akun Kiai Berhasil Dibuat')
+                    ->body("Akun untuk kiai **{$kiai->name}** telah dibuat.\n\n**Email:** {$email}\n**Password:** kiai12345")
+                    ->persistent()
+                    ->sendToDatabase($admins);
             }
         });
     }

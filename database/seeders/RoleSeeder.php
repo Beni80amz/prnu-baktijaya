@@ -82,10 +82,15 @@ class RoleSeeder extends Seeder
 
         // Create Kontributor role
         $kontributor = Role::firstOrCreate(['name' => 'kontributor']);
-        $kontributor->givePermissionTo([
+        $kontributor->syncPermissions([
             'manage_news',
             'manage_articles',
-            'manage_gallery',
+        ]);
+
+        // Create Kiai role
+        $kiai = Role::firstOrCreate(['name' => 'kiai']);
+        $kiai->syncPermissions([
+            'manage_tanya_kiai',
         ]);
 
         // Create Super Admin user
