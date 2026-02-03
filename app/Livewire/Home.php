@@ -163,7 +163,11 @@ class Home extends Component
                 'sliders' => $sliders,
                 'donationCampaigns' => $campaigns->toArray(), // Pass campaigns to view
                 'news' => News::with('category')->where('status', 'published')->latest()->take(2)->get(),
-                'dawuh' => Dawuh::where('is_active', true)->latest()->first(),
+                'dawuhs' => Dawuh::where('is_active', true)->latest()->get()->map(fn($d) => [
+                    'quote' => $d->quote,
+                    'ulama_name' => $d->ulama_name,
+                    'ulama_title' => $d->ulama_title,
+                ])->toArray(),
                 'galleries' => Gallery::where('is_active', true)->latest()->take(6)->get(),
                 'mosques' => Mosque::where('is_active', true)->take(4)->get(),
                 'agendas' => Agenda::where('date', '>=', now()->toDateString())
