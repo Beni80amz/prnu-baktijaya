@@ -13,22 +13,22 @@ class GalleryPolicy
 
     public function viewAny(User $user): Response
     {
-        return $this->allowRoles($user, ['super_admin', 'admin_konten', 'kontributor']);
+        return $this->allowRoles($user, ['super_admin', 'admin_konten']);
     }
 
     public function view(User $user, Gallery $gallery): Response
     {
-        return $this->allowRoles($user, ['super_admin', 'admin_konten', 'kontributor']);
+        return $this->allowRoles($user, ['super_admin', 'admin_konten']);
     }
 
     public function create(User $user): Response
     {
-        return $this->allowRoles($user, ['super_admin', 'admin_konten', 'kontributor']);
+        return $this->allowRoles($user, ['super_admin', 'admin_konten']);
     }
 
     public function update(User $user, Gallery $gallery): Response
     {
-        return $this->allowRoles($user, ['super_admin', 'admin_konten', 'kontributor']);
+        return $this->allowRoles($user, ['super_admin', 'admin_konten']);
     }
 
     public function delete(User $user, Gallery $gallery): Response
