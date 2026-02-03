@@ -47,8 +47,7 @@
                                 class="block text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Email
                                 Utama</label>
                             <input type="email" wire:model="email"
-                                class="w-full px-5 py-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-primary/50 outline-none text-gray-800 dark:text-white transition-all shadow-inner"
-                                readonly>
+                                class="w-full px-5 py-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-primary/50 outline-none text-gray-800 dark:text-white transition-all shadow-inner">
                             @error('email') <span class="text-xs text-rose-500 font-bold mt-1">{{ $message }}</span>
                             @enderror
                         </div>
